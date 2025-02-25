@@ -1,0 +1,30 @@
+version: '3'
+services:
+  web:
+    build: .
+    ports:
+      - "5002:5002"
+    environment:
+      - MYSQL_DATABASE=berounka_db
+      - MYSQL_USER=youruser
+      - MYSQL_PASSWORD=yourpassword
+      - MYSQL_HOST=mysql
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_DATABASE: berounka_db
+      MYSQL_USER: youruser
+      MYSQL_PASSWORD: yourpassword
+      MYSQL_ROOT_PASSWORD: yourrootpassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./SQL/berounka_db.sql:/docker-entrypoint-initdb.d/berounka_db.sql
+
+volumes:
+  mysql-data:

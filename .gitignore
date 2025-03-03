@@ -1,0 +1,9 @@
+# Ignore large image files
+*.psd
+*.ai
+*.eps
+
+# Allow optimized images
+!public/images/**/*.jpg
+!public/images/**/*.png
+!public/images/**/*.webp

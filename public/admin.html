@@ -2,29 +2,11 @@
 <html>
 <head>
     <title>Admin - Web Berounka</title>
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #4CAF50;
-            color: white;
-        }
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-    </style>
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
     <h1>Admin Panel - Seznam uživatelů</h1>
-    <button onclick="loadUsers()">Obnovit data</button>
+    <button onclick="loadUsers()" class="btn">Obnovit data</button>
     <table>
         <thead>
             <tr>
@@ -35,27 +17,6 @@
         </thead>
         <tbody id="usersList"></tbody>
     </table>
-
-    <script>
-        async function loadUsers() {
-            try {
-                const response = await fetch('/users');
-                const users = await response.json();
-                const usersList = document.getElementById('usersList');
-                usersList.innerHTML = users.map(user => `
-                    <tr>
-                        <td>${user.id}</td>
-                        <td>${user.name}</td>
-                        <td>${user.email}</td>
-                    </tr>
-                `).join('');
-            } catch (error) {
-                console.error('Chyba:', error);
-            }
-        }
-
-        // Načtení dat při otevření stránky
-        loadUsers();
-    </script>
+    <script src="/js/main.js"></script>
 </body>
 </html>

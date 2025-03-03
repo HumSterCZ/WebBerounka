@@ -1,0 +1,54 @@
+.progressbar {
+    counter-reset: step;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+
+.progressbar li {
+    list-style-type: none;
+    width: calc(20% - 8px);
+    text-align: center;
+    font-weight: 500;
+    color: var(--text-color);
+    position: relative;
+}
+
+.progressbar li:before {
+    content: counter(step);
+    counter-increment: step;
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    border: 2px solid var(--border-color);
+    display: block;
+    text-align: center;
+    margin: 0 auto 10px auto;
+    border-radius: 5px;
+    background-color: var(--light-bg);
+}
+
+.progressbar li.active {
+    color: var(--accent-color);
+}
+
+.progressbar li.active:before {
+    border-color: var(--accent-color);
+    background-color: var(--accent-color);
+    color: var(--light-text);
+}
+
+.step {
+    display: none;
+}
+
+.step.active {
+    display: block;
+}
+
+/* Responzivní design */
+@media (max-width: 767px) {
+    .progressbar {
+        display: none;
+    }
+}

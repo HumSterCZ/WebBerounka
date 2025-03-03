@@ -1,0 +1,27 @@
+:root {
+    /* Barvy */
+    --primary-color: #2c3e50;
+    --secondary-color: #34495e;
+    --text-color: #333;
+    --light-text: #fff;
+    --border-color: #ddd;
+
+    /* Typografie */
+    --heading-font: 'Antonio', sans-serif;
+    --body-font: 'Outfit', sans-serif;
+
+    /* Spacing */
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 2rem;
+
+    /* Border radius */
+    --border-radius: 4px;
+
+    /* Transitions */
+    --transition-speed: 0.3s;
+
+    /* Accent colors */
+    --accent-color: #ff6b00; /* Přidáme výraznou oranžovou barvu */
+    --accent-color-hover: #ff8533; /* Světlejší varianta pro hover efekt */
+}

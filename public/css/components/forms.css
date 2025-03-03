@@ -1,0 +1,130 @@
+.container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.step {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: var(--accent-color);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(255, 107, 0, 0.1);
+}
+
+.button-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+    gap: 1rem;
+}
+
+.form-textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 0.8rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    resize: vertical;
+}
+
+.order-summary {
+    background: #f8f9fa;
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    margin-bottom: 2rem;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.error {
+    border-color: var(--error-color);
+    background-color: var(--error-bg);
+}
+
+/* Aktualizace stylů pro všechna tlačítka */
+.next-btn, .prev-btn, .submit-btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+
+.next-btn {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+.submit-btn {
+    background-color: #28a745; /* Zelená barva pro tlačítko odeslat */
+    color: white;
+    margin: 0; /* Reset margin */
+}
+
+.next-btn:hover {
+    background-color: var(--accent-color-hover);
+    transform: translateY(-1px);
+}
+
+.submit-btn:hover {
+    background-color: #218838; /* Tmavší zelená při najetí myší */
+    transform: translateY(-1px);
+}
+
+.prev-btn {
+    background-color: #6c757d;
+    color: white;
+}
+
+.prev-btn:hover {
+    background-color: #5a6268;
+    transform: translateY(-1px);
+}
+
+/* Responzivní design */
+@media (max-width: 768px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Zajištění viditelnosti posledního kroku */
+#step6 {
+    display: none;
+}
+
+#step6.active {
+    display: block !important;
+}

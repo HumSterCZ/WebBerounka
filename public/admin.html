@@ -2,21 +2,54 @@
 <html>
 <head>
     <title>Admin - Web Berounka</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/admin.css">
 </head>
 <body>
-    <h1>Admin Panel - Seznam uživatelů</h1>
-    <button onclick="loadUsers()" class="btn">Obnovit data</button>
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Jméno</th>
-                <th>Email</th>
-            </tr>
-        </thead>
-        <tbody id="usersList"></tbody>
-    </table>
-    <script src="/js/main.js"></script>
+    <div class="admin-container">
+        <h1>Administrace objednávek</h1>
+        
+        <div class="admin-tabs">
+            <button class="tab-button active" onclick="showTab('orders')">Objednávky</button>
+            <button class="tab-button" onclick="showTab('users')">Uživatelé</button>
+        </div>
+
+        <div id="orders" class="tab-content active">
+            <h2>Seznam objednávek</h2>
+            <button onclick="loadOrders()" class="btn">Obnovit data</button>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Datum vytvoření</th>
+                        <th>Jméno</th>
+                        <th>Email</th>
+                        <th>Telefon</th>
+                        <th>Termín od</th>
+                        <th>Termín do</th>
+                        <th>Status</th>
+                        <th>Akce</th>
+                    </tr>
+                </thead>
+                <tbody id="ordersList"></tbody>
+            </table>
+        </div>
+
+        <div id="users" class="tab-content">
+            <h2>Seznam uživatelů</h2>
+            <button onclick="loadUsers()" class="btn">Obnovit data</button>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Jméno</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody id="usersList"></tbody>
+            </table>
+        </div>
+    </div>
+    <script src="/js/admin.js"></script>
 </body>
 </html>

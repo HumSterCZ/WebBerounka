@@ -1,0 +1,55 @@
+nav {
+    flex-grow: 1;
+    margin-left: var(--spacing-lg);
+}
+
+nav ul {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    flex-wrap: wrap;
+}
+
+nav ul li {
+    margin: 0 var(--spacing-md);
+}
+
+nav ul li a {
+    color: var(--light-text);
+    text-decoration: none;
+    padding: var(--spacing-sm);
+    font-weight: 600;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+    letter-spacing: 0.5px;
+}
+
+nav ul li a:hover {
+    background-color: var(--secondary-color);
+    border-radius: var(--border-radius);
+    transition: all var(--transition-speed) ease;
+}
+
+nav ul li a.active {
+    background-color: var(--secondary-color);
+    border-radius: var(--border-radius);
+}
+
+/* Speciální styling pro tlačítko Objednávky */
+nav ul li a[href="/objednavky.html"] {
+    background-color: var(--accent-color);
+    color: var(--light-text);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    transition: all var(--transition-speed) ease;
+}
+
+nav ul li a[href="/objednavky.html"]:hover {
+    background-color: var(--accent-color-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(255, 107, 0, 0.3);
+}
+
+nav ul li a[href="/objednavky.html"].active {
+    background-color: var(--accent-color-hover);
+}

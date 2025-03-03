@@ -1,3 +1,21 @@
+/* Import základních stylů */
+@import 'base/variables.css';
+@import 'base/reset.css';
+@import 'base/typography.css';
+
+/* Import komponent */
+@import 'components/header.css';
+@import 'components/navigation.css';
+@import 'components/footer.css';
+@import 'components/buttons.css';
+@import 'components/forms.css';
+@import 'components/gallery.css';
+
+/* Import stylů pro jednotlivé stránky */
+@import 'pages/home.css';
+@import 'pages/about.css';
+@import 'pages/admin.css';
+
 * {
     margin: 0;
     padding: 0;
@@ -248,4 +266,44 @@ footer {
     .hero-text {
         font-size: 1.4rem;
     }
+}
+
+/* Admin Panel Styles */
+.btn {
+    padding: 10px 20px;
+    background-color: #2c3e50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 1rem 0;
+}
+
+.btn:hover {
+    background-color: #34495e;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #2c3e50;
+    color: white;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+tr:hover {
+    background-color: #ddd;
 }

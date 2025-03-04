@@ -53,8 +53,10 @@ async function loadOrders() {
     }
 }
 
-// Funkce pro řazení dat - upravená část pro datum a čas
+// Upravíme funkci pro řazení
 function sortOrders(column) {
+    console.log('Řazení podle:', column); // Debug log
+
     const th = document.querySelector(`th[onclick="sortOrders('${column}')"]`);
     document.querySelectorAll('th').forEach(header => {
         if (header !== th) {
@@ -71,6 +73,45 @@ function sortOrders(column) {
 
     th.classList.toggle('sorted-asc', currentSort.direction === 'asc');
     th.classList.toggle('sorted-desc', currentSort.direction === 'desc');
+
+    // Opravíme řazení pro datum a čas
+    ordersData.sort((a, b) => {
+        let valueA, valueB;
+
+        switch(column) {
+            case 'arrival':
+                valueA = new Date(`${a.arrival_date}T${a.arrival_time}`);
+                valueB = new Date(`${b.arrival_date}T${b.arrival_time}`);
+                break;
+
+            case 'departure':
+                valueA = new Date(`${a.departure_date}T${a.departure_time}`);
+                valueB = new Date(`${b.departure_date}T${b.departure_time}`);
+                break;
+
+            case 'created_at':
+                valueA = new Date(a.created_at);
+                valueB = new Date(b.created_at);
+                break;
+
+            default:
+                valueA = a[column];
+                valueB = b[column];
+                if (typeof valueA === 'string') {
+                    valueA = valueA.toLowerCase();
+                    valueB = valueB.toLowerCase();
+                }
+        }
+
+        // Ošetření neplatných dat
+        if (valueA instanceof Date && isNaN(valueA)) return 1;
+        if (valueB instanceof Date && isNaN(valueB)) return -1;
+
+        const direction = currentSort.direction === 'asc' ? 1 : -1;
+        if (valueA < valueB) return -1 * direction;
+        if (valueA > valueB) return 1 * direction;
+        return 0;
+    });
 
     renderOrders();
 }

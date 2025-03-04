@@ -31,6 +31,7 @@
         
         <div class="admin-tabs">
             <button class="tab-button active" onclick="showTab('orders')">Objednávky</button>
+            <button class="tab-button" onclick="showTab('inventory')">Sklady</button>
             <button class="tab-button" onclick="showTab('users')">Uživatelé</button>
         </div>
 
@@ -74,6 +75,29 @@
             </div>
         </div>
 
+        <div id="inventory" class="tab-content">
+            <div class="section-header">
+                <h2>Stav skladů</h2>
+                <div class="inventory-controls">
+                    <input type="date" id="inventoryDate" onchange="loadInventory()">
+                    <button onclick="loadInventory()" class="btn-refresh">Obnovit data</button>
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <div id="inventoryGrid" class="inventory-grid">
+                    <!-- Sem se budou vykreslovat karty skladů -->
+                    <div class="inventory-item">
+                        <span class="item-name">${itemNames[type] || type}</span>
+                        <div class="item-controls">
+                            <span class="item-quantity ${quantityClass}">${quantity}</span>
+                            <button onclick="editInventory(${warehouse.id}, '${type}', ${quantity})" class="btn-edit-inventory">Upravit množství</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div id="users" class="tab-content">
             <div class="section-header">
                 <h2>Seznam uživatelů</h2>
@@ -110,6 +134,13 @@
     <footer>
         <p>&copy; 2024 Berounka.cz - Všechna práva vyhrazena</p>
     </footer>
+
+    <div id="inventoryModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="inventoryEditForm"></div>
+        </div>
+    </div>
 
     <script src="/js/admin.js"></script>
 </body>

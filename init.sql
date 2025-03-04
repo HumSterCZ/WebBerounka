@@ -62,6 +62,66 @@ ALTER DATABASE berounka CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ALTER TABLE orders CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ALTER TABLE orders MODIFY COLUMN status ENUM('Nová', 'Potvrzená', 'Dokončená', 'Zrušená') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'Nová';
 
+-- Nejdřív vypneme kontrolu cizích klíčů
+SET FOREIGN_KEY_CHECKS=0;
+
+-- Smazat a znovu vytvořit tabulky v správném pořadí
+DROP TABLE IF EXISTS inventory_items;
+DROP TABLE IF EXISTS warehouses;
+
+-- Vytvoření tabulky pro sklady
+CREATE TABLE warehouses (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    location VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    UNIQUE KEY unique_location (location)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Vytvoření tabulky pro skladové položky
+CREATE TABLE inventory_items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    warehouse_id INT NOT NULL,
+    item_type ENUM('kanoe', 'kanoe_rodinna', 'velky_raft', 'padlo', 'padlo_detske', 'vesta', 'vesta_detska', 'barel') NOT NULL,
+    total_quantity INT NOT NULL DEFAULT 0,
+    FOREIGN KEY (warehouse_id) REFERENCES warehouses(id),
+    UNIQUE KEY unique_item_warehouse (warehouse_id, item_type)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Vložení nových skladů
+INSERT INTO warehouses (location, name) VALUES
+('Chrást - dolany', 'Sklad Chrást'),
+('Nadryby - Pravý břeh', 'Sklad Nadryby'),
+('Liblín - Tábořiště kobylka', 'Sklad Liblín'),
+('Třímany - U Mloka', 'Sklad Třímany'),
+('Zvíkovec - U Varských', 'Sklad Zvíkovec'),
+('Skryje - U Fišera', 'Sklad Skryje'),
+('Višňová', 'Sklad Višňová'),
+('Roztoky - U Jezzu', 'Sklad Roztoky');
+
+-- Vložit náhodná data do skladů
+INSERT INTO inventory_items (warehouse_id, item_type, total_quantity)
+SELECT 
+    w.id,
+    t.item_type,
+    CASE 
+        WHEN t.item_type IN ('padlo', 'vesta') THEN FLOOR(30 + RAND() * 20)
+        ELSE FLOOR(10 + RAND() * 20)
+    END as total_quantity
+FROM warehouses w
+CROSS JOIN (
+    SELECT 'kanoe' as item_type UNION ALL
+    SELECT 'kanoe_rodinna' UNION ALL
+    SELECT 'velky_raft' UNION ALL
+    SELECT 'padlo' UNION ALL
+    SELECT 'padlo_detske' UNION ALL
+    SELECT 'vesta' UNION ALL
+    SELECT 'vesta_detska' UNION ALL
+    SELECT 'barel'
+) t;
+
+-- Znovu zapneme kontrolu cizích klíčů
+SET FOREIGN_KEY_CHECKS=1;
+
 -- Vytvoření uživatele a práva
 CREATE USER IF NOT EXISTS 'berounka'@'%' IDENTIFIED BY 'berounka123';
 GRANT ALL PRIVILEGES ON berounka.* TO 'berounka'@'%';

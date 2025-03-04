@@ -505,6 +505,200 @@ function displayUsername() {
     }
 }
 
+// Přidáme funkci pro načtení stavu skladů
+async function loadInventory() {
+    try {
+        const date = document.getElementById('inventoryDate').value || new Date().toISOString().split('T')[0];
+        const response = await fetch(`/api/inventory/${date}`, {
+            headers: getAuthHeaders()
+        });
+
+        if (!response.ok) throw new Error('Chyba při načítání dat skladů');
+        const data = await response.json();
+
+        renderInventory(data);
+    } catch (error) {
+        showError('Chyba při načítání stavu skladů: ' + error.message);
+    }
+}
+
+// Upravíme funkci renderInventory
+function renderInventory(data) {
+    const grid = document.getElementById('inventoryGrid');
+    grid.innerHTML = data.map(warehouse => `
+        <div class="warehouse-card">
+            <div class="warehouse-header">
+                <h3 class="warehouse-title">${warehouse.name}</h3>
+                <div class="warehouse-location">${warehouse.location}</div>
+                <button onclick="editWarehouse(${warehouse.id}, ${JSON.stringify(warehouse).replace(/"/g, '&quot;')})" class="btn-edit-inventory">
+                    Upravit sklad
+                </button>
+            </div>
+            <div class="inventory-list">
+                ${renderInventoryItems(warehouse.items)}
+            </div>
+        </div>
+    `).join('');
+}
+
+// Upravíme funkci renderInventoryItems pro zobrazení bez tlačítek
+function renderInventoryItems(items) {
+    const itemNames = {
+        kanoe: 'Kanoe',
+        kanoe_rodinna: 'Rodinná kanoe',
+        velky_raft: 'Velký raft',
+        padlo: 'Pádlo',
+        padlo_detske: 'Dětské pádlo',
+        vesta: 'Vesta',
+        vesta_detska: 'Dětská vesta',
+        barel: 'Barel'
+    };
+
+    return Object.entries(items).map(([type, quantity]) => {
+        const quantityClass = getQuantityClass(quantity);
+        return `
+            <div class="inventory-item">
+                <span class="item-name">${itemNames[type] || type}</span>
+                <span class="item-quantity ${quantityClass}">${quantity}</span>
+            </div>
+        `;
+    }).join('');
+}
+
+// Přidáme novou funkci pro editaci celého skladu
+function editWarehouse(warehouseId, warehouse) {
+    const modal = document.getElementById('inventoryModal');
+    const form = document.getElementById('inventoryEditForm');
+    
+    const itemNames = {
+        kanoe: 'Kanoe',
+        kanoe_rodinna: 'Rodinná kanoe',
+        velky_raft: 'Velký raft',
+        padlo: 'Pádlo',
+        padlo_detske: 'Dětské pádlo',
+        vesta: 'Vesta',
+        vesta_detska: 'Dětská vesta',
+        barel: 'Barel'
+    };
+
+    form.innerHTML = `
+        <h3>Upravit množství - ${warehouse.name}</h3>
+        <div class="inventory-edit-grid">
+            ${Object.entries(warehouse.items).map(([type, quantity]) => `
+                <div class="inventory-edit-group">
+                    <label>${itemNames[type]}:</label>
+                    <input type="number" 
+                           id="quantity_${type}" 
+                           value="${quantity}" 
+                           min="0"
+                           data-item-type="${type}">
+                </div>
+            `).join('')}
+        </div>
+        <div class="inventory-edit-actions">
+            <button onclick="saveWarehouseChanges(${warehouseId})" class="btn-save">Uložit</button>
+            <button onclick="closeInventoryModal()" class="btn-cancel">Zrušit</button>
+        </div>
+    `;
+    
+    modal.style.display = "block";
+}
+
+// Přidáme funkci pro uložení změn celého skladu
+async function saveWarehouseChanges(warehouseId) {
+    try {
+        const updates = [];
+        const inputs = document.querySelectorAll('#inventoryEditForm input[type="number"]');
+        
+        inputs.forEach(input => {
+            updates.push({
+                warehouseId,
+                itemType: input.dataset.itemType,
+                quantity: parseInt(input.value) || 0
+            });
+        });
+
+        // Sekvenčně uložíme všechny změny
+        for (const update of updates) {
+            const response = await fetch('/api/inventory/update', {
+                method: 'PUT',
+                headers: getAuthHeaders(),
+                body: JSON.stringify(update)
+            });
+
+            if (!response.ok) {
+                throw new Error(`Chyba při ukládání položky ${update.itemType}`);
+            }
+        }
+
+        showToast('Množství bylo úspěšně aktualizováno', 'success');
+        closeInventoryModal();
+        await loadInventory(); // Znovu načteme data
+    } catch (error) {
+        showToast(`Chyba při ukládání: ${error.message}`, 'error');
+    }
+}
+
+// Přidat nové funkce pro správu inventáře
+function editInventory(warehouseId, itemType, currentQuantity) {
+    const modal = document.getElementById('inventoryModal');
+    const form = document.getElementById('inventoryEditForm');
+    
+    form.innerHTML = `
+        <h3>Upravit množství</h3>
+        <div class="inventory-edit-group">
+            <label>Aktuální množství: ${currentQuantity}</label>
+            <input type="number" id="newQuantity" value="${currentQuantity}" min="0">
+        </div>
+        <div class="inventory-edit-actions">
+            <button onclick="saveInventoryChange(${warehouseId}, '${itemType}')" class="btn-save">Uložit</button>
+            <button onclick="closeInventoryModal()" class="btn-cancel">Zrušit</button>
+        </div>
+    `;
+    
+    modal.style.display = "block";
+}
+
+function closeInventoryModal() {
+    const modal = document.getElementById('inventoryModal');
+    modal.style.display = "none";
+}
+
+async function saveInventoryChange(warehouseId, itemType) {
+    const newQuantity = parseInt(document.getElementById('newQuantity').value);
+    
+    try {
+        const response = await fetch('/api/inventory/update', {
+            method: 'PUT',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({
+                warehouseId,
+                itemType,
+                quantity: newQuantity
+            })
+        });
+
+        const result = await response.json();
+        
+        if (!result.success) {
+            throw new Error(result.message);
+        }
+
+        showToast('Množství bylo úspěšně aktualizováno', 'success');
+        closeInventoryModal();
+        await loadInventory(); // Znovu načteme data
+    } catch (error) {
+        showToast(`Chyba při ukládání: ${error.message}`, 'error');
+    }
+}
+
+// Přidat novou funkci pro určení třídy podle množství
+function getQuantityClass(quantity) {
+    if (quantity <= 2) return 'quantity-low';
+    if (quantity <= 5) return 'quantity-medium';
+    return 'quantity-good';
+}
+
 // Upravíme načtení stránky
 document.addEventListener('DOMContentLoaded', async () => {
     if (!checkAuth()) return;
@@ -523,7 +717,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Pokud je token platný, načteme data
         await loadOrders();
         await loadUsers();
+        await loadInventory();
         setupModalHandlers();
+        
+        // Nastavíme dnešní datum pro inventář
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('inventoryDate').value = today;
     } catch (error) {
         console.error('Auth check failed:', error);
         if (error.message === 'Neplatné přihlášení') {

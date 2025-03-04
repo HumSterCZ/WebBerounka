@@ -205,6 +205,87 @@ app.post('/api/orders/create', async (req, res) => {
     }
 });
 
+// Přesuneme endpoint pro inventář před připojení admin rout
+app.get('/api/inventory/:date', async (req, res) => {
+    try {
+        const date = req.params.date;
+        console.log('Načítání inventáře pro datum:', date);
+        
+        // Nejprve načteme všechny sklady
+        const [warehouses] = await promisePool.query('SELECT * FROM warehouses');
+        console.log('Načtené sklady:', warehouses);
+        
+        // Pro každý sklad spočítáme aktuální stav
+        const inventoryPromises = warehouses.map(async (warehouse) => {
+            // Načteme základní stav skladu
+            const [items] = await promisePool.query(
+                'SELECT item_type, total_quantity FROM inventory_items WHERE warehouse_id = ?',
+                [warehouse.id]
+            );
+            console.log(`Sklad ${warehouse.name} - položky:`, items);
+            
+            // Načteme všechny výpůjčky pro tento den
+            const [orders] = await promisePool.query(`
+                SELECT * FROM orders 
+                WHERE (arrival_date <= ? AND departure_date >= ?)
+                AND (pickup_location = ? OR return_location = ?)
+            `, [date, date, warehouse.location, warehouse.location]);
+            console.log(`Objednávky pro sklad ${warehouse.name}:`, orders.length);
+            
+            // Vytvoříme výchozí stav pro všechny typy položek
+            const currentStock = {
+                kanoe: 0,
+                kanoe_rodinna: 0,
+                velky_raft: 0,
+                padlo: 0,
+                padlo_detske: 0,
+                vesta: 0,
+                vesta_detska: 0,
+                barel: 0
+            };
+
+            // Přidáme základní množství ze skladu
+            items.forEach(item => {
+                if (item.item_type in currentStock) {
+                    currentStock[item.item_type] = item.total_quantity;
+                }
+            });
+
+            // Započítáme půjčené a vrácené položky
+            orders.forEach(order => {
+                Object.keys(currentStock).forEach(type => {
+                    if (order[type]) {
+                        if (order.pickup_location === warehouse.location) {
+                            currentStock[type] -= order[type];
+                        }
+                        if (order.return_location === warehouse.location) {
+                            currentStock[type] += order[type];
+                        }
+                    }
+                });
+            });
+            
+            return {
+                id: warehouse.id,
+                name: warehouse.name,
+                location: warehouse.location,
+                items: currentStock
+            };
+        });
+        
+        const inventoryData = await Promise.all(inventoryPromises);
+        console.log('Finální data inventáře:', inventoryData);
+        
+        res.json(inventoryData);
+    } catch (error) {
+        console.error('Chyba při načítání stavu skladů:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Chyba při načítání dat skladů: ' + error.message
+        });
+    }
+});
+
 // Zabezpečení POUZE pro admin API endpointy (přesunout před ostatní routy)
 const adminRoutes = express.Router();
 adminRoutes.use(verifyToken);
@@ -371,8 +452,116 @@ adminRoutes.put('/:id', async (req, res) => {
     }
 });
 
+// Přidáme endpoint pro získání stavu skladů
+adminRoutes.get('/inventory/:date', async (req, res) => {
+    try {
+        const date = req.params.date;
+        
+        // Nejprve načteme všechny sklady
+        const [warehouses] = await promisePool.query('SELECT * FROM warehouses');
+        
+        // Pro každý sklad spočítáme aktuální stav
+        const inventoryPromises = warehouses.map(async (warehouse) => {
+            // Načteme základní stav skladu
+            const [items] = await promisePool.query(
+                'SELECT item_type, total_quantity FROM inventory_items WHERE warehouse_id = ?',
+                [warehouse.id]
+            );
+            
+            // Načteme všechny výpůjčky pro tento den
+            const [orders] = await promisePool.query(`
+                SELECT * FROM orders 
+                WHERE (arrival_date <= ? AND departure_date >= ?)
+                AND (pickup_location = ? OR return_location = ?)
+            `, [date, date, warehouse.location, warehouse.location]);
+            
+            // Spočítáme aktuální stav
+            const currentStock = calculateCurrentStock(items, orders, warehouse.location, date);
+            
+            return {
+                ...warehouse,
+                items: currentStock
+            };
+        });
+        
+        const inventoryData = await Promise.all(inventoryPromises);
+        res.json(inventoryData);
+    } catch (error) {
+        console.error('Chyba při načítání stavu skladů:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Chyba při načítání dat skladů: ' + error.message
+        });
+    }
+});
+
+// Pomocná funkce pro výpočet aktuálního stavu
+function calculateCurrentStock(baseItems, orders, location, date) {
+    const stock = {};
+    
+    // Inicializace základního stavu
+    baseItems.forEach(item => {
+        stock[item.item_type] = item.total_quantity;
+    });
+    
+    // Započítání půjčeného a vráceného materiálu
+    orders.forEach(order => {
+        const itemTypes = [
+            'kanoe', 'kanoe_rodinna', 'velky_raft', 
+            'padlo', 'padlo_detske', 'vesta', 
+            'vesta_detska', 'barel'
+        ];
+        
+        itemTypes.forEach(type => {
+            if (order[type]) {
+                if (order.pickup_location === location) {
+                    // Odečteme půjčený materiál
+                    stock[type] = (stock[type] || 0) - order[type];
+                }
+                if (order.return_location === location) {
+                    // Přičteme vrácený materiál
+                    stock[type] = (stock[type] || 0) + order[type];
+                }
+            }
+        });
+    });
+    
+    return stock;
+}
+
 // Připojíme admin routy pod /api/orders
 app.use('/api/orders', adminRoutes);
+
+// Přidat nový endpoint pro aktualizaci množství
+app.put('/api/inventory/update', verifyToken, async (req, res) => {
+    try {
+        const { warehouseId, itemType, quantity } = req.body;
+        
+        if (quantity < 0) {
+            throw new Error('Množství nemůže být záporné');
+        }
+
+        const [result] = await promisePool.query(
+            'UPDATE inventory_items SET total_quantity = ? WHERE warehouse_id = ? AND item_type = ?',
+            [quantity, warehouseId, itemType]
+        );
+
+        if (result.affectedRows === 0) {
+            throw new Error('Položka nebyla nalezena');
+        }
+
+        res.json({
+            success: true,
+            message: 'Množství bylo úspěšně aktualizováno'
+        });
+    } catch (error) {
+        console.error('Chyba při aktualizaci množství:', error);
+        res.status(400).json({
+            success: false,
+            message: 'Chyba při aktualizaci: ' + error.message
+        });
+    }
+});
 
 // Ostatní routy...
 app.get('/', (req, res) => {

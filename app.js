@@ -1,6 +1,7 @@
 const express = require('express');
 const mysql = require('mysql2');
 const path = require('path');
+const jwt = require('jsonwebtoken');
 const app = express();
 const port = 8080;
 
@@ -9,7 +10,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Vytvoření connection poolu místo jednoho připojení
+// Upravíme pool konfiguraci
 const pool = mysql.createPool({
   host: process.env.DB_HOST || 'db',
   user: process.env.DB_USER || 'root',
@@ -18,7 +19,9 @@ const pool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
-  connectTimeout: 60000
+  connectTimeout: 60000,
+  charset: 'utf8mb4',
+  collation: 'utf8mb4_unicode_ci'
 });
 
 // Příprava promise wrapperu pro pool
@@ -92,7 +95,235 @@ async function startServer() {
 // Spustíme server
 startServer();
 
-// Routy
+// Sekretní klíč pro JWT
+const JWT_SECRET = process.env.JWT_SECRET || 'berounka-secret-key';
+
+// Middleware pro ověření JWT tokenu
+const verifyToken = (req, res, next) => {
+    const token = req.headers.authorization?.split(' ')[1];
+    
+    if (!token) {
+        return res.status(401).json({ 
+            success: false, 
+            message: 'Není přihlášen' 
+        });
+    }
+
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        req.user = decoded;
+        next();
+    } catch (error) {
+        return res.status(401).json({ 
+            success: false, 
+            message: 'Neplatný token' 
+        });
+    }
+};
+
+// Přihlašovací endpoint
+app.post('/api/login', (req, res) => {
+    const { username, password } = req.body;
+    
+    if (username === 'admin' && password === 'berounka123') {
+        const token = jwt.sign(
+            { username, role: 'admin' }, 
+            JWT_SECRET, 
+            { expiresIn: '24h' }
+        );
+        
+        res.json({ 
+            success: true, 
+            token,
+            message: 'Přihlášení úspěšné'
+        });
+    } else {
+        res.status(401).json({ 
+            success: false, 
+            message: 'Nesprávné přihlašovací údaje' 
+        });
+    }
+});
+
+// Veřejný endpoint pro vytvoření objednávky (musí být PŘED admin routami)
+app.post('/api/orders/create', async (req, res) => {
+    try {
+        console.log('Přijatá data:', req.body);
+
+        // Validace povinných polí
+        const requiredFields = ['name', 'email', 'phone', 'arrival_date', 'arrival_time', 
+                          'pickup_location', 'departure_date', 'departure_time', 'return_location'];
+        
+        for (const field of requiredFields) {
+            if (!req.body[field]) {
+                throw new Error(`Chybí povinné pole: ${field}`);
+            }
+        }
+
+        const orderData = {
+            name: req.body.name,
+            email: req.body.email,
+            phone: req.body.phone,
+            kanoe: parseInt(req.body.kanoe) || 0,
+            kanoe_rodinna: parseInt(req.body.kanoe_rodinna) || 0,
+            velky_raft: parseInt(req.body.velky_raft) || 0,
+            padlo: parseInt(req.body.padlo) || 0,
+            padlo_detske: parseInt(req.body.padlo_detske) || 0,
+            vesta: parseInt(req.body.vesta) || 0,
+            vesta_detska: parseInt(req.body.vesta_detska) || 0,
+            barel: parseInt(req.body.barel) || 0,
+            arrival_date: req.body.arrival_date,
+            arrival_time: req.body.arrival_time,
+            pickup_location: req.body.pickup_location,
+            departure_date: req.body.departure_date,
+            departure_time: req.body.departure_time,
+            return_location: req.body.return_location,
+            transport_items: req.body.transport_items || 'Nezvoleno',
+            transport_people: req.body.transport_people || 'Nezvoleno',
+            order_note: req.body.order_note || ''
+        };
+
+        const [result] = await promisePool.query(
+            'INSERT INTO orders SET ?',
+            orderData
+        );
+
+        res.json({ 
+            success: true, 
+            orderId: result.insertId,
+            message: 'Objednávka byla úspěšně uložena'
+        });
+    } catch (error) {
+        console.error('Chyba při ukládání objednávky:', error);
+        res.status(400).json({ 
+            success: false, 
+            message: `Chyba při ukládání objednávky: ${error.message}`
+        });
+    }
+});
+
+// Zabezpečení POUZE pro admin API endpointy (přesunout před ostatní routy)
+const adminRoutes = express.Router();
+adminRoutes.use(verifyToken);
+
+adminRoutes.get('/list', async (req, res) => {
+    try {
+        const [rows] = await promisePool.query(`
+            SELECT * FROM orders ORDER BY created_at DESC
+        `);
+        res.json(rows);
+    } catch (error) {
+        console.error('Error loading orders:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Database error' 
+        });
+    }
+});
+
+// Ostatní admin routy
+adminRoutes.get('/:id', async (req, res) => {
+    try {
+        console.log('Loading order detail:', req.params.id);
+        
+        const [rows] = await promisePool.query(
+            'SELECT * FROM orders WHERE id = ?',
+            [req.params.id]
+        );
+        
+        console.log('Found data:', rows);
+        
+        if (rows.length === 0) {
+            return res.status(404).json({ 
+                success: false,
+                message: 'Order not found' 
+            });
+        }
+        
+        res.json({
+            success: true,
+            data: rows[0]
+        });
+    } catch (error) {
+        console.error('Error loading order detail:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Database error',
+            error: error.message 
+        });
+    }
+});
+
+adminRoutes.put('/:id/status', async (req, res) => {
+    try {
+        const { status } = req.body;
+        const validStatuses = ['Nová', 'Potvrzená', 'Dokončená', 'Zrušená'];
+        
+        console.log('Přijatý status:', status); // Pro debugging
+
+        if (!validStatuses.includes(status)) {
+            return res.status(400).json({ 
+                success: false,
+                message: `Neplatný status. Povolené hodnoty: ${validStatuses.join(', ')}` 
+            });
+        }
+
+        const [result] = await promisePool.query(
+            'UPDATE orders SET status = ? WHERE id = ?',
+            [status, req.params.id]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ 
+                success: false,
+                message: 'Objednávka nenalezena' 
+            });
+        }
+        
+        res.json({ 
+            success: true,
+            message: 'Status byl úspěšně aktualizován'
+        });
+    } catch (error) {
+        console.error('Chyba při aktualizaci statusu:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Databázová chyba: ' + error.message 
+        });
+    }
+});
+
+adminRoutes.delete('/:id', async (req, res) => {
+    try {
+        const [result] = await promisePool.query(
+            'DELETE FROM orders WHERE id = ?',
+            [req.params.id]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ 
+                success: false,
+                message: 'Order not found' 
+            });
+        }
+        
+        res.json({ 
+            success: true,
+            message: 'Order deleted successfully' 
+        });
+    } catch (error) {
+        console.error('Error deleting order:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Database error' 
+        });
+    }
+});
+
+// Připojíme admin routy pod /api/orders
+app.use('/api/orders', adminRoutes);
+
+// Ostatní routy...
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'domu.html'));
 });
@@ -116,67 +347,6 @@ app.post('/submit', async (req, res) => {
   }
 });
 
-app.post('/api/orders', async (req, res) => {
-  try {
-    console.log('Přijatá data:', req.body);
-
-    // Validace povinných polí
-    const requiredFields = ['name', 'email', 'phone', 'arrival_date', 'arrival_time', 
-                          'pickup_location', 'departure_date', 'departure_time', 'return_location'];
-    
-    for (const field of requiredFields) {
-      if (!req.body[field]) {
-        throw new Error(`Chybí povinné pole: ${field}`);
-      }
-    }
-
-    // Příprava dat pro vložení
-    const orderData = {
-      name: req.body.name,
-      email: req.body.email,
-      phone: req.body.phone,
-      kanoe: parseInt(req.body.kanoe) || 0,
-      kanoe_rodinna: parseInt(req.body.kanoe_rodinna) || 0,
-      velky_raft: parseInt(req.body.velky_raft) || 0,
-      padlo: parseInt(req.body.padlo) || 0,
-      padlo_detske: parseInt(req.body.padlo_detske) || 0,
-      vesta: parseInt(req.body.vesta) || 0,
-      vesta_detska: parseInt(req.body.vesta_detska) || 0,
-      barel: parseInt(req.body.barel) || 0,
-      arrival_date: req.body.arrival_date,
-      arrival_time: req.body.arrival_time,
-      pickup_location: req.body.pickup_location,
-      departure_date: req.body.departure_date,
-      departure_time: req.body.departure_time,
-      return_location: req.body.return_location,
-      transport_items: req.body.transport_items || 'Nezvoleno',
-      transport_people: req.body.transport_people || 'Nezvoleno',
-      order_note: req.body.order_note || ''
-    };
-
-    console.log('Upravená data pro databázi:', orderData);
-
-    const [result] = await promisePool.query(
-      'INSERT INTO orders SET ?',
-      orderData
-    );
-
-    console.log('Výsledek insertu:', result);
-
-    res.json({ 
-      success: true, 
-      orderId: result.insertId,
-      message: 'Objednávka byla úspěšně uložena'
-    });
-  } catch (error) {
-    console.error('Chyba při ukládání objednávky:', error);
-    res.status(400).json({ 
-      success: false, 
-      message: `Chyba při ukládání objednávky: ${error.message}`
-    });
-  }
-});
-
 app.get('/users', async (req, res) => {
   try {
     const [rows] = await promisePool.query('SELECT * FROM users');
@@ -187,42 +357,7 @@ app.get('/users', async (req, res) => {
   }
 });
 
-// Přidat nový endpoint pro získání všech objednávek
-app.get('/api/orders', async (req, res) => {
-  try {
-    // Zkontrolujeme připojení k databázi
-    await promisePool.query('SELECT 1');
-    
-    const [rows] = await promisePool.query(`
-      SELECT id, created_at, name, email, phone, 
-             arrival_date, arrival_time, departure_date, departure_time, 
-             status 
-      FROM orders 
-      ORDER BY created_at DESC
-    `);
-    
-    console.log('Načtené objednávky:', rows); // Pro debugging
-    res.json(rows);
-  } catch (error) {
-    console.error('Detailní chyba při načítání objednávek:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Chyba při načítání objednávek z databáze',
-      error: error.message
-    });
-  }
-});
-
-// Přidáme základní autentizaci pro admin sekci
-app.get('/admin.html', (req, res, next) => {
-  const auth = {login: 'admin', password: 'berounka123'};
-  const b64auth = (req.headers.authorization || '').split(' ')[1] || '';
-  const [login, password] = Buffer.from(b64auth, 'base64').toString().split(':');
-
-  if (login && password && login === auth.login && password === auth.password) {
-    return next();
-  }
-
-  res.set('WWW-Authenticate', 'Basic realm="Admin sekce"');
-  res.status(401).send('Přístup zamítnut');
+// Směrování pro admin stránku
+app.get('/admin.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });

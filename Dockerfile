@@ -4,17 +4,17 @@ FROM node:14
 # Nastavíme pracovní adresář v kontejneru
 WORKDIR /usr/src/app
 
-# Kopírujeme pouze package.json a package-lock.json
+# Kopírujeme package.json a package-lock.json
 COPY package*.json ./
 
-# Čistá instalace závislostí
-RUN rm -rf node_modules && npm install
+# Instalace závislostí
+RUN npm install
 
-# Zkopírujeme zbytek aplikace do pracovního adresáře
+# Zkopírujeme zbytek aplikace
 COPY . .
 
-# Exponujeme port, na kterém bude aplikace běžet
+# Exponujeme port
 EXPOSE 8080
 
-# Definujeme příkaz pro spuštění aplikace
-CMD ["node", "app.js"]
+# Spustíme aplikaci
+CMD ["npm", "start"]

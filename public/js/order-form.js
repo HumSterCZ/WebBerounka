@@ -111,7 +111,7 @@ class OrderForm {
         console.log('Odesílaná data:', formData); // Pro debugging
 
         try {
-            const response = await fetch('/api/orders', {
+            const response = await fetch('/api/orders/create', { // Změna endpointu
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

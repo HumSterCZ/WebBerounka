@@ -1,13 +1,32 @@
 <!DOCTYPE html>
-<html>
+<html lang="cs">
 <head>
-    <title>Admin - Web Berounka</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+    <title>Admin - Berounka.cz</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@700&family=Outfit:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="/css/admin.css">
+    <script src="/components/navigation.js"></script>
+    <script src="/components/header.js"></script>
 </head>
 <body>
-    <div class="admin-container">
-        <h1>Administrace objednávek</h1>
+    <header>
+        <site-header></site-header>
+        <div class="admin-header">
+            <div class="admin-user">
+                <span class="admin-user-icon">👤</span>
+                <span id="adminUsername">Administrátor</span>
+            </div>
+            <button onclick="logout()" class="btn-logout">Odhlásit se</button>
+        </div>
+    </header>
+
+    <main class="admin-container">
+        <h1>Administrace systému</h1>
         
         <div class="admin-tabs">
             <button class="tab-button active" onclick="showTab('orders')">Objednávky</button>
@@ -15,41 +34,82 @@
         </div>
 
         <div id="orders" class="tab-content active">
-            <h2>Seznam objednávek</h2>
-            <button onclick="loadOrders()" class="btn">Obnovit data</button>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Datum vytvoření</th>
-                        <th>Jméno</th>
-                        <th>Email</th>
-                        <th>Telefon</th>
-                        <th>Termín od</th>
-                        <th>Termín do</th>
-                        <th>Status</th>
-                        <th>Akce</th>
-                    </tr>
-                </thead>
-                <tbody id="ordersList"></tbody>
-            </table>
+            <div class="section-header">
+                <h2>Seznam objednávek</h2>
+                <div class="table-controls">
+                    <div class="search-box">
+                        <input type="text" id="orderSearch" placeholder="Vyhledat..." onkeyup="filterOrders()">
+                    </div>
+                    <div class="filter-box">
+                        <select id="statusFilter" onchange="filterOrders()">
+                            <option value="">Všechny statusy</option>
+                            <option value="Nová">Nové</option>
+                            <option value="Potvrzená">Potvrzené</option>
+                            <option value="Dokončená">Dokončené</option>
+                            <option value="Zrušená">Zrušené</option>
+                        </select>
+                    </div>
+                    <button onclick="loadOrders()" class="btn-refresh">Obnovit data</button>
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th onclick="sortOrders('id')">ID ↕</th>
+                            <th onclick="sortOrders('created_at')">Datum vytvoření ↕</th>
+                            <th onclick="sortOrders('name')">Jméno ↕</th>
+                            <th onclick="sortOrders('email')">Email ↕</th>
+                            <th onclick="sortOrders('phone')">Telefon ↕</th>
+                            <th onclick="sortOrders('arrival_date')">Termín od ↕</th>
+                            <th onclick="sortOrders('departure_date')">Termín do ↕</th>
+                            <th onclick="sortOrders('status')">Status ↕</th>
+                            <th>Akce</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersList"></tbody>
+                </table>
+            </div>
         </div>
 
         <div id="users" class="tab-content">
-            <h2>Seznam uživatelů</h2>
-            <button onclick="loadUsers()" class="btn">Obnovit data</button>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Jméno</th>
-                        <th>Email</th>
-                    </tr>
-                </thead>
-                <tbody id="usersList"></tbody>
-            </table>
+            <div class="section-header">
+                <h2>Seznam uživatelů</h2>
+                <button onclick="loadUsers()" class="btn-refresh">Obnovit data</button>
+            </div>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Jméno</th>
+                            <th>Email</th>
+                            <th>Akce</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersList"></tbody>
+                </table>
+            </div>
         </div>
-    </div>
+
+        <!-- Modal pro detail objednávky -->
+        <div id="orderModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <div id="orderDetail"></div>
+            </div>
+        </div>
+
+        <!-- Toast kontejner pro notifikace -->
+        <div class="toast-container"></div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Berounka.cz - Všechna práva vyhrazena</p>
+    </footer>
+
     <script src="/js/admin.js"></script>
 </body>
 </html>

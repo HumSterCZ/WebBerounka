@@ -54,6 +54,14 @@ CREATE TABLE orders (
     INDEX idx_status (status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- Upravíme ENUM pro status v tabulce orders
+ALTER TABLE orders MODIFY COLUMN status ENUM('Nová', 'Potvrzená', 'Dokončená', 'Zrušená') DEFAULT 'Nová';
+
+-- Upravíme tabulku orders pro správné kódování
+ALTER DATABASE berounka CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+ALTER TABLE orders CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+ALTER TABLE orders MODIFY COLUMN status ENUM('Nová', 'Potvrzená', 'Dokončená', 'Zrušená') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'Nová';
+
 -- Vytvoření uživatele a práva
 CREATE USER IF NOT EXISTS 'berounka'@'%' IDENTIFIED BY 'berounka123';
 GRANT ALL PRIVILEGES ON berounka.* TO 'berounka'@'%';

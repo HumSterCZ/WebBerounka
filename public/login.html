@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Přihlášení - Berounka.cz</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/login.css">
+    <script>
+        // Přidáme kontrolu přihlášení při načtení stránky
+        window.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('authToken');
+            if (token) {
+                window.location.href = '/admin.html';
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <img src="/images/ico.png" alt="Logo" class="login-logo">
+            <h1>Přihlášení do administrace</h1>
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="username">Uživatelské jméno</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Heslo</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="login-button">Přihlásit</button>
+            </form>
+            <div id="loginError" class="login-error"></div>
+        </div>
+    </div>
+    <script src="/js/login.js"></script>
+</body>
+</html>

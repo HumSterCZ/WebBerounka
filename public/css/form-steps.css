@@ -1,0 +1,92 @@
+/* Styly pro selectory lokací */
+select#pickup_location,
+select#return_location {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: 'Outfit', sans-serif;
+    background-color: white;
+    margin-bottom: 1rem;
+}
+
+/* Přidáme styly pro toast notifikace */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999; /* Zvýšíme z-index, aby byl nad vším */
+}
+
+.toast {
+    background: white;
+    color: #333;
+    padding: 1rem 2rem;
+    margin: 0.5rem;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: slideIn 0.3s ease-out;
+    transition: all 0.3s ease;
+    max-width: 350px;
+    font-family: 'Outfit', sans-serif; /* Přidáme stejný font */
+}
+
+.toast.success {
+    border-left: 4px solid #2ecc71;
+    background: white;
+}
+
+.toast.error {
+    border-left: 4px solid #e74c3c;
+    background: white;
+}
+
+.toast.hiding {
+    animation: slideOut 0.3s ease-out forwards;
+}
+
+.toast-icon {
+    font-size: 1.2rem;
+}
+
+.toast-message {
+    flex-grow: 1;
+    font-size: 0.9rem; /* Upravíme velikost písma */
+}
+
+.toast-close {
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+    font-size: 1.2rem;
+    padding: 0 4px;
+}
+
+.toast-close:hover {
+    opacity: 1;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}

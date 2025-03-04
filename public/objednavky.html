@@ -10,9 +10,11 @@
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="/css/components/forms.css">
     <link rel="stylesheet" href="/css/components/multi-step-form.css">
+    <link rel="stylesheet" href="/css/form-steps.css">
     <script src="/components/navigation.js"></script>
     <script src="/components/header.js"></script>
     <script src="/components/footer.js"></script>
+    <script src="/js/shared/locations.js"></script>
 </head>
 <body>
     <header>
@@ -33,9 +35,12 @@
         <div id="orderFormSteps"></div>
     </main>
 
+    <!-- Přesuneme toast kontejner na konec main -->
+    <div class="toast-container"></div>
+
     <site-footer></site-footer>
     
-    <script src="/js/order-form.js"></script>
+    <!-- Důležité: Ponechat pouze jeden skript pro formulář -->
     <script src="/js/form-steps.js"></script>
 </body>
 </html>

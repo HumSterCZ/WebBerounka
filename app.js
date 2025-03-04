@@ -180,13 +180,16 @@ app.post('/api/orders/create', async (req, res) => {
             return_location: req.body.return_location,
             transport_items: req.body.transport_items || 'Nezvoleno',
             transport_people: req.body.transport_people || 'Nezvoleno',
-            order_note: req.body.order_note || ''
+            order_note: req.body.order_note || '',
+            status: 'Nová' // Přidáme výchozí status
         };
 
         const [result] = await promisePool.query(
             'INSERT INTO orders SET ?',
             orderData
         );
+
+        console.log('Objednávka uložena:', result.insertId);
 
         res.json({ 
             success: true, 
@@ -206,17 +209,24 @@ app.post('/api/orders/create', async (req, res) => {
 const adminRoutes = express.Router();
 adminRoutes.use(verifyToken);
 
+// Upravíme admin endpoint pro výpis objednávek
 adminRoutes.get('/list', async (req, res) => {
     try {
+        console.log('Načítání seznamu objednávek...');
+        
         const [rows] = await promisePool.query(`
-            SELECT * FROM orders ORDER BY created_at DESC
+            SELECT * FROM orders 
+            ORDER BY created_at DESC
         `);
+        
+        console.log(`Načteno ${rows.length} objednávek`);
+        
         res.json(rows);
     } catch (error) {
-        console.error('Error loading orders:', error);
+        console.error('Chyba při načítání objednávek:', error);
         res.status(500).json({ 
             success: false, 
-            message: 'Database error' 
+            message: 'Chyba při načítání dat z databáze: ' + error.message 
         });
     }
 });
@@ -316,6 +326,47 @@ adminRoutes.delete('/:id', async (req, res) => {
         res.status(500).json({ 
             success: false, 
             message: 'Database error' 
+        });
+    }
+});
+
+// Přidáme nový endpoint pro editaci objednávky
+adminRoutes.put('/:id', async (req, res) => {
+    try {
+        const orderId = req.params.id;
+        const updateData = req.body;
+
+        // Validace dat
+        const requiredFields = ['name', 'email', 'phone', 'arrival_date', 'arrival_time', 
+                              'pickup_location', 'departure_date', 'departure_time', 'return_location'];
+        
+        for (const field of requiredFields) {
+            if (!updateData[field]) {
+                throw new Error(`Chybí povinné pole: ${field}`);
+            }
+        }
+
+        const [result] = await promisePool.query(
+            'UPDATE orders SET ? WHERE id = ?',
+            [updateData, orderId]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Objednávka nenalezena'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'Objednávka byla úspěšně aktualizována'
+        });
+    } catch (error) {
+        console.error('Chyba při aktualizaci objednávky:', error);
+        res.status(400).json({
+            success: false,
+            message: `Chyba při aktualizaci objednávky: ${error.message}`
         });
     }
 });

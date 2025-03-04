@@ -1,0 +1,11 @@
+/* Styly pro selectory lokací */
+select#pickup_location,
+select#return_location {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: 'Outfit', sans-serif;
+    background-color: white;
+    margin-bottom: 1rem;
+}

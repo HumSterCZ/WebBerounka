@@ -25,23 +25,31 @@ let currentSort = {
     direction: 'desc'
 };
 
-// Upravíme funkci loadOrders
+// Upravíme funkci loadOrders pro lepší debugování
 async function loadOrders() {
     try {
+        console.log('Načítám objednávky...');
         const response = await fetch('/api/orders/list', {
             method: 'GET',
             headers: getAuthHeaders()
         });
         
+        console.log('Status odpovědi:', response.status);
+        
         if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Server response:', errorText);
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        ordersData = await response.json(); // Uložíme data do globální proměnné
-        renderOrders(); // Zobrazíme data
+        const data = await response.json();
+        console.log('Načtená data:', data);
+        
+        ordersData = data;
+        renderOrders();
     } catch (error) {
-        showError('Chyba při načítání objednávek');
-        console.error(error);
+        console.error('Detailní chyba:', error);
+        showError('Chyba při načítání objednávek: ' + error.message);
     }
 }
 
@@ -77,7 +85,7 @@ function formatTime(timeString) {
     return timeString ? timeString.substring(0, 5) : '';  // Vezme pouze HH:MM část
 }
 
-// Funkce pro vykreslení dat
+// Upravíme funkci renderOrders
 function renderOrders() {
     let filteredData = [...ordersData];
 
@@ -97,29 +105,48 @@ function renderOrders() {
         filteredData = filteredData.filter(order => order.status === statusFilter);
     }
 
-    // Aplikujeme řazení
+    // Opravíme řazení pro datum a čas
     filteredData.sort((a, b) => {
-        let valueA = a[currentSort.column];
-        let valueB = b[currentSort.column];
+        let valueA, valueB;
 
-        // Speciální zacházení s datumem a časem
-        if (column === 'arrival_date' || column === 'departure_date') {
-            // Kombinujeme datum a čas pro porovnání
-            const timeColumnA = column.replace('date', 'time');
-            const timeColumnB = column.replace('date', 'time');
-            valueA = new Date(a[column] + 'T' + a[timeColumnA]);
-            valueB = new Date(b[column] + 'T' + b[timeColumnB]);
-        } else if (currentSort.column.includes('date')) {
-            valueA = new Date(valueA);
-            valueB = new Date(valueB);
-        } else if (typeof valueA === 'string') {
-            valueA = valueA.toLowerCase();
-            valueB = valueB.toLowerCase();
+        switch(currentSort.column) {
+            case 'arrival_date':
+                // Pro řazení podle data příjezdu
+                valueA = new Date(`${a.arrival_date}T${a.arrival_time || '00:00'}`);
+                valueB = new Date(`${b.arrival_date}T${b.arrival_time || '00:00'}`);
+                break;
+            
+            case 'departure_date':
+                // Pro řazení podle data odjezdu
+                valueA = new Date(`${a.departure_date}T${a.departure_time || '00:00'}`);
+                valueB = new Date(`${b.departure_date}T${b.departure_time || '00:00'}`);
+                break;
+            
+            case 'created_at':
+                // Pro řazení podle data vytvoření
+                valueA = new Date(a.created_at);
+                valueB = new Date(b.created_at);
+                break;
+
+            default:
+                // Pro ostatní sloupce
+                valueA = a[currentSort.column];
+                valueB = b[currentSort.column];
+                
+                // Převedeme na malá písmena pro textové hodnoty
+                if (typeof valueA === 'string') {
+                    valueA = valueA.toLowerCase();
+                    valueB = valueB.toLowerCase();
+                }
         }
 
-        if (valueA < valueB) return currentSort.direction === 'asc' ? -1 : 1;
-        if (valueA > valueB) return currentSort.direction === 'asc' ? 1 : -1;
-        return 0;
+        // Ošetření neplatných dat
+        if (valueA instanceof Date && isNaN(valueA)) valueA = new Date(0);
+        if (valueB instanceof Date && isNaN(valueB)) valueB = new Date(0);
+
+        // Řazení podle směru
+        const sortOrder = currentSort.direction === 'asc' ? 1 : -1;
+        return valueA < valueB ? -sortOrder : valueA > valueB ? sortOrder : 0;
     });
 
     // Vykreslíme data
@@ -136,7 +163,8 @@ function renderOrders() {
             <td>${getStatusBadge(order.status)}</td>
             <td>
                 <button onclick="viewOrder(${order.id})" class="btn-action btn-view">Detail</button>
-                <button onclick="updateOrderStatus(${order.id})" class="btn-action btn-edit">Status</button>
+                <button onclick="editOrder(${order.id})" class="btn-action btn-edit">Upravit</button>
+                <button onclick="updateOrderStatus(${order.id})" class="btn-action btn-status">Status</button>
                 <button onclick="deleteOrder(${order.id})" class="btn-action btn-delete">Smazat</button>
             </td>
         </tr>
@@ -302,10 +330,27 @@ function closeStatusDialog() {
     }
 }
 
+// Upravená funkce pro mazání objednávky
 async function deleteOrder(orderId) {
-    try {
-        if (!confirm('Opravdu chcete smazat tuto objednávku?')) return;
+    // Vytvoříme dialog pro potvrzení
+    const deleteDialog = document.createElement('div');
+    deleteDialog.className = 'status-dialog';
+    deleteDialog.innerHTML = `
+        <div class="status-modal">
+            <h3>Smazání objednávky</h3>
+            <p>Opravdu chcete smazat tuto objednávku?</p>
+            <div class="status-buttons">
+                <button onclick="confirmDelete(${orderId})" class="btn-confirm">Smazat</button>
+                <button onclick="closeDeleteDialog()" class="btn-cancel">Zrušit</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(deleteDialog);
+}
 
+// Přidáme pomocné funkce pro mazání
+async function confirmDelete(orderId) {
+    try {
         const response = await fetch(`/api/orders/${orderId}`, {
             method: 'DELETE',
             headers: getAuthHeaders()
@@ -317,11 +362,19 @@ async function deleteOrder(orderId) {
             throw new Error(result.message);
         }
 
-        await loadOrders(); // Znovu načteme seznam objednávek
-        showMessage('Objednávka byla úspěšně smazána');
+        await loadOrders();
+        showToast('Objednávka byla úspěšně smazána', 'success');
+        closeDeleteDialog();
     } catch (error) {
-        showError(`Chyba při mazání objednávky: ${error.message}`);
+        showToast(`Chyba při mazání objednávky: ${error.message}`, 'error');
         console.error('Detailní chyba:', error);
+    }
+}
+
+function closeDeleteDialog() {
+    const dialog = document.querySelector('.status-dialog');
+    if (dialog) {
+        dialog.remove();
     }
 }
 
@@ -449,5 +502,189 @@ function setupModalHandlers() {
         if (event.target === modal) {
             modal.style.display = "none";
         }
+    }
+}
+
+// Přidáme pomocnou funkci pro formátování data do HTML input formátu (YYYY-MM-DD)
+function formatDateForInput(dateString) {
+    const date = new Date(dateString);
+    return date.toISOString().split('T')[0];
+}
+
+function createLocationSelector(name, value) {
+    const options = Object.entries(LOCATIONS).map(([key, text]) => 
+        `<option value="${key}" ${value === key ? 'selected' : ''}>${text}</option>`
+    ).join('');
+    
+    return `<select name="${name}" required>${options}</select>`;
+}
+
+async function editOrder(orderId) {
+    try {
+        const response = await fetch(`/api/orders/${orderId}`, {
+            method: 'GET',
+            headers: getAuthHeaders()
+        });
+
+        if (!response.ok) throw new Error('Chyba při načítání dat');
+        const result = await response.json();
+        const order = result.data;
+
+        const editHtml = `
+            <h2>Editace objednávky #${order.id}</h2>
+            <form id="editOrderForm" class="edit-form">
+                <div class="edit-grid">
+                    <div class="edit-section">
+                        <h3>Kontaktní údaje</h3>
+                        <div class="form-group">
+                            <label>Jméno:</label>
+                            <input type="text" name="name" value="${order.name}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email:</label>
+                            <input type="email" name="email" value="${order.email}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Telefon:</label>
+                            <input type="tel" name="phone" value="${order.phone}" required>
+                        </div>
+                    </div>
+                    
+                    <div class="edit-section">
+                        <h3>Termín</h3>
+                        <div class="form-group">
+                            <label>Od:</label>
+                            <input type="date" name="arrival_date" value="${formatDateForInput(order.arrival_date)}" required>
+                            <input type="time" name="arrival_time" value="${formatTime(order.arrival_time)}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Do:</label>
+                            <input type="date" name="departure_date" value="${formatDateForInput(order.departure_date)}" required>
+                            <input type="time" name="departure_time" value="${formatTime(order.departure_time)}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Místo vyzvednutí:</label>
+                            ${createLocationSelector('pickup_location', order.pickup_location)}
+                        </div>
+                        <div class="form-group">
+                            <label>Místo vrácení:</label>
+                            ${createLocationSelector('return_location', order.return_location)}
+                        </div>
+                    </div>
+
+                    <div class="edit-section">
+                        <h3>Vybavení</h3>
+                        <div class="form-group">
+                            <label>Kanoe:</label>
+                            <input type="number" name="kanoe" value="${order.kanoe}" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Rodinné kanoe:</label>
+                            <input type="number" name="kanoe_rodinna" value="${order.kanoe_rodinna}" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Velký raft:</label>
+                            <input type="number" name="velky_raft" value="${order.velky_raft}" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Pádla:</label>
+                            <input type="number" name="padlo" value="${order.padlo}" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Dětská pádla:</label>
+                            <input type="number" name="padlo_detske" value="${order.padlo_detske}" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Vesty:</label>
+                            <input type="number" name="vesta" value="${order.vesta}" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Dětské vesty:</label>
+                            <input type="number" name="vesta_detska" value="${order.vesta_detska}" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Barely:</label>
+                            <input type="number" name="barel" value="${order.barel}" min="0">
+                        </div>
+                    </div>
+
+                    <div class="edit-section">
+                        <h3>Doprava</h3>
+                        <div class="form-group">
+                            <label>Přeprava vybavení:</label>
+                            <select name="transport_items">
+                                <option value="Ano" ${order.transport_items === 'Ano' ? 'selected' : ''}>Ano</option>
+                                <option value="Ne" ${order.transport_items === 'Ne' ? 'selected' : ''}>Ne</option>
+                                <option value="Nezvoleno" ${order.transport_items === 'Nezvoleno' ? 'selected' : ''}>Nezvoleno</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Přeprava osob:</label>
+                            <select name="transport_people">
+                                <option value="Žádná" ${order.transport_people === 'Žádná' ? 'selected' : ''}>Žádná</option>
+                                <option value="Microbus" ${order.transport_people === 'Microbus' ? 'selected' : ''}>Microbus</option>
+                                <option value="Autobus" ${order.transport_people === 'Autobus' ? 'selected' : ''}>Autobus</option>
+                                <option value="Nezvoleno" ${order.transport_people === 'Nezvoleno' ? 'selected' : ''}>Nezvoleno</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Poznámka:</label>
+                            <textarea name="order_note">${order.order_note || ''}</textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-save">Uložit změny</button>
+                    <button type="button" onclick="closeEditDialog()" class="btn-cancel">Zrušit</button>
+                </div>
+            </form>
+        `;
+
+        const editDialog = document.createElement('div');
+        editDialog.className = 'edit-dialog';
+        editDialog.innerHTML = editHtml;
+        document.body.appendChild(editDialog);
+
+        // Přidáme handler pro formulář
+        document.getElementById('editOrderForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await saveOrderChanges(orderId, e.target);
+        });
+
+    } catch (error) {
+        showError('Chyba při načítání dat objednávky');
+        console.error(error);
+    }
+}
+
+async function saveOrderChanges(orderId, form) {
+    try {
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+
+        const response = await fetch(`/api/orders/${orderId}`, {
+            method: 'PUT',
+            headers: getAuthHeaders(),
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        
+        if (!result.success) {
+            throw new Error(result.message);
+        }
+
+        showMessage('Změny byly úspěšně uloženy');
+        closeEditDialog();
+        await loadOrders();
+    } catch (error) {
+        showError(`Chyba při ukládání změn: ${error.message}`);
+    }
+}
+
+function closeEditDialog() {
+    const dialog = document.querySelector('.edit-dialog');
+    if (dialog) {
+        dialog.remove();
     }
 }

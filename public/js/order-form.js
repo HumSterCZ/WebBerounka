@@ -7,6 +7,7 @@ class OrderForm {
         
         this.initEventListeners();
         this.showStep(this.currentStep);
+        this.initLocationSelectors();
     }
 
     showStep(stepIndex) {
@@ -165,6 +166,20 @@ class OrderForm {
                 }
             });
         });
+    }
+
+    initLocationSelectors() {
+        const pickupSelect = document.getElementById('pickup_location');
+        const returnSelect = document.getElementById('return_location');
+        
+        // Vytvoříme options z LOCATIONS objektu
+        const options = Object.entries(LOCATIONS).map(([value, text]) => 
+            `<option value="${value}">${text}</option>`
+        ).join('');
+
+        // Nastavíme options do obou selectů
+        pickupSelect.innerHTML = options;
+        returnSelect.innerHTML = options;
     }
 }
 

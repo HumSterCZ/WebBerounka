@@ -91,12 +91,11 @@ const formSteps = [
                         </div>
                         <div class="form-group">
                             <label for="pickup_location">Místo převzetí:</label>
-                            <select name="pickup_location" required>
+                            <select id="pickup_location" name="pickup_location" required>
                                 <option value="">Vyberte místo</option>
-                                <option value="Chrást - dolany">Chrást - dolany</option>
-                                <option value="Nadryby - Pravý břeh">Nadryby - Pravý břeh</option>
-                                <option value="Liblín">Liblín</option>
-                                <!-- Další místa... -->
+                                ${Object.entries(LOCATIONS).map(([value, text]) => 
+                                    `<option value="${value}">${text}</option>`
+                                ).join('')}
                             </select>
                         </div>
                     </div>
@@ -112,11 +111,11 @@ const formSteps = [
                         </div>
                         <div class="form-group">
                             <label for="return_location">Místo vrácení:</label>
-                            <select name="return_location" required>
+                            <select id="return_location" name="return_location" required>
                                 <option value="">Vyberte místo</option>
-                                <option value="Nadryby - Pravý břeh">Nadryby - Pravý břeh</option>
-                                <option value="Liblín">Liblín</option>
-                                <!-- Další místa... -->
+                                ${Object.entries(LOCATIONS).map(([value, text]) => 
+                                    `<option value="${value}">${text}</option>`
+                                ).join('')}
                             </select>
                         </div>
                     </div>
@@ -195,8 +194,123 @@ const formSteps = [
     }
 ];
 
-// Načtení kroků do DOM
-document.getElementById('orderFormSteps').innerHTML = formSteps.map(step => step.template).join('');
+// Přidáme funkce pro notifikace před DOMContentLoaded
+function showToast(message, type = 'success') {
+    const container = document.querySelector('.toast-container');
+    const toast = document.createElement('div');
+    const id = 'toast-' + Date.now();
+    
+    toast.className = `toast ${type}`;
+    toast.id = id;
+    
+    const icon = type === 'success' ? '✅' : '❌';
+    
+    toast.innerHTML = `
+        <span class="toast-icon">${icon}</span>
+        <span class="toast-message">${message}</span>
+        <span class="toast-close" onclick="closeToast('${id}')">&times;</span>
+    `;
+    
+    container.appendChild(toast);
+    setTimeout(() => closeToast(id), 5000);
+}
+
+function closeToast(id) {
+    const toast = document.getElementById(id);
+    if (toast) {
+        toast.classList.add('hiding');
+        setTimeout(() => toast.remove(), 300);
+    }
+}
+
+// Přidáme inicializační kód po definici formSteps
+document.addEventListener('DOMContentLoaded', () => {
+    // Načtení kroků do DOM
+    document.getElementById('orderFormSteps').innerHTML = formSteps.map(step => step.template).join('');
+
+    // Inicializace ovládání formuláře
+    let currentStep = 0;
+    const steps = document.querySelectorAll('.step');
+    const progressItems = document.querySelectorAll('.progressbar li');
+
+    // Funkce pro zobrazení aktuálního kroku
+    function showStep(stepIndex) {
+        steps.forEach((step, index) => {
+            step.style.display = index === stepIndex ? 'block' : 'none';
+            if (progressItems[index]) {
+                progressItems[index].classList.toggle('active', index <= stepIndex);
+            }
+        });
+    }
+
+    // Přidání event listenerů pro tlačítka
+    document.querySelectorAll('.next-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (validateStep(`step${currentStep + 1}`)) {
+                currentStep++;
+                showStep(currentStep);
+                if (currentStep === steps.length - 1) {
+                    generateSummary();
+                }
+            }
+        });
+    });
+
+    document.querySelectorAll('.prev-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            currentStep--;
+            showStep(currentStep);
+        });
+    });
+
+    // Upravený event listener pro odeslání formuláře
+    document.getElementById('step6').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = {};
+        document.querySelectorAll('.step input, .step select, .step textarea').forEach(input => {
+            if (input.name) {
+                if (input.type === 'number') {
+                    formData[input.name] = parseInt(input.value) || 0;
+                } else {
+                    formData[input.name] = input.value;
+                }
+            }
+        });
+
+        try {
+            const submitButton = e.target.querySelector('.submit-btn');
+            submitButton.disabled = true; // Zakážeme opakované kliknutí
+            
+            const response = await fetch('/api/orders/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const result = await response.json();
+            
+            if (result.success) {
+                showToast('Objednávka byla úspěšně odeslána!', 'success');
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 2000);
+            } else {
+                throw new Error(result.message || 'Chyba při odesílání objednávky');
+            }
+        } catch (error) {
+            const submitButton = e.target.querySelector('.submit-btn');
+            submitButton.disabled = false; // Povolíme tlačítko při chybě
+            showToast(error.message || 'Došlo k chybě při odesílání objednávky', 'error');
+            console.error('Chyba:', error);
+        }
+    });
+
+    // Inicializace prvního kroku
+    showStep(currentStep);
+});
 
 // Přidání funkce pro generování souhrnu
 function generateSummary() {
@@ -242,4 +356,64 @@ function validateStep(stepId) {
     });
 
     return isValid;
+}
+
+class FormSteps {
+    constructor() {
+        this.initLocationSelectors();
+    }
+
+    // Přidáme novou metodu pro inicializaci selectorů
+    initLocationSelectors() {
+        const pickupSelect = document.getElementById('pickup_location');
+        const returnSelect = document.getElementById('return_location');
+        
+        if (pickupSelect && returnSelect) {
+            // Vytvoříme options z LOCATIONS objektu
+            const options = Object.entries(LOCATIONS).map(([value, text]) => 
+                `<option value="${value}">${text}</option>`
+            ).join('');
+
+            // Nastavíme options do obou selectů
+            pickupSelect.innerHTML = options;
+            returnSelect.innerHTML = options;
+        }
+    }
+}
+
+// Přidáme funkce pro notifikace
+function showToast(message, type = 'success') {
+    const container = document.querySelector('.toast-container');
+    const toast = document.createElement('div');
+    const id = 'toast-' + Date.now();
+    
+    toast.className = `toast ${type}`;
+    toast.id = id;
+    
+    const icon = type === 'success' ? '✅' : '❌';
+    
+    toast.innerHTML = `
+        <span class="toast-icon">${icon}</span>
+        <span class="toast-message">${message}</span>
+        <span class="toast-close" onclick="closeToast('${id}')">&times;</span>
+    `;
+    
+    container.appendChild(toast);
+    setTimeout(() => closeToast(id), 5000);
+}
+
+function closeToast(id) {
+    const toast = document.getElementById(id);
+    if (toast) {
+        toast.classList.add('hiding');
+        setTimeout(() => toast.remove(), 300);
+    }
+}
+
+function showError(message) {
+    showToast(message, 'error');
+}
+
+function showSuccess(message) {
+    showToast(message, 'success');
 }

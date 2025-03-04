@@ -528,17 +528,91 @@ function renderInventory(data) {
     grid.innerHTML = data.map(warehouse => `
         <div class="warehouse-card">
             <div class="warehouse-header">
-                <h3 class="warehouse-title">${warehouse.name}</h3>
-                <div class="warehouse-location">${warehouse.location}</div>
+                <div class="warehouse-title-section">
+                    <h3 class="warehouse-title">${warehouse.name}</h3>
+                    <div class="warehouse-location">${warehouse.location}</div>
+                </div>
                 <button onclick="editWarehouse(${warehouse.id}, ${JSON.stringify(warehouse).replace(/"/g, '&quot;')})" class="btn-edit-inventory">
                     Upravit sklad
                 </button>
             </div>
-            <div class="inventory-list">
-                ${renderInventoryItems(warehouse.items)}
+            <div class="warehouse-sections">
+                <div class="inventory-section">
+                    <div class="section-title">Aktuální stav skladu</div>
+                    <div class="inventory-list">
+                        ${renderInventoryItems(warehouse.items)}
+                    </div>
+                </div>
+                <div class="daily-plan-section">
+                    <div class="section-title">Denní plán</div>
+                    <div class="daily-plan">
+                        <div class="plan-departures">
+                            <h4>Výdej vybavení</h4>
+                            ${renderDepartures(warehouse.dailyPlan?.departures)}
+                        </div>
+                        <div class="plan-returns">
+                            <h4>Očekávané vrácení</h4>
+                            ${renderReturns(warehouse.dailyPlan?.returns)}
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     `).join('');
+}
+
+function renderDepartures(departures) {
+    if (!departures || departures.length === 0) {
+        return '<div class="no-data">Žádné výdeje</div>';
+    }
+
+    return departures.map(order => `
+        <div class="plan-item departure">
+            <div class="plan-time">${formatTime(order.arrival_time)}</div>
+            <div class="plan-details">
+                <div class="plan-customer">${order.name} (${order.phone})</div>
+                <div class="plan-equipment">
+                    ${renderEquipmentList(order)}
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function renderReturns(returns) {
+    if (!returns || returns.length === 0) {
+        return '<div class="no-data">Žádné vrácení</div>';
+    }
+
+    return returns.map(order => `
+        <div class="plan-item return">
+            <div class="plan-time">${formatTime(order.departure_time)}</div>
+            <div class="plan-details">
+                <div class="plan-customer">${order.name} (${order.phone})</div>
+                <div class="plan-equipment">
+                    ${renderEquipmentList(order)}
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function renderEquipmentList(order) {
+    const equipment = {
+        kanoe: 'Kanoe',
+        kanoe_rodinna: 'Rodinná kanoe',
+        velky_raft: 'Velký raft',
+        padlo: 'Pádlo',
+        padlo_detske: 'Dětské pádlo',
+        vesta: 'Vesta',
+        vesta_detska: 'Dětská vesta',
+        barel: 'Barel'
+    };
+
+    return Object.entries(equipment)
+        .filter(([key, _]) => order[key] > 0)
+        .map(([key, name]) => `${order[key]}× ${name}`)
+        .join(', ');
 }
 
 // Upravíme funkci renderInventoryItems pro zobrazení bez tlačítek
@@ -555,7 +629,7 @@ function renderInventoryItems(items) {
     };
 
     return Object.entries(items).map(([type, quantity]) => {
-        const quantityClass = getQuantityClass(quantity);
+        const quantityClass = getQuantityClass(type, quantity);
         return `
             <div class="inventory-item">
                 <span class="item-name">${itemNames[type] || type}</span>
@@ -693,10 +767,29 @@ async function saveInventoryChange(warehouseId, itemType) {
 }
 
 // Přidat novou funkci pro určení třídy podle množství
-function getQuantityClass(quantity) {
-    if (quantity <= 2) return 'quantity-low';
-    if (quantity <= 5) return 'quantity-medium';
-    return 'quantity-good';
+function getQuantityClass(itemType, quantity) {
+    // Nastavení limitů pro různé typy vybavení
+    const limits = {
+        default: { low: 5, medium: 10 },
+        padlo: { low: 10, medium: 20 },
+        vesta: { low: 10, medium: 20 }
+    };
+
+    const { low, medium } = limits[itemType] || limits.default;
+
+    if (quantity <= low) return 'quantity-low';
+    if (quantity <= medium) return 'quantity-medium';
+    return 'quantity-high';
+}
+
+function renderInventoryItem(item, quantity) {
+    const quantityClass = getQuantityClass(item, quantity);
+    return `
+        <div class="inventory-item">
+            <span class="item-name">${formatItemName(item)}</span>
+            <span class="item-quantity ${quantityClass}">${quantity}</span>
+        </div>
+    `;
 }
 
 // Upravíme načtení stránky

@@ -84,17 +84,8 @@
                 </div>
             </div>
             
-            <div class="table-container">
-                <div id="inventoryGrid" class="inventory-grid">
-                    <!-- Sem se budou vykreslovat karty skladů -->
-                    <div class="inventory-item">
-                        <span class="item-name">${itemNames[type] || type}</span>
-                        <div class="item-controls">
-                            <span class="item-quantity ${quantityClass}">${quantity}</span>
-                            <button onclick="editInventory(${warehouse.id}, '${type}', ${quantity})" class="btn-edit-inventory">Upravit množství</button>
-                        </div>
-                    </div>
-                </div>
+            <div id="inventoryGrid" class="inventory-grid">
+                <!-- Šablona pro kartu skladu bude generována JavaScriptem -->
             </div>
         </div>
 
@@ -137,7 +128,7 @@
 
     <div id="inventoryModal" class="modal">
         <div class="modal-content">
-            <span class="close">&times;</span>
+            <span class="close" onclick="closeInventoryModal()">&times;</span>
             <div id="inventoryEditForm"></div>
         </div>
     </div>

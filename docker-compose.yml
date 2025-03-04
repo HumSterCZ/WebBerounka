@@ -5,7 +5,8 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
       - DB_HOST=db
       - DB_USER=berounka
@@ -13,6 +14,13 @@ services:
       - DB_NAME=berounka
     networks:
       - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   db:
     image: mysql:5.7
@@ -23,11 +31,22 @@ services:
       - MYSQL_DATABASE=berounka
       - MYSQL_USER=berounka
       - MYSQL_PASSWORD=berounka123
+      - LANG=C.UTF-8
     volumes:
       - mysql_data:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "berounka", "-pberounka123"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    command: 
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    restart: unless-stopped
 
 volumes:
   mysql_data:

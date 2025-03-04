@@ -13,13 +13,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Upravíme pool konfiguraci
 const pool = mysql.createPool({
   host: process.env.DB_HOST || 'db',
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || 'root',
+  user: process.env.DB_USER || 'berounka',
+  password: process.env.DB_PASSWORD || 'berounka123',
   database: process.env.DB_NAME || 'berounka',
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
-  connectTimeout: 60000,
+  port: 3306,
   charset: 'utf8mb4',
   collation: 'utf8mb4_unicode_ci'
 });
@@ -79,10 +79,39 @@ async function initDatabase() {
   }
 }
 
+// Přidáme funkci pro čekání na databázi
+async function waitForDatabase() {
+  const maxRetries = 60; // Zvýšíme počet pokusů
+  const retryInterval = 5000; // Prodloužíme interval mezi pokusy na 5 sekund
+  
+  console.log('Čekání na inicializaci databáze...');
+  
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      console.log(`Pokus o připojení k databázi (${i + 1}/${maxRetries})...`);
+      await promisePool.query('SELECT 1');
+      console.log('Úspěšně připojeno k databázi!');
+      return true;
+    } catch (error) {
+      console.log(`Připojení selhalo (pokus ${i + 1}/${maxRetries}): ${error.message}`);
+      if (i < maxRetries - 1) {
+        console.log(`Čekám ${retryInterval/1000} sekund před dalším pokusem...`);
+        await new Promise(resolve => setTimeout(resolve, retryInterval));
+      }
+    }
+  }
+  throw new Error(`Nepodařilo se připojit k databázi po ${maxRetries} pokusech`);
+}
+
 // Upravíme spuštění serveru, aby počkalo na inicializaci databáze
 async function startServer() {
   try {
+    console.log('Čekání na dostupnost databáze...');
+    await waitForDatabase();
+    
+    console.log('Inicializace databáze...');
     await initDatabase();
+    
     app.listen(port, () => {
       console.log(`Aplikace běží na http://localhost:${port}`);
     });
@@ -209,30 +238,31 @@ app.post('/api/orders/create', async (req, res) => {
 app.get('/api/inventory/:date', async (req, res) => {
     try {
         const date = req.params.date;
-        console.log('Načítání inventáře pro datum:', date);
-        
-        // Nejprve načteme všechny sklady
         const [warehouses] = await promisePool.query('SELECT * FROM warehouses');
-        console.log('Načtené sklady:', warehouses);
         
-        // Pro každý sklad spočítáme aktuální stav
         const inventoryPromises = warehouses.map(async (warehouse) => {
             // Načteme základní stav skladu
             const [items] = await promisePool.query(
                 'SELECT item_type, total_quantity FROM inventory_items WHERE warehouse_id = ?',
                 [warehouse.id]
             );
-            console.log(`Sklad ${warehouse.name} - položky:`, items);
             
-            // Načteme všechny výpůjčky pro tento den
-            const [orders] = await promisePool.query(`
+            // Načteme všechny výdeje a vrácení pro tento den
+            const [departures] = await promisePool.query(`
                 SELECT * FROM orders 
-                WHERE (arrival_date <= ? AND departure_date >= ?)
-                AND (pickup_location = ? OR return_location = ?)
-            `, [date, date, warehouse.location, warehouse.location]);
-            console.log(`Objednávky pro sklad ${warehouse.name}:`, orders.length);
+                WHERE arrival_date = ?
+                AND pickup_location = ?
+                ORDER BY arrival_time ASC
+            `, [date, warehouse.location]);
+
+            const [returns] = await promisePool.query(`
+                SELECT * FROM orders 
+                WHERE departure_date = ?
+                AND return_location = ?
+                ORDER BY departure_time ASC
+            `, [date, warehouse.location]);
             
-            // Vytvoříme výchozí stav pro všechny typy položek
+            // Zpracujeme aktuální stav skladu
             const currentStock = {
                 kanoe: 0,
                 kanoe_rodinna: 0,
@@ -251,31 +281,19 @@ app.get('/api/inventory/:date', async (req, res) => {
                 }
             });
 
-            // Započítáme půjčené a vrácené položky
-            orders.forEach(order => {
-                Object.keys(currentStock).forEach(type => {
-                    if (order[type]) {
-                        if (order.pickup_location === warehouse.location) {
-                            currentStock[type] -= order[type];
-                        }
-                        if (order.return_location === warehouse.location) {
-                            currentStock[type] += order[type];
-                        }
-                    }
-                });
-            });
-            
             return {
                 id: warehouse.id,
                 name: warehouse.name,
                 location: warehouse.location,
-                items: currentStock
+                items: currentStock,
+                dailyPlan: {
+                    departures,
+                    returns
+                }
             };
         });
         
         const inventoryData = await Promise.all(inventoryPromises);
-        console.log('Finální data inventáře:', inventoryData);
-        
         res.json(inventoryData);
     } catch (error) {
         console.error('Chyba při načítání stavu skladů:', error);

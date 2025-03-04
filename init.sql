@@ -1,15 +1,23 @@
-CREATE DATABASE IF NOT EXISTS berounka;
+SET NAMES utf8mb4;
+SET CHARACTER SET utf8mb4;
+SET collation_connection = utf8mb4_unicode_ci;
+
+-- Drop and recreate database
+DROP DATABASE IF EXISTS berounka;
+CREATE DATABASE berounka CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE berounka;
 
--- Tabulka users zůstává stejná
-CREATE TABLE IF NOT EXISTS users (
+-- Nejdřív vypneme kontrolu cizích klíčů
+SET FOREIGN_KEY_CHECKS=0;
+
+-- Vytvoření tabulky users
+CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- Upravená tabulka orders
-DROP TABLE IF EXISTS orders;
+-- Vytvoření tabulky orders
 CREATE TABLE orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
     
@@ -46,36 +54,21 @@ CREATE TABLE orders (
     
     -- Metadata
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    status ENUM('new', 'confirmed', 'completed', 'cancelled') DEFAULT 'new',
+    status ENUM('Nová', 'Potvrzená', 'Dokončená', 'Zrušená') DEFAULT 'Nová',
     
     -- Indexy pro rychlejší vyhledávání
     INDEX idx_email (email),
     INDEX idx_dates (arrival_date, departure_date),
     INDEX idx_status (status)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- Upravíme ENUM pro status v tabulce orders
-ALTER TABLE orders MODIFY COLUMN status ENUM('Nová', 'Potvrzená', 'Dokončená', 'Zrušená') DEFAULT 'Nová';
-
--- Upravíme tabulku orders pro správné kódování
-ALTER DATABASE berounka CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-ALTER TABLE orders CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-ALTER TABLE orders MODIFY COLUMN status ENUM('Nová', 'Potvrzená', 'Dokončená', 'Zrušená') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'Nová';
-
--- Nejdřív vypneme kontrolu cizích klíčů
-SET FOREIGN_KEY_CHECKS=0;
-
--- Smazat a znovu vytvořit tabulky v správném pořadí
-DROP TABLE IF EXISTS inventory_items;
-DROP TABLE IF EXISTS warehouses;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- Vytvoření tabulky pro sklady
 CREATE TABLE warehouses (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    location VARCHAR(255) NOT NULL,
-    name VARCHAR(255) NOT NULL,
+    location VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+    name VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
     UNIQUE KEY unique_location (location)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- Vytvoření tabulky pro skladové položky
 CREATE TABLE inventory_items (
@@ -85,9 +78,12 @@ CREATE TABLE inventory_items (
     total_quantity INT NOT NULL DEFAULT 0,
     FOREIGN KEY (warehouse_id) REFERENCES warehouses(id),
     UNIQUE KEY unique_item_warehouse (warehouse_id, item_type)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- Vložení nových skladů
+-- Znovu zapneme kontrolu cizích klíčů
+SET FOREIGN_KEY_CHECKS=1;
+
+-- Vložení výchozích dat do skladů
 INSERT INTO warehouses (location, name) VALUES
 ('Chrást - dolany', 'Sklad Chrást'),
 ('Nadryby - Pravý břeh', 'Sklad Nadryby'),
@@ -98,7 +94,7 @@ INSERT INTO warehouses (location, name) VALUES
 ('Višňová', 'Sklad Višňová'),
 ('Roztoky - U Jezzu', 'Sklad Roztoky');
 
--- Vložit náhodná data do skladů
+-- Vložení výchozího inventáře
 INSERT INTO inventory_items (warehouse_id, item_type, total_quantity)
 SELECT 
     w.id,
@@ -118,9 +114,6 @@ CROSS JOIN (
     SELECT 'vesta_detska' UNION ALL
     SELECT 'barel'
 ) t;
-
--- Znovu zapneme kontrolu cizích klíčů
-SET FOREIGN_KEY_CHECKS=1;
 
 -- Vytvoření uživatele a práva
 CREATE USER IF NOT EXISTS 'berounka'@'%' IDENTIFIED BY 'berounka123';

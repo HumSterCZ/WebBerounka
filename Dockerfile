@@ -1,20 +1,17 @@
-# Použijeme oficiální Node.js image jako základ
-FROM node:14
+FROM node:18-alpine
 
-# Nastavíme pracovní adresář v kontejneru
 WORKDIR /usr/src/app
 
-# Kopírujeme package.json a package-lock.json
+# Kopírujeme pouze package.json a package-lock.json
 COPY package*.json ./
 
-# Instalace závislostí
-RUN npm install
+# Instalujeme závislosti
+RUN apk add --no-cache curl && \
+    npm install
 
-# Zkopírujeme zbytek aplikace
+# Kopírujeme zdrojové soubory
 COPY . .
 
-# Exponujeme port
 EXPOSE 8080
 
-# Spustíme aplikaci
-CMD ["npm", "start"]
+CMD ["node", "app.js"]

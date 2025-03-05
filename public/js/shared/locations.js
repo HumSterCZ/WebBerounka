@@ -8,3 +8,5 @@ const LOCATIONS = {
     'Višňová': 'Višňová',
     'Roztoky - U Jezzu': 'Roztoky - U Jezzu'
 };
+
+window.LOCATIONS = LOCATIONS;

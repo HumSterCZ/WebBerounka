@@ -32,6 +32,7 @@
         <div class="admin-tabs">
             <button class="tab-button active" onclick="showTab('orders')">Objednávky</button>
             <button class="tab-button" onclick="showTab('inventory')">Sklady</button>
+            <button class="tab-button" onclick="showTab('warehouse-edits')">Editace skladů</button>
             <button class="tab-button" onclick="showTab('users')">Uživatelé</button>
         </div>
 
@@ -79,13 +80,80 @@
             <div class="section-header">
                 <h2>Stav skladů</h2>
                 <div class="inventory-controls">
+                    <button onclick="changeInventoryDate(-1)" class="btn-refresh date-nav-btn">&larr;</button>
                     <input type="date" id="inventoryDate" onchange="loadInventory()">
+                    <button onclick="changeInventoryDate(1)" class="btn-refresh date-nav-btn">&rarr;</button>
                     <button onclick="loadInventory()" class="btn-refresh">Obnovit data</button>
                 </div>
             </div>
             
-            <div id="inventoryGrid" class="inventory-grid">
-                <!-- Šablona pro kartu skladu bude generována JavaScriptem -->
+            <div id="inventoryGrid" class="inventory-grid"></div>
+            
+            <!-- Sekce pro edity skladů -->
+            <div class="section-header">
+                <h2>Historie editů skladů</h2>
+            </div>
+            <div id="editsContainer" class="edits-container">
+                <div class="table-container">
+                    <table id="editsTable">
+                        <thead>
+                            <tr>
+                                <th>Datum editu</th>
+                                <th>Sklad</th>
+                                <th>Materiál</th>
+                                <th>Předchozí stav</th>
+                                <th>Nový stav</th>
+                                <th>Změna</th>
+                                <th>Vytvořeno</th>
+                            </tr>
+                        </thead>
+                        <tbody id="editsList"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Přidáme novou záložku pro editaci skladů -->
+        <div id="warehouse-edits" class="tab-content">
+            <div class="section-header">
+                <h2>Historie editů skladů</h2>
+            </div>
+            
+            <div class="edits-controls">
+                <div class="edits-search-row">
+                    <div class="search-box">
+                        <input type="text" id="editsSearch" placeholder="Vyhledat v editech..." onkeyup="filterWarehouseEdits()">
+                    </div>
+                    <div class="date-filter-controls">
+                        <label for="editsFromDate">Od:</label>
+                        <input type="date" id="editsFromDate">
+                        <label for="editsToDate">Do:</label>
+                        <input type="date" id="editsToDate">
+                        <button onclick="loadAllWarehouseEdits()" class="btn-refresh">Filtrovat</button>
+                        <button onclick="loadAllWarehouseEdits(true)" class="btn-refresh">Zobrazit vše</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <div class="table-stats">
+                    Zobrazeno <span id="displayedEditsCount">0</span> z <span id="totalEditsCount">0</span> záznamů
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Datum editace</th>
+                            <th>Sklad</th>
+                            <th>Materiál</th>
+                            <th>Původní hodnota</th>
+                            <th>Nová hodnota</th>
+                            <th>Změna</th>
+                            <th>Vytvořeno</th>
+                        </tr>
+                    </thead>
+                    <tbody id="warehouseEditsList"></tbody>
+                </table>
             </div>
         </div>
 

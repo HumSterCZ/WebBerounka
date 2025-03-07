@@ -7,6 +7,15 @@ function showTab(tabId) {
     });
     document.getElementById(tabId).classList.add('active');
     document.querySelector(`button[onclick="showTab('${tabId}')"]`).classList.add('active');
+    
+    // Load specific data based on which tab is active
+    if (tabId === 'warehouse-edits') {
+        // Load all warehouse edits when switching to the warehouse edits tab
+        loadAllWarehouseEdits(true);
+    } else if (tabId === 'inventory') {
+        // If switching to inventory tab, make sure to refresh it
+        loadInventory();
+    }
 }
 
 // Upravíme helper funkci pro API volání
@@ -123,7 +132,13 @@ function filterOrders() {
 
 // Přidáme funkci pro formátování času
 function formatTime(timeString) {
-    return timeString ? timeString.substring(0, 5) : '';  // Vezme pouze HH:MM část
+    if (!timeString) return '';
+    try {
+        return timeString.substring(0, 5);  // Vezme pouze HH:MM část
+    } catch (e) {
+        console.error('Error formatting time:', e);
+        return '';
+    }
 }
 
 // Upravíme funkci renderOrders
@@ -505,28 +520,111 @@ function displayUsername() {
     }
 }
 
-// Přidáme funkci pro načtení stavu skladů
+// Upravíme funkci loadInventory pro načtení stavů skladů ke zvolenému datu
 async function loadInventory() {
     try {
         const date = document.getElementById('inventoryDate').value || new Date().toISOString().split('T')[0];
-        const response = await fetch(`/api/inventory/${date}`, {
+        console.log('Loading inventory for date:', date);
+        
+        const response = await fetch(`/api/warehouse/status/${date}`, {
             headers: getAuthHeaders()
         });
 
         if (!response.ok) throw new Error('Chyba při načítání dat skladů');
         const data = await response.json();
+        console.log('Loaded warehouse data:', data);
+
+        // Debug the received warehouse data
+        debugWarehouseState(date, data);
 
         renderInventory(data);
+        
+        // Also load warehouse edits for the selected date to ensure they appear in both places
+        await loadWarehouseEdits(date);
+        
+        // Now update the daily plan edits section for each warehouse
+        updateDailyPlanEdits(date);
+        
+        // Show toast notification for successful loading
+        const formattedDate = new Date(date).toLocaleDateString('cs-CZ');
+        showToast(`Sklady načteny pro datum: ${formattedDate}`, 'success');
     } catch (error) {
         showError('Chyba při načítání stavu skladů: ' + error.message);
     }
 }
 
-// Upravíme funkci renderInventory
+// Přidáme funkci pro načtení editů skladů pro zvolené datum
+async function loadWarehouseEdits(date) {
+    try {
+        const response = await fetch(`/api/warehouse/edits/${date}`, {
+            headers: getAuthHeaders()
+        });
+
+        if (!response.ok) throw new Error('Chyba při načítání editů skladů');
+        const data = await response.json();
+
+        renderWarehouseEdits(data);
+        
+        // Now also update the daily plan sections with the same edit data
+        updateDailyPlanEdits(date);
+        
+        return data;
+    } catch (error) {
+        showError('Chyba při načítání editů skladů: ' + error.message);
+        return [];
+    }
+}
+
+// Funkce pro vykreslení seznamu editů skladů
+function renderWarehouseEdits(edits) {
+    const tbody = document.getElementById('editsList');
+    if (!edits || edits.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="no-data">Žádné edity pro tento den</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = edits.map(edit => `
+        <tr>
+            <td>${formatDate(edit.edit_date)}</td>
+            <td>${edit.warehouse_name}</td>
+            <td>${formatMaterialType(edit.material_type)}</td>
+            <td>${edit.previous_quantity}</td>
+            <td>${edit.new_quantity}</td>
+            <td class="${edit.new_quantity > edit.previous_quantity ? 'quantity-high' : 'quantity-low'}">
+                ${edit.new_quantity > edit.previous_quantity ? '+' : ''}${edit.new_quantity - edit.previous_quantity}
+            </td>
+            <td>${formatDateTime(edit.created_at)}</td>
+        </tr>
+    `).join('');
+}
+
+// Funkce pro formátování typu materiálu
+function formatMaterialType(type) {
+    const materialNames = {
+        'kanoe': 'Kanoe',
+        'kanoe_rodinna': 'Rodinná kanoe',
+        'velky_raft': 'Velký raft',
+        'padlo': 'Pádlo',
+        'padlo_detske': 'Dětské pádlo',
+        'vesta': 'Vesta',
+        'vesta_detska': 'Dětská vesta',
+        'barel': 'Barel'
+    };
+    
+    return materialNames[type] || type;
+}
+
+// Funkce pro formátování data a času
+function formatDateTime(dateTimeString) {
+    const date = new Date(dateTimeString);
+    return `${date.toLocaleDateString('cs-CZ')} ${date.toLocaleTimeString('cs-CZ')}`;
+}
+
+// Upravíme funkci renderInventory pro zobrazení základních stavů, změn a aktuálních stavů
 function renderInventory(data) {
     const grid = document.getElementById('inventoryGrid');
     grid.innerHTML = data.map(warehouse => `
-        <div class="warehouse-card">
+        <div class="warehouse-card" data-warehouse-id="${warehouse.id}">
             <div class="warehouse-header">
                 <div class="warehouse-title-section">
                     <h3 class="warehouse-title">${warehouse.name}</h3>
@@ -538,9 +636,21 @@ function renderInventory(data) {
             </div>
             <div class="warehouse-sections">
                 <div class="inventory-section">
-                    <div class="section-title">Aktuální stav skladu</div>
-                    <div class="inventory-list">
-                        ${renderInventoryItems(warehouse.items)}
+                    <div class="section-title">Stav skladu</div>
+                    <div class="inventory-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Materiál</th>
+                                    <th>Základní stav</th>
+                                    <th>Změna</th>
+                                    <th>Aktuální stav</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${renderInventoryTableWithState(warehouse.items)}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
                 <div class="daily-plan-section">
@@ -548,11 +658,15 @@ function renderInventory(data) {
                     <div class="daily-plan">
                         <div class="plan-departures">
                             <h4>Výdej vybavení</h4>
-                            ${renderDepartures(warehouse.dailyPlan?.departures)}
+                            ${renderDepartures(warehouse.dailyPlan?.departures || [])}
                         </div>
                         <div class="plan-returns">
                             <h4>Očekávané vrácení</h4>
-                            ${renderReturns(warehouse.dailyPlan?.returns)}
+                            ${renderReturns(warehouse.dailyPlan?.returns || [])}
+                        </div>
+                        <div class="plan-edits">
+                            <h4>Edity skladu</h4>
+                            ${renderWarehouseEditsForDay(warehouse.dailyPlan?.edits || [])}
                         </div>
                     </div>
                 </div>
@@ -561,79 +675,119 @@ function renderInventory(data) {
     `).join('');
 }
 
-function renderDepartures(departures) {
-    if (!departures || departures.length === 0) {
-        return '<div class="no-data">Žádné výdeje</div>';
-    }
+// Enhanced renderInventoryTableWithState function to properly display inventory data
+function renderInventoryTableWithState(items) {
+    const itemTypes = [
+        'kanoe', 'kanoe_rodinna', 'velky_raft', 
+        'padlo', 'padlo_detske', 'vesta', 
+        'vesta_detska', 'barel'
+    ];
+    
+    return itemTypes.map(type => {
+        // Initialize default values to prevent undefined errors
+        let baseQuantity = 0;
+        let changes = [];
+        let changeTotal = 0;
+        let currentQuantity = 0;
 
-    return departures.map(order => `
-        <div class="plan-item departure">
-            <div class="plan-time">${formatTime(order.arrival_time)}</div>
-            <div class="plan-details">
-                <div class="plan-customer">${order.name} (${order.phone})</div>
-                <div class="plan-equipment">
-                    ${renderEquipmentList(order)}
-                </div>
-            </div>
-        </div>
-    `).join('');
-}
-
-function renderReturns(returns) {
-    if (!returns || returns.length === 0) {
-        return '<div class="no-data">Žádné vrácení</div>';
-    }
-
-    return returns.map(order => `
-        <div class="plan-item return">
-            <div class="plan-time">${formatTime(order.departure_time)}</div>
-            <div class="plan-details">
-                <div class="plan-customer">${order.name} (${order.phone})</div>
-                <div class="plan-equipment">
-                    ${renderEquipmentList(order)}
-                </div>
-            </div>
-        </div>
-    `).join('');
-}
-
-function renderEquipmentList(order) {
-    const equipment = {
-        kanoe: 'Kanoe',
-        kanoe_rodinna: 'Rodinná kanoe',
-        velky_raft: 'Velký raft',
-        padlo: 'Pádlo',
-        padlo_detske: 'Dětské pádlo',
-        vesta: 'Vesta',
-        vesta_detska: 'Dětská vesta',
-        barel: 'Barel'
-    };
-
-    return Object.entries(equipment)
-        .filter(([key, _]) => order[key] > 0)
-        .map(([key, name]) => `${order[key]}× ${name}`)
-        .join(', ');
-}
-
-// Upravíme funkci renderInventoryItems pro zobrazení bez tlačítek
-function renderInventoryItems(items) {
-    const itemNames = {
-        kanoe: 'Kanoe',
-        kanoe_rodinna: 'Rodinná kanoe',
-        velky_raft: 'Velký raft',
-        padlo: 'Pádlo',
-        padlo_detske: 'Dětské pádlo',
-        vesta: 'Vesta',
-        vesta_detska: 'Dětská vesta',
-        barel: 'Barel'
-    };
-
-    return Object.entries(items).map(([type, quantity]) => {
-        const quantityClass = getQuantityClass(type, quantity);
+        if (typeof items[type] === 'object' && items[type] !== null) {
+            // If we have the new structure with detailed properties
+            baseQuantity = items[type].baseQuantity || 0;
+            // Ensure changes is an array
+            changes = Array.isArray(items[type].changes) ? items[type].changes : [];
+            changeTotal = items[type].changeTotal || 0;
+            currentQuantity = items[type].currentQuantity || 0;
+        } else {
+            // If it's a simple number value (old structure)
+            currentQuantity = items[type] || 0;
+            baseQuantity = currentQuantity;
+            // No changes array in the old format
+        }
+        
+        // Get the appropriate CSS classes for color display
+        const baseClass = getQuantityColorClass(baseQuantity);
+        
+        // Filter the changes array to show only operational changes (not edits)
+        const operationalChanges = Array.isArray(changes) 
+            ? changes.filter(change => !change.isEdit) 
+            : [];
+        
+        // Calculate the total from operational changes directly from the changes array
+        const operationalChangeTotal = operationalChanges.reduce((sum, change) => sum + change.quantity, 0);
+        
+        const changeClass = operationalChangeTotal > 0 ? 'quantity-high' : operationalChangeTotal < 0 ? 'quantity-low' : '';
+        const currentClass = getQuantityColorClass(currentQuantity);
+        
+        // Debug data (can be removed in production)
+        console.log(`${type}: Base=${baseQuantity}, Change=${operationalChangeTotal}, Current=${currentQuantity}`);
+        
         return `
-            <div class="inventory-item">
-                <span class="item-name">${itemNames[type] || type}</span>
-                <span class="item-quantity ${quantityClass}">${quantity}</span>
+            <tr>
+                <td>${formatMaterialType(type)}</td>
+                <td class="quantity-cell ${baseClass}">${baseQuantity}</td>
+                <td class="quantity-cell ${changeClass}">
+                    ${operationalChangeTotal > 0 ? '+' : ''}${operationalChangeTotal}
+                    ${renderChangesDetails(operationalChanges)}
+                </td>
+                <td class="quantity-cell ${currentClass}">
+                    ${currentQuantity}
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+// Nová funkce pro zobrazení editů skladu pro daný den
+function renderWarehouseEditsForDay(edits) {
+    if (!edits || edits.length === 0) {
+        return '<div class="no-data">Žádné edity pro tento den</div>';
+    }
+    
+    return edits.map(edit => {
+        const difference = edit.new_quantity - edit.previous_quantity;
+        const differenceClass = difference > 0 ? 'quantity-high' : 'quantity-low';
+        
+        return `
+            <div class="plan-item edit">
+                <div class="edit-details">
+                    <div class="edit-title">
+                        ${formatMaterialType(edit.material_type)} - změna z ${edit.previous_quantity} na ${edit.new_quantity}
+                    </div>
+                    <div class="edit-info">
+                        Rozdíl: <span class="${differenceClass}">
+                        ${difference > 0 ? '+' : ''}${difference}
+                        </span> | ${formatTime(new Date(edit.created_at).toTimeString().split(' ')[0])}
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// Improved renderWarehouseEditsForDay function to clearly show edit details
+function renderWarehouseEditsForDay(edits) {
+    if (!edits || edits.length === 0) {
+        return '<div class="no-data">Žádné edity pro tento den</div>';
+    }
+    
+    return edits.map(edit => {
+        const difference = edit.new_quantity - edit.previous_quantity;
+        const differenceClass = difference > 0 ? 'quantity-high' : 'quantity-low';
+        const formattedTime = formatTime(new Date(edit.created_at).toTimeString().split(' ')[0]);
+        
+        return `
+            <div class="plan-item edit">
+                <div class="edit-details">
+                    <div class="edit-title">
+                        ${formatMaterialType(edit.material_type)} - ruční úprava
+                    </div>
+                    <div class="edit-info">
+                        Z <strong>${edit.previous_quantity}</strong> na <strong>${edit.new_quantity}</strong>
+                        <span class="${differenceClass}">
+                            (${difference > 0 ? '+' : ''}${difference})
+                        </span> | ${formattedTime}
+                    </div>
+                </div>
             </div>
         `;
     }).join('');
@@ -655,19 +809,37 @@ function editWarehouse(warehouseId, warehouse) {
         barel: 'Barel'
     };
 
+    // Zpracujeme warehouse jako objekt, pokud byl předán jako string
+    if (typeof warehouse === 'string') {
+        try {
+            warehouse = JSON.parse(warehouse);
+        } catch (e) {
+            console.error('Chyba při parsování dat skladu:', e);
+        }
+    }
+
     form.innerHTML = `
         <h3>Upravit množství - ${warehouse.name}</h3>
         <div class="inventory-edit-grid">
-            ${Object.entries(warehouse.items).map(([type, quantity]) => `
+            ${Object.entries(warehouse.items).map(([type, quantity]) => {
+                // Zjistíme aktuální hodnotu (může být objekt nebo číslo)
+                let currentValue = quantity;
+                if (typeof quantity === 'object' && quantity !== null) {
+                    currentValue = quantity.currentQuantity || 0;
+                }
+                
+                return `
                 <div class="inventory-edit-group">
                     <label>${itemNames[type]}:</label>
                     <input type="number" 
                            id="quantity_${type}" 
-                           value="${quantity}" 
+                           value="${currentValue}" 
                            min="0"
-                           data-item-type="${type}">
+                           data-item-type="${type}"
+                           data-original-quantity="${currentValue}">
                 </div>
-            `).join('')}
+                `;
+            }).join('')}
         </div>
         <div class="inventory-edit-actions">
             <button onclick="saveWarehouseChanges(${warehouseId})" class="btn-save">Uložit</button>
@@ -678,21 +850,39 @@ function editWarehouse(warehouseId, warehouse) {
     modal.style.display = "block";
 }
 
-// Přidáme funkci pro uložení změn celého skladu
+// Upravená funkce pro uložení změn celého skladu
 async function saveWarehouseChanges(warehouseId) {
     try {
         const updates = [];
         const inputs = document.querySelectorAll('#inventoryEditForm input[type="number"]');
+        // Získáme datum z inventoryDate pole nebo použijeme dnešní datum
+        const editDate = document.getElementById('inventoryDate').value || new Date().toISOString().split('T')[0];
         
         inputs.forEach(input => {
-            updates.push({
-                warehouseId,
-                itemType: input.dataset.itemType,
-                quantity: parseInt(input.value) || 0
-            });
+            // Přidáváme původní hodnotu, kterou načteme z datasetu
+            const originalQuantity = parseInt(input.dataset.originalQuantity) || 0;
+            const newQuantity = parseInt(input.value) || 0;
+            
+            // Změnu uložíme pouze když se hodnota skutečně změnila
+            if (originalQuantity !== newQuantity) {
+                updates.push({
+                    warehouseId,
+                    itemType: input.dataset.itemType,
+                    quantity: newQuantity,
+                    previousQuantity: originalQuantity,
+                    editDate // Přidáme datum editu
+                });
+            }
         });
 
-        // Sekvenčně uložíme všechny změny
+        // Pokud nemáme žádné změny, ukončíme funkci
+        if (updates.length === 0) {
+            showToast('Žádné změny nebyly provedeny', 'info');
+            closeInventoryModal();
+            return;
+        }
+
+        // Sekvenčně uložíme všechny změny jako edity (bez změny základního množství v inventory_items)
         for (const update of updates) {
             const response = await fetch('/api/inventory/update', {
                 method: 'PUT',
@@ -701,13 +891,14 @@ async function saveWarehouseChanges(warehouseId) {
             });
 
             if (!response.ok) {
-                throw new Error(`Chyba při ukládání položky ${update.itemType}`);
+                const errorData = await response.json();
+                throw new Error(errorData.message || `Chyba při ukládání položky ${update.itemType}`);
             }
         }
 
-        showToast('Množství bylo úspěšně aktualizováno', 'success');
+        showToast('Změny byly úspěšně zaznamenány jako edity', 'success');
         closeInventoryModal();
-        await loadInventory(); // Znovu načteme data
+        await loadInventory(); // Znovu načteme data aby ukázaly aktuální stav
     } catch (error) {
         showToast(`Chyba při ukládání: ${error.message}`, 'error');
     }
@@ -740,25 +931,49 @@ function closeInventoryModal() {
 
 async function saveInventoryChange(warehouseId, itemType) {
     const newQuantity = parseInt(document.getElementById('newQuantity').value);
+    const editDate = document.getElementById('inventoryDate').value || new Date().toISOString().split('T')[0];
     
     try {
-        const response = await fetch('/api/inventory/update', {
+        // Nejprve získáme současný stav k danému datu
+        const response = await fetch(`/api/warehouse/status/${editDate}`, {
+            headers: getAuthHeaders()
+        });
+
+        if (!response.ok) throw new Error('Chyba při načítání aktuálního stavu');
+        const data = await response.json();
+        
+        // Najdeme správný sklad a položku
+        const warehouse = data.find(w => w.id == warehouseId);
+        if (!warehouse) throw new Error('Sklad nebyl nalezen');
+        
+        // Získáme aktuální hodnotu jako previousQuantity pro edit
+        let previousQuantity = 0;
+        if (warehouse.items[itemType]) {
+            previousQuantity = typeof warehouse.items[itemType] === 'object' 
+                ? warehouse.items[itemType].currentQuantity 
+                : warehouse.items[itemType];
+        }
+        
+        // Vytvoříme edit (bez změny základního inventáře)
+        const updateResponse = await fetch('/api/inventory/update', {
             method: 'PUT',
             headers: getAuthHeaders(),
             body: JSON.stringify({
                 warehouseId,
                 itemType,
-                quantity: newQuantity
+                quantity: newQuantity,
+                previousQuantity,
+                editDate
             })
         });
 
-        const result = await response.json();
+        const result = await updateResponse.json();
         
         if (!result.success) {
             throw new Error(result.message);
         }
 
-        showToast('Množství bylo úspěšně aktualizováno', 'success');
+        showToast('Edit byl úspěšně zaznamenán', 'success');
         closeInventoryModal();
         await loadInventory(); // Znovu načteme data
     } catch (error) {
@@ -811,6 +1026,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         await loadOrders();
         await loadUsers();
         await loadInventory();
+        
+        // Also load warehouse edits if that tab is currently active
+        if (document.getElementById('warehouse-edits').classList.contains('active')) {
+            await loadAllWarehouseEdits(true);
+        }
+        
         setupModalHandlers();
         
         // Nastavíme dnešní datum pro inventář
@@ -990,6 +1211,7 @@ async function editOrder(orderId) {
     }
 }
 
+// Oprava funkce saveOrderChanges
 async function saveOrderChanges(orderId, form) {
     try {
         const formData = new FormData(form);
@@ -1020,4 +1242,528 @@ function closeEditDialog() {
     if (dialog) {
         dialog.remove();
     }
+}
+
+// Globální proměnná pro uložení všech načtených editů
+let allWarehouseEdits = [];
+
+// Upravená funkce pro načtení všech editů skladů
+async function loadAllWarehouseEdits(loadAll = false) {
+    try {
+        const fromDate = loadAll ? '' : document.getElementById('editsFromDate').value || '';
+        const toDate = loadAll ? '' : document.getElementById('editsToDate').value || '';
+        
+        let url = '/api/warehouse/edits';
+        if (!loadAll && (fromDate || toDate)) {
+            const params = new URLSearchParams();
+            if (fromDate) params.append('from', fromDate);
+            if (toDate) params.append('to', toDate);
+            url += `?${params.toString()}`;
+        }
+        
+        const response = await fetch(url, {
+            headers: getAuthHeaders()
+        });
+
+        if (!response.ok) throw new Error('Chyba při načítání dat');
+        const data = await response.json();
+        
+        // Uložíme všechny načtené edity pro pozdější filtrování
+        allWarehouseEdits = data;
+        
+        // Zobrazíme edity
+        filterWarehouseEdits();
+        
+        // Pokud načítáme všechny, vymažeme datumy
+        if (loadAll) {
+            document.getElementById('editsFromDate').value = '';
+            document.getElementById('editsToDate').value = '';
+        }
+        
+        showMessage(`Načteno ${data.length} editů skladů`);
+    } catch (error) {
+        showError('Chyba při načítání editů skladů: ' + error.message);
+        console.error(error);
+    }
+}
+
+// Funkce pro filtrování editů skladů podle vyhledávacího výrazu
+function filterWarehouseEdits() {
+    const searchTerm = document.getElementById('editsSearch').value.toLowerCase();
+    let filteredEdits = [...allWarehouseEdits];
+    
+    if (searchTerm) {
+        filteredEdits = filteredEdits.filter(edit => 
+            edit.warehouse_name.toLowerCase().includes(searchTerm) ||
+            formatMaterialType(edit.material_type).toLowerCase().includes(searchTerm) ||
+            edit.edit_date.includes(searchTerm) ||
+            edit.previous_quantity.toString().includes(searchTerm) ||
+            edit.new_quantity.toString().includes(searchTerm) ||
+            edit.id.toString().includes(searchTerm)
+        );
+    }
+    
+    // Aktualizujeme počítadla záznamů
+    document.getElementById('displayedEditsCount').textContent = filteredEdits.length;
+    document.getElementById('totalEditsCount').textContent = allWarehouseEdits.length;
+    
+    // Vykreslíme filtrovaná data
+    renderWarehouseEditsList(filteredEdits);
+}
+
+// Upravená funkce pro vykreslení seznamu všech editů skladů
+function renderWarehouseEditsList(edits) {
+    const tbody = document.getElementById('warehouseEditsList');
+    
+    if (!edits || edits.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" class="no-data">Žádné edity nenalezeny</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = edits.map(edit => {
+        const difference = edit.new_quantity - edit.previous_quantity;
+        const differenceClass = difference > 0 ? 'quantity-high' : difference < 0 ? 'quantity-low' : '';
+        
+        return `
+            <tr>
+                <td>${edit.id}</td>
+                <td>${formatDate(edit.edit_date)}</td>
+                <td>${edit.warehouse_name}</td>
+                <td>${formatMaterialType(edit.material_type)}</td>
+                <td>${edit.previous_quantity}</td>
+                <td>${edit.new_quantity}</td>
+                <td class="${differenceClass}">
+                    ${difference > 0 ? '+' : ''}${difference}
+                </td>
+                <td>${formatDateTime(edit.created_at)}</td>
+            </tr>
+        `;
+    }).join('');
+}
+
+// Upravíme funkci renderInventory pro lepší zobrazení stavu skladů - odstraněna "Akce" v hlavičce
+function renderInventory(data) {
+    const grid = document.getElementById('inventoryGrid');
+    grid.innerHTML = data.map(warehouse => `
+        <div class="warehouse-card" data-warehouse-id="${warehouse.id}">
+            <div class="warehouse-header">
+                <div class="warehouse-title-section">
+                    <h3 class="warehouse-title">${warehouse.name}</h3>
+                    <div class="warehouse-location">${warehouse.location}</div>
+                </div>
+                <button onclick="editWarehouse(${warehouse.id}, ${JSON.stringify(warehouse).replace(/"/g, '&quot;')})" class="btn-edit-inventory">
+                    Upravit sklad
+                </button>
+            </div>
+            <div class="warehouse-sections">
+                <div class="inventory-section">
+                    <div class="section-title">Stav skladu</div>
+                    <div class="inventory-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Materiál</th>
+                                    <th>Základ</th>
+                                    <th>Změna</th>
+                                    <th>Aktuální stav</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${renderInventoryTableWithState(warehouse.items)}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="daily-plan-section">
+                    <div class="section-title">Denní plán</div>
+                    <div class="daily-plan">
+                        <div class="plan-departures">
+                            <h4>Výdej vybavení</h4>
+                            ${renderDepartures(warehouse.dailyPlan?.departures)}
+                        </div>
+                        <div class="plan-returns">
+                            <h4>Očekávané vrácení</h4>
+                            ${renderReturns(warehouse.dailyPlan?.returns)}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Fix the renderInventoryTableWithState function to properly show changes from the daily plan
+function renderInventoryTableWithState(items) {
+    const itemTypes = [
+        'kanoe', 'kanoe_rodinna', 'velky_raft', 
+        'padlo', 'padlo_detske', 'vesta', 
+        'vesta_detska', 'barel'
+    ];
+    
+    return itemTypes.map(type => {
+        // Initialize default values to prevent undefined errors
+        let baseQuantity = 0;
+        let changes = [];
+        let changeTotal = 0;
+        let currentQuantity = 0;
+
+        if (typeof items[type] === 'object' && items[type] !== null) {
+            // If we have the new structure with detailed properties
+            baseQuantity = items[type].baseQuantity || 0;
+            // Ensure changes is an array
+            changes = Array.isArray(items[type].changes) ? items[type].changes : [];
+            changeTotal = items[type].changeTotal || 0;
+            currentQuantity = items[type].currentQuantity || 0;
+        } else {
+            // If it's a simple number value (old structure)
+            currentQuantity = items[type] || 0;
+            baseQuantity = currentQuantity;
+            // No changes array in the old format
+        }
+        
+        // Get the appropriate CSS classes for color display
+        const baseClass = '';
+        
+        // Now safely filter the changes array to show only operational changes (not edits)
+        // We ONLY want to display changes that are NOT edits in the "Změna" column
+        const operationalChanges = Array.isArray(changes) 
+            ? changes.filter(change => !change.isEdit) 
+            : [];
+        
+        // Calculate the total from operational changes directly from the changes array
+        // This ensures we're displaying the actual changes from orders in the daily plan
+        const operationalChangeTotal = operationalChanges.reduce((sum, change) => sum + change.quantity, 0);
+        
+        const changeClass = operationalChangeTotal > 0 ? 'quantity-high' : operationalChangeTotal < 0 ? 'quantity-low' : '';
+        const currentClass = getQuantityColorClass(currentQuantity);
+        
+        return `
+            <tr>
+                <td>${formatMaterialType(type)}</td>
+                <td class="quantity-cell">${baseQuantity}</td>
+                <td class="quantity-cell ${changeClass}">
+                    ${operationalChangeTotal > 0 ? '+' : ''}${operationalChangeTotal}
+                    ${renderChangesDetails(operationalChanges)}
+                </td>
+                <td class="quantity-cell ${currentClass}">
+                    ${currentQuantity}
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+// Nová funkce pro zobrazení detailů změn
+function renderChangesDetails(changes) {
+    if (!changes || !Array.isArray(changes) || changes.length === 0) {
+        return '';
+    }
+    
+    const detailsHtml = changes.map(change => {
+        const prefix = change.quantity > 0 ? '+' : '';
+        return `<div>${change.description || 'Změna'}: ${prefix}${change.quantity}</div>`;
+    }).join('');
+    
+    return `
+        <div class="changes-tooltip">
+            <span class="tooltip-icon">ℹ️</span>
+            <div class="tooltip-content">
+                ${detailsHtml}
+            </div>
+        </div>
+    `;
+}
+
+// Funkce pro určení barevné třídy podle množství
+function getQuantityColorClass(quantity) {
+    if (quantity <= 0) return 'quantity-critical';
+    if (quantity <= 5) return 'quantity-low';
+    if (quantity <= 10) return 'quantity-medium';
+    return 'quantity-high';
+}
+
+// Přidáme funkci pro načtení stavu skladů
+async function loadInventory() {
+    try {
+        const date = document.getElementById('inventoryDate').value || new Date().toISOString().split('T')[0];
+        console.log('Loading inventory for date:', date);
+        
+        const response = await fetch(`/api/warehouse/status/${date}`, {
+            headers: getAuthHeaders()
+        });
+
+        if (!response.ok) throw new Error('Chyba při načítání dat skladů');
+        const data = await response.json();
+        console.log('Loaded warehouse data:', data);
+
+        // Ensure we have only one version of renderInventory
+        renderInventory(data);
+        
+        // Also load warehouse edits for the selected date to ensure they appear in both places
+        await loadWarehouseEdits(date);
+        
+        // Now update the daily plan edits section for each warehouse
+        updateDailyPlanEdits(date);
+    } catch (error) {
+        showError('Chyba při načítání stavu skladů: ' + error.message);
+    }
+}
+
+// New function to keep warehouse edits in sync between tabs
+async function updateDailyPlanEdits(date) {
+    try {
+        // Get all warehouse edits for the date
+        const response = await fetch(`/api/warehouse/edits/${date}`, {
+            headers: getAuthHeaders()
+        });
+
+        if (!response.ok) throw new Error('Chyba při načítání editů skladů');
+        const allEdits = await response.json();
+        
+        // Group edits by warehouse ID
+        const editsByWarehouse = {};
+        allEdits.forEach(edit => {
+            if (!editsByWarehouse[edit.warehouse_id]) {
+                editsByWarehouse[edit.warehouse_id] = [];
+            }
+            editsByWarehouse[edit.warehouse_id].push(edit);
+        });
+        
+        // Update each warehouse's edits section
+        document.querySelectorAll('.warehouse-card').forEach(card => {
+            const warehouseId = card.getAttribute('data-warehouse-id');
+            if (warehouseId) {
+                const warehouseEdits = editsByWarehouse[warehouseId] || [];
+                const editsSection = card.querySelector('.plan-edits');
+                if (editsSection) {
+                    editsSection.innerHTML = `
+                        <h4>Edity skladu</h4>
+                        ${renderWarehouseEditsForDay(warehouseEdits)}
+                    `;
+                }
+            }
+        });
+        
+        console.log('Daily plan edits updated successfully');
+    } catch (error) {
+        console.error('Error updating daily plan edits:', error);
+    }
+}
+
+// Enhance renderInventory to include warehouse IDs for easier reference
+function renderInventory(data) {
+    const grid = document.getElementById('inventoryGrid');
+    grid.innerHTML = data.map(warehouse => `
+        <div class="warehouse-card" data-warehouse-id="${warehouse.id}">
+            <div class="warehouse-header">
+                <div class="warehouse-title-section">
+                    <h3 class="warehouse-title">${warehouse.name}</h3>
+                    <div class="warehouse-location">${warehouse.location}</div>
+                </div>
+                <button onclick="editWarehouse(${warehouse.id}, ${JSON.stringify(warehouse).replace(/"/g, '&quot;')})" class="btn-edit-inventory">
+                    Upravit sklad
+                </button>
+            </div>
+            <div class="warehouse-sections">
+                <div class="inventory-section">
+                    <div class="section-title">Stav skladu</div>
+                    <div class="inventory-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Materiál</th>
+                                    <th>Základ</th>
+                                    <th>Změna</th>
+                                    <th>Aktuální stav</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${renderInventoryTableWithState(warehouse.items)}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="daily-plan-section">
+                    <div class="section-title">Denní plán</div>
+                    <div class="daily-plan">
+                        <div class="plan-departures">
+                            <h4>Výdej vybavení</h4>
+                            ${renderDepartures(warehouse.dailyPlan?.departures)}
+                        </div>
+                        <div class="plan-returns">
+                            <h4>Očekávané vrácení</h4>
+                            ${renderReturns(warehouse.dailyPlan?.returns)}
+                        </div>
+                        <div class="plan-edits">
+                            <h4>Edity skladu</h4>
+                            ${renderWarehouseEditsForDay(warehouse.dailyPlan?.edits || [])}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Enhance loadWarehouseEdits to automatically update daily plan edits
+async function loadWarehouseEdits(date) {
+    try {
+        const response = await fetch(`/api/warehouse/edits/${date}`, {
+            headers: getAuthHeaders()
+        });
+
+        if (!response.ok) throw new Error('Chyba při načítání editů skladů');
+        const data = await response.json();
+
+        renderWarehouseEdits(data);
+        
+        // Now also update the daily plan sections with the same edit data
+        updateDailyPlanEdits(date);
+        
+        return data;
+    } catch (error) {
+        showError('Chyba při načítání editů skladů: ' + error.message);
+        return [];
+    }
+}
+
+// Enhance saveInventoryEditWithDate to refresh both tables
+async function saveInventoryEditWithDate(warehouseId, itemType, previousQuantity, date) {
+    const newQuantity = parseInt(document.getElementById('newQuantity').value);
+    
+    if (newQuantity === previousQuantity) {
+        showToast('Hodnota nebyla změněna', 'info');
+        closeInventoryModal();
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/inventory/update', {
+            method: 'PUT',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({
+                warehouseId,
+                itemType,
+                quantity: newQuantity,
+                previousQuantity,
+                editDate: date
+            })
+        });
+
+        const result = await response.json();
+        
+        if (!result.success) {
+            throw new Error(result.message);
+        }
+
+        showToast(`Množství ${formatMaterialType(itemType)} bylo úspěšně změněno z ${previousQuantity} na ${newQuantity}`, 'success');
+        closeInventoryModal();
+        
+        // Refresh both inventory view and warehouse edits
+        await loadInventory(); 
+        await loadWarehouseEdits(date);
+        
+        // Make sure edits are displayed in daily plan
+        await updateDailyPlanEdits(date);
+    } catch (error) {
+        showToast(`Chyba při ukládání: ${error.message}`, 'error');
+    }
+}
+
+// Add a debug function to show detailed warehouse state
+function debugWarehouseState(date, warehouseData) {
+    console.log(`Debug - Warehouse state for ${date}:`);
+    warehouseData.forEach(warehouse => {
+        console.log(`Warehouse: ${warehouse.name}`);
+        Object.keys(warehouse.items).forEach(itemType => {
+            if (typeof warehouse.items[itemType] === 'object') {
+                const item = warehouse.items[itemType];
+                console.log(`  ${itemType}: base=${item.baseQuantity}, change=${item.changeTotal}, current=${item.currentQuantity}`);
+                if (item.changes && item.changes.length > 0) {
+                    console.log('  Changes:');
+                    item.changes.forEach(change => {
+                        console.log(`    - ${change.description}: ${change.quantity} (isEdit: ${change.isEdit})`);
+                    });
+                }
+            }
+        });
+    });
+}
+
+// Add the missing renderDepartures function
+function renderDepartures(departures) {
+    if (!departures || departures.length === 0) {
+        return '<div class="no-data">Žádné výdeje</div>';
+    }
+
+    return departures.map(order => `
+        <div class="plan-item departure">
+            <div class="plan-time">${formatTime(order.arrival_time)}</div>
+            <div class="plan-details">
+                <div class="plan-customer">${order.name} (${order.phone})</div>
+                <div class="plan-equipment">
+                    ${renderEquipmentList(order)}
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Add the missing renderReturns function
+function renderReturns(returns) {
+    if (!returns || returns.length === 0) {
+        return '<div class="no-data">Žádné vrácení</div>';
+    }
+
+    return returns.map(order => `
+        <div class="plan-item return">
+            <div class="plan-time">${formatTime(order.departure_time)}</div>
+            <div class="plan-details">
+                <div class="plan-customer">${order.name} (${order.phone})</div>
+                <div class="plan-equipment">
+                    ${renderEquipmentList(order)}
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Add helper function to render equipment lists
+function renderEquipmentList(order) {
+    const equipment = {
+        kanoe: 'Kanoe',
+        kanoe_rodinna: 'Rodinná kanoe',
+        velky_raft: 'Velký raft',
+        padlo: 'Pádlo',
+        padlo_detske: 'Dětské pádlo',
+        vesta: 'Vesta',
+        vesta_detska: 'Dětská vesta',
+        barel: 'Barel'
+    };
+
+    return Object.entries(equipment)
+        .filter(([key, _]) => order[key] > 0)
+        .map(([key, name]) => `${order[key]}× ${name}`)
+        .join(', ');
+}
+
+// Function to change inventory date by the specified number of days
+function changeInventoryDate(days) {
+    const datePicker = document.getElementById('inventoryDate');
+    const currentDate = datePicker.value ? new Date(datePicker.value) : new Date();
+    
+    // Add the specified number of days
+    currentDate.setDate(currentDate.getDate() + days);
+    
+    // Format date as YYYY-MM-DD
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+    const day = String(currentDate.getDate()).padStart(2, '0');
+    const formattedDate = `${year}-${month}-${day}`;
+    
+    // Update the date picker value
+    datePicker.value = formattedDate;
+    
+    // Load the inventory for the new date
+    loadInventory();
 }

@@ -500,7 +500,7 @@ tr:hover {
 /* Skladový systém - upravená sekce */
 .inventory-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 sloupce natvrdo */
+    grid-template-columns: repeat(2, 1fr); /* Changed from 3 columns to 2 columns */
     gap: 1.5rem;
     padding: 1rem;
     max-width: 100%;
@@ -512,6 +512,7 @@ tr:hover {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     display: flex;
     flex-direction: column;
+    width: 100%; /* Ensure cards use full width of their grid cell */
 }
 
 .warehouse-header {
@@ -575,6 +576,47 @@ tr:hover {
     border-radius: 4px;
     margin-bottom: 0.5rem;
     border: 1px solid #eee;
+    flex-wrap: wrap;
+}
+
+.item-name {
+    font-weight: 600;
+    width: 100%;
+    margin-bottom: 0.5rem;
+    color: #2c3e50;
+}
+
+.item-quantities {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.quantity-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    text-align: center;
+    border-radius: 4px;
+    padding: 0.25rem;
+    background-color: #f8f9fa;
+}
+
+.quantity-label {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-bottom: 0.25rem;
+}
+
+.item-quantity {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 600;
+    min-width: 40px;
+    text-align: center;
+    display: block;
 }
 
 .item-quantity {
@@ -645,8 +687,608 @@ tr:hover {
     .inventory-grid {
         grid-template-columns: 1fr; /* Pouze na mobilu jeden sloupec */
     }
+}
+
+/* Improve responsiveness */
+@media (max-width: 1200px) {
+    .inventory-grid {
+        grid-template-columns: 1fr; /* On smaller screens, display only one warehouse per row */
+    }
+}
+
+/* Styly pro tabulku inventáře */
+.inventory-table table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 0;
+}
+
+.inventory-table th, 
+.inventory-table td {
+    padding: 0.75rem;
+    border: 1px solid #dee2e6;
+    text-align: center;
+}
+
+.inventory-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+/* Styly pro změny */
+.changes-container {
+    position: relative;
+}
+
+.change-total {
+    font-weight: bold;
+}
+
+.change-details {
+    display: none;
+    position: absolute;
+    z-index: 100;
+    background: white;
+    border: 1px solid #ddd;
+    padding: 0.5rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    min-width: 150px;
+}
+
+.changes-container:hover .change-details {
+    display: block;
+}
+
+.change-item {
+    padding: 0.25rem 0;
+}
+
+/* Styly pro tabulku editů */
+.edits-container {
+    margin-top: 2rem;
+}
+
+.no-data {
+    text-align: center;
+    padding: 1rem;
+    color: #666;
+}
+
+.quantity-high {
+    color: green;
+    font-weight: bold;
+}
+
+.quantity-medium {
+    color: orange;
+    font-weight: bold;
+}
+
+.quantity-low {
+    color: red;
+    font-weight: bold;
+}
+
+/* Přidáme nové styly pro zobrazení stavů */
+.quantity-cell {
+    text-align: center;
+    font-weight: bold;
+    padding: 0.5rem;
+}
+
+.quantity-critical {
+    color: white;
+    background-color: #dc3545;
+    font-weight: bold;
+}
+
+/* Tooltips pro detaily změn */
+.changes-tooltip {
+    position: relative;
+    display: inline-block;
+    margin-left: 5px;
+}
+
+.tooltip-icon {
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.tooltip-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 200px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    padding: 10px;
+    z-index: 100;
+    border-radius: 4px;
+    right: 0;
+    top: 100%;
+    white-space: nowrap;
+}
+
+.changes-tooltip:hover .tooltip-content {
+    display: block;
+}
+
+/* Edity v denním plánu */
+.plan-item.edit {
+    border-left: 4px solid #17a2b8;
+}
+
+.edit-details {
+    padding: 0.5rem;
+}
+
+.edit-title {
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+}
+
+.edit-info {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+/* Upravíme vzhled tabulky skladu */
+.inventory-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.inventory-table th,
+.inventory-table td {
+    padding: 0.75rem;
+    border: 1px solid #dee2e6;
+}
+
+.inventory-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+/* Pro správné zobrazení na mobilních zařízeních */
+@media (max-width: 768px) {
+    .inventory-table {
+        overflow-x: auto;
+    }
+}
+
+/* Styly pro vyhledávání v editech skladů */
+.edits-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.edits-controls .search-box {
+    flex: 1;
+    min-width: 250px;
+}
+
+.edits-controls .search-box input {
+    width: 100%;
+    padding: 0.6rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 1rem;
+}
+
+.date-filter-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.table-stats {
+    margin-bottom: 0.5rem;
+    text-align: right;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+/* Responzivní úpravy pro mobilní zařízení */
+@media (max-width: 768px) {
+    .edits-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
     
-    .warehouse-sections {
-        grid-template-columns: 1fr;
+    .date-filter-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .date-filter-controls label {
+        margin-top: 0.5rem;
+    }
+}
+
+/* Vylepšené styly pro tabulku inventáře */
+.inventory-table table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 0;
+}
+
+.inventory-table th, 
+.inventory-table td {
+    padding: 0.75rem;
+    border: 1px solid #dee2e6;
+    text-align: center;
+}
+
+.inventory-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+/* Zvýraznění barev v tabulce */
+.quantity-cell {
+    font-weight: bold;
+}
+
+td.quantity-high {
+    background-color: rgba(40, 167, 69, 0.1);
+}
+
+td.quantity-medium {
+    background-color: rgba(255, 193, 7, 0.1);
+}
+
+td.quantity-low {
+    background-color: rgba(220, 53, 69, 0.1);
+}
+
+td.quantity-critical {
+    background-color: rgba(220, 53, 69, 0.2);
+    color: #dc3545;
+}
+
+/* Vylepšení tooltipů */
+.changes-tooltip {
+    position: relative;
+    display: inline-block;
+    margin-left: 5px;
+}
+
+.tooltip-icon {
+    cursor: pointer;
+    font-size: 1rem;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.tooltip-icon:hover {
+    opacity: 1;
+}
+
+.tooltip-content {
+    display: none;
+    position: absolute;
+    background-color: white;
+    min-width: 250px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    padding: 12px;
+    z-index: 100;
+    border-radius: 4px;
+    right: 0;
+    top: 100%;
+    white-space: nowrap;
+    text-align: left;
+    border-left: 4px solid #17a2b8;
+}
+
+.changes-tooltip:hover .tooltip-content {
+    display: block;
+}
+
+.tooltip-content div {
+    padding: 4px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.tooltip-content div:last-child {
+    border-bottom: none;
+}
+
+/* Úprava editu v denním plánu */
+.plan-item.edit {
+    border-left: 4px solid #17a2b8;
+    margin-bottom: 8px;
+}
+
+.edit-details {
+    padding: 0;
+}
+
+.edit-title {
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.edit-info {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+/* Přidání barev pro změny */
+.quantity-high {
+    color: #28a745;
+}
+
+.quantity-low {
+    color: #dc3545;
+}
+
+/* Improved styles for warehouse edits search section */
+.edits-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    background-color: #f8f9fa;
+    padding: 1.25rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.edits-search-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    width: 100%;
+    align-items: center;
+}
+
+.edits-controls .search-box {
+    flex: 1;
+    min-width: 250px;
+    margin-right: 1rem;
+}
+
+.edits-controls .search-box input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 1rem;
+}
+
+.date-filter-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    background-color: white;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    border: 1px solid #e5e5e5;
+}
+
+.date-filter-controls label {
+    font-weight: 500;
+    color: #2c3e50;
+    min-width: 40px;
+}
+
+.date-filter-controls input[type="date"] {
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: 'Outfit', sans-serif;
+}
+
+.edits-controls .btn-refresh {
+    padding: 0.75rem 1.25rem;
+    white-space: nowrap;
+}
+
+.edits-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+.table-stats {
+    margin: 0.75rem 0;
+    text-align: right;
+    color: #6c757d;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .date-filter-controls {
+        flex-direction: row;
+        flex-wrap: wrap;
+        width: 100%;
+    }
+    
+    .edits-buttons {
+        justify-content: flex-start;
+        margin-top: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .edits-search-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .edits-controls .search-box {
+        margin-right: 0;
+    }
+    
+    .date-filter-controls {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+    }
+    
+    .date-filter-controls > * {
+        width: 100%;
+        margin: 0.25rem 0;
+    }
+}
+
+/* Improved date filter controls */
+.date-filter-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: nowrap;
+    background-color: white;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    border: 1px solid #e5e5e5;
+    white-space: nowrap;
+}
+
+.date-filter-controls label {
+    font-weight: 500;
+    color: #2c3e50;
+    margin: 0;
+    padding: 0;
+}
+
+.date-filter-controls input[type="date"] {
+    padding: 0.4rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: 'Outfit', sans-serif;
+    width: 130px;
+}
+
+.date-filter-controls .btn-refresh {
+    padding: 0.4rem 0.75rem;
+    margin-left: 0.25rem;
+}
+
+/* Remove the now unused edits-buttons styles */
+.edits-buttons {
+    display: none; /* Hide this since we moved the button */
+}
+
+/* Update responsive styles for the filter controls */
+@media (max-width: 992px) {
+    .date-filter-controls {
+        flex-wrap: wrap;
+    }
+    
+    .date-filter-controls .btn-refresh {
+        margin-top: 0.5rem;
+    }
+}
+
+/* More compact date picker layout for smaller screens */
+@media (max-width: 992px) {
+    .edits-search-row {
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+    
+    .date-filter-controls {
+        width: auto;
+        flex: 0 0 auto;
+    }
+}
+
+@media (max-width: 576px) {
+    .date-filter-controls {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+        padding: 0.75rem;
+    }
+    
+    .date-filter-controls > * {
+        margin: 0.25rem 0;
+    }
+    
+    .date-filter-controls input[type="date"] {
+        width: 100%;
+    }
+}
+
+/* Styles for inventory date navigation */
+.date-nav-btn {
+    padding: 0.5rem 0.75rem;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    color: #2c3e50;
+    transition: background-color 0.2s;
+    line-height: 1;
+}
+
+.date-nav-btn:hover {
+    background-color: #e9ecef;
+}
+
+.inventory-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.inventory-controls input[type="date"] {
+    min-width: 150px;
+}
+
+/* Update inventory controls to match warehouse edits style */
+.inventory-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: white;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    border: 1px solid #e5e5e5;
+    white-space: nowrap;
+}
+
+.inventory-controls input[type="date"] {
+    padding: 0.4rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: 'Outfit', sans-serif;
+    width: 150px;
+}
+
+/* Make date navigation buttons match refresh button style */
+.date-nav-btn {
+    background-color: #2c3e50;
+    color: white;
+    min-width: 42px;
+    padding: 0.5rem 0.6rem;
+    font-size: 1rem;
+    line-height: 1;
+    border: none;
+}
+
+.date-nav-btn:hover {
+    background-color: #34495e; /* Match btn-refresh hover color */
+}
+
+/* Responsive adjustments for inventory controls */
+@media (max-width: 576px) {
+    .inventory-controls {
+        flex-wrap: wrap;
+    }
+    
+    .inventory-controls input[type="date"] {
+        flex: 1;
+        min-width: 0;
     }
 }

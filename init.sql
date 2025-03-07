@@ -80,6 +80,20 @@ CREATE TABLE inventory_items (
     UNIQUE KEY unique_item_warehouse (warehouse_id, item_type)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+-- Vytvoření tabulky pro edity skladů
+CREATE TABLE warehouse_edits (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    warehouse_id INT NOT NULL,
+    material_type VARCHAR(50) NOT NULL,
+    edit_date DATE NOT NULL,
+    previous_quantity INT NOT NULL,
+    new_quantity INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    user_id INT DEFAULT NULL,
+    FOREIGN KEY (warehouse_id) REFERENCES warehouses(id) ON DELETE CASCADE,
+    INDEX idx_warehouse_date (warehouse_id, edit_date)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 -- Znovu zapneme kontrolu cizích klíčů
 SET FOREIGN_KEY_CHECKS=1;
 

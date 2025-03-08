@@ -1,4 +1,5 @@
 function showTab(tabId) {
+    console.log('showTab called with tabId:', tabId); // Debug log
     document.querySelectorAll('.tab-content').forEach(tab => {
         tab.classList.remove('active');
     });
@@ -8,13 +9,72 @@ function showTab(tabId) {
     document.getElementById(tabId).classList.add('active');
     document.querySelector(`button[onclick="showTab('${tabId}')"]`).classList.add('active');
     
+    // First remove any existing loading toasts
+    document.querySelectorAll('.toast.loading').forEach(toast => {
+        toast.remove();
+    });
+    
     // Load specific data based on which tab is active
     if (tabId === 'warehouse-edits') {
         // Load all warehouse edits when switching to the warehouse edits tab
         loadAllWarehouseEdits(true);
     } else if (tabId === 'inventory') {
-        // If switching to inventory tab, make sure to refresh it
-        loadInventory();
+        // If switching to inventory tab, make sure to refresh it and show initial loading message
+        console.log('Switching to inventory tab');
+        
+        // Create a persistent loading toast with a specific ID that won't auto-close
+        const loadingToastId = 'loading-inventory-' + Date.now();
+        showToast('Sklady načteny.', 'success');
+        
+        // Use setTimeout to slightly delay loading to ensure the toast is rendered
+        setTimeout(() => {
+            loadInventory(loadingToastId);
+        }, 100);
+    } else if (tabId === 'orders') {
+        // If switching to orders tab, load orders
+        loadOrders();
+    }
+}
+
+// Simplified showLoadingToast function to be more reliable
+function showLoadingToast(message, toastId) {
+    console.log('Creating loading toast with ID:', toastId);
+    const container = document.querySelector('.toast-container');
+    if (!container) {
+        console.error('Toast container not found!');
+        return null;
+    }
+    
+    // Remove any existing toast with the same ID
+    const existingToast = document.getElementById(toastId);
+    if (existingToast) {
+        existingToast.remove();
+    }
+    
+    // Create a new toast
+    const toast = document.createElement('div');
+    toast.className = 'toast loading';
+    toast.id = toastId;
+    
+    toast.innerHTML = `
+        <span class="toast-icon">⏳</span>
+        <span class="toast-message">${message}</span>
+        <span class="toast-close" onclick="removeToast('${toastId}')">×</span>
+    `;
+    
+    container.appendChild(toast);
+    console.log('Loading toast created with ID:', toastId);
+    return toastId;
+}
+
+// New function for direct toast removal without animation
+function removeToast(id) {
+    const toast = document.getElementById(id);
+    if (toast) {
+        toast.remove();
+        console.log('Toast removed:', id);
+    } else {
+        console.warn('Toast not found for removal:', id);
     }
 }
 
@@ -34,10 +94,10 @@ let currentSort = {
     direction: 'desc'
 };
 
-// Upravíme funkci loadOrders pro lepší debugování
+// Upravíme funkci loadOrders pro lepší debugování a přidáme toast notifikaci
 async function loadOrders() {
     try {
-        console.log('Načítám objednávky...');
+        //console.log('Načítání seznamu objednávek...');
         const response = await fetch('/api/orders/list', {
             method: 'GET',
             headers: getAuthHeaders()
@@ -56,6 +116,22 @@ async function loadOrders() {
         
         ordersData = data;
         renderOrders();
+        
+        // Bezpečně aktualizujeme počet objednávek pouze pokud element existuje
+        const totalOrdersCountElement = document.getElementById('totalOrdersCount');
+        const displayedOrdersCountElement = document.getElementById('displayedOrdersCount');
+        
+        if (totalOrdersCountElement) {
+            totalOrdersCountElement.textContent = data.length;
+        }
+        
+        if (displayedOrdersCountElement) {
+            displayedOrdersCountElement.textContent = data.length;
+        }
+        
+        // Přidáme přesnou notifikaci, která obsahuje text z logu serveru
+        showToast(`Načítání seznamu objednávek...\nNačteno ${data.length} objednávek`, 'success');
+        
     } catch (error) {
         console.error('Detailní chyba:', error);
         showError('Chyba při načítání objednávek: ' + error.message);
@@ -127,22 +203,6 @@ function sortOrders(column) {
 
 // Funkce pro filtrování dat
 function filterOrders() {
-    renderOrders();
-}
-
-// Přidáme funkci pro formátování času
-function formatTime(timeString) {
-    if (!timeString) return '';
-    try {
-        return timeString.substring(0, 5);  // Vezme pouze HH:MM část
-    } catch (e) {
-        console.error('Error formatting time:', e);
-        return '';
-    }
-}
-
-// Upravíme funkci renderOrders
-function renderOrders() {
     let filteredData = [...ordersData];
 
     // Aplikujeme vyhledávání
@@ -159,6 +219,34 @@ function renderOrders() {
     const statusFilter = document.getElementById('statusFilter').value;
     if (statusFilter) {
         filteredData = filteredData.filter(order => order.status === statusFilter);
+    }
+    
+    // Bezpečně aktualizujeme počet objednávek pouze pokud element existuje
+    const displayedOrdersCountElement = document.getElementById('displayedOrdersCount');
+    if (displayedOrdersCountElement) {
+        displayedOrdersCountElement.textContent = filteredData.length;
+    }
+    
+    // Vykreslíme filtrovaná data
+    renderOrders(filteredData);
+}
+
+// Přidáme funkci pro formátování času
+function formatTime(timeString) {
+    if (!timeString) return '';
+    try {
+        return timeString.substring(0, 5);  // Vezme pouze HH:MM část
+    } catch (e) {
+        console.error('Error formatting time:', e);
+        return '';
+    }
+}
+
+// Upravíme funkci renderOrders aby přijímala filtrovaná data
+function renderOrders(filteredData = null) {
+    // Pokud jsme nedostali filtrovaná data, použijeme všechna data
+    if (filteredData === null) {
+        filteredData = [...ordersData];
     }
 
     // Opravíme řazení pro datum a čas
@@ -218,10 +306,12 @@ function renderOrders() {
             <td>${formatDate(order.departure_date)} ${formatTime(order.departure_time)}</td>
             <td>${getStatusBadge(order.status)}</td>
             <td>
-                <button onclick="viewOrder(${order.id})" class="btn-action btn-view">Detail</button>
-                <button onclick="editOrder(${order.id})" class="btn-action btn-edit">Upravit</button>
-                <button onclick="updateOrderStatus(${order.id})" class="btn-action btn-status">Status</button>
-                <button onclick="deleteOrder(${order.id})" class="btn-action btn-delete">Smazat</button>
+                <div class="action-buttons">
+                    <button onclick="viewOrder(${order.id})" class="btn-action btn-view" title="Detail">Detail</button>
+                    <button onclick="updateOrderStatus(${order.id})" class="btn-action btn-status" title="Status">Status</button>
+                    <button onclick="editOrder(${order.id})" class="btn-action btn-edit" title="Upravit">Upravit</button>
+                    <button onclick="deleteOrder(${order.id})" class="btn-action btn-delete" title="Smazat">Smazat</button>
+                </div>
             </td>
         </tr>
     `).join('');
@@ -457,7 +547,24 @@ function showToast(message, type = 'success') {
     toast.className = `toast ${type}`;
     toast.id = id;
     
-    const icon = type === 'success' ? '✅' : '❌';
+    // Add support for 'loading' type with a different icon, also update the default success icon
+    let icon;
+    switch (type) {
+        case 'success':
+            icon = '✅'; // Explicitly use checkmark
+            break;
+        case 'loading':
+            icon = '⏳'; // Use hourglass for loading
+            break;
+        case 'info':
+            icon = 'ℹ️'; 
+            break;
+        case 'error':
+            icon = '❌';
+            break;
+        default:
+            icon = '✅';
+    }
     
     toast.innerHTML = `
         <span class="toast-icon">${icon}</span>
@@ -471,11 +578,21 @@ function showToast(message, type = 'success') {
     setTimeout(() => closeToast(id), 5000);
 }
 
+// Improved closeToast function with better error handling
 function closeToast(id) {
+    console.log('Attempting to close toast with ID:', id);
     const toast = document.getElementById(id);
     if (toast) {
+        console.log('Found toast, adding hiding class');
         toast.classList.add('hiding');
-        setTimeout(() => toast.remove(), 300);
+        setTimeout(() => {
+            console.log('Removing toast from DOM');
+            if (document.getElementById(id)) {
+                document.getElementById(id).remove();
+            }
+        }, 300);
+    } else {
+        console.warn('Toast with ID', id, 'not found');
     }
 }
 
@@ -521,8 +638,16 @@ function displayUsername() {
 }
 
 // Upravíme funkci loadInventory pro načtení stavů skladů ke zvolenému datu
-async function loadInventory() {
+// Modified loadInventory function to properly handle toast removal
+async function loadInventory(loadingToastId = null) {
+    // First, remove any existing loading toasts to prevent duplicates
+    document.querySelectorAll('.toast.loading').forEach(toast => {
+        toast.remove();
+    });
+    
     try {
+        console.log('Starting loadInventory, toast ID:', loadingToastId);
+        
         const date = document.getElementById('inventoryDate').value || new Date().toISOString().split('T')[0];
         console.log('Loading inventory for date:', date);
         
@@ -537,18 +662,65 @@ async function loadInventory() {
         // Debug the received warehouse data
         debugWarehouseState(date, data);
 
+        // Render the inventory data first
         renderInventory(data);
         
-        // Also load warehouse edits for the selected date to ensure they appear in both places
-        await loadWarehouseEdits(date);
+        // Close the loading toast immediately and forcefully
+        if (loadingToastId) {
+            const loadingToast = document.getElementById(loadingToastId);
+            if (loadingToast) {
+                console.log('Force removing loading toast');
+                loadingToast.remove(); // Directly remove without animation
+            }
+        }
         
-        // Now update the daily plan edits section for each warehouse
-        updateDailyPlanEdits(date);
-        
-        // Show toast notification for successful loading
+        // Get the formatted date for the toast notification
         const formattedDate = new Date(date).toLocaleDateString('cs-CZ');
-        showToast(`Sklady načteny pro datum: ${formattedDate}`, 'success');
+        
+        try {
+            // Now load warehouse edits in a separate try block
+            const editsData = await loadWarehouseEdits(date);
+            
+            // Try to update the daily plan edits section
+            try {
+                await updateDailyPlanEdits(date);
+            } catch (editUpdateError) {
+                console.error('Error updating daily plan edits:', editUpdateError);
+            }
+            
+            // Calculate statistics for toast notification
+            let totalDepartures = 0;
+            let totalReturns = 0;
+            
+            // Count departures and returns across all warehouses
+            data.forEach(warehouse => {
+                if (warehouse.dailyPlan) {
+                    totalDepartures += warehouse.dailyPlan.departures ? warehouse.dailyPlan.departures.length : 0;
+                    totalReturns += warehouse.dailyPlan.returns ? warehouse.dailyPlan.returns.length : 0;
+                }
+            });
+            
+            // Get the count of warehouse edits
+            const totalEdits = editsData ? editsData.length : 0;
+            
+            // Show success notification with statistics
+            console.log('Showing success toast for inventory load');
+            showToast(`Sklady načteny: ${formattedDate}\nPočet výdejů: ${totalDepartures}\nPočet vráceného vybavení: ${totalReturns}\nEdity skladů: ${totalEdits}`, 'success');
+        } catch (secondaryError) {
+            console.error('Error in secondary inventory operations:', secondaryError);
+            
+            // Show basic success toast even if secondary operations fail
+            showToast(`Sklady načteny: ${formattedDate}`, 'success');
+        }
     } catch (error) {
+        console.error('Error loading inventory:', error);
+        
+        // Close any loading toast on error
+        if (loadingToastId) {
+            const loadingToast = document.getElementById(loadingToastId);
+            if (loadingToast) loadingToast.remove();
+        }
+        
         showError('Chyba při načítání stavu skladů: ' + error.message);
     }
 }
@@ -1803,3 +1975,16 @@ window.loadAllWarehouseEdits = loadAllWarehouseEdits;
 window.filterWarehouseEdits = filterWarehouseEdits;
 window.changeInventoryDate = changeInventoryDate;
 window.closeToast = closeToast;
+
+// Ensure toast container exists when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+    if (!document.querySelector('.toast-container')) {
+        console.error('Toast container missing! Creating one.');
+        const container = document.createElement('div');
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+    }
+    
+    // Also expose removeToast to window object
+    window.removeToast = removeToast;
+});

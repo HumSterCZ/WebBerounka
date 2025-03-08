@@ -227,11 +227,12 @@ tr:hover {
     border-radius: 4px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     display: flex;
-    align-items: center;
+    align-items: flex-start; /* Změna z center na flex-start pro lepší zarovnání víceřádkových zpráv */
     gap: 10px;
     animation: slideIn 0.3s ease-out;
     transition: all 0.3s ease;
     max-width: 350px;
+    white-space: pre-line; /* Podpora zalomení řádků v textu */
 }
 
 .toast.success {
@@ -1476,6 +1477,23 @@ td.quantity-critical {
     flex-wrap: nowrap;
     justify-content: flex-start;
     min-width: max-content;
+}
+
+/* Změna layoutu tlačítek v tabulce na 2x2 grid */
+.action-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 4px;
+    min-width: max-content;
+    max-width: 130px; /* Omezí maximální šířku */
+}
+
+/* Upravená velikost tlačítek pro 2x2 grid */
+.action-buttons .btn-action {
+    padding: 0.35rem 0.4rem;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    width: 100%;
 }
 
 .btn-action:hover {

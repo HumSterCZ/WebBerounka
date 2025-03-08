@@ -62,11 +62,14 @@ CREATE TABLE orders (
     INDEX idx_status (status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- Vytvoření tabulky pro sklady
+-- Nejprve smažeme a znovu vytvoříme tabulku skladů
+DROP TABLE IF EXISTS inventory_items;
+DROP TABLE IF EXISTS warehouses;
+
 CREATE TABLE warehouses (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    location VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-    name VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+    location VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL,
     UNIQUE KEY unique_location (location)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -74,8 +77,9 @@ CREATE TABLE warehouses (
 CREATE TABLE inventory_items (
     id INT AUTO_INCREMENT PRIMARY KEY,
     warehouse_id INT NOT NULL,
-    item_type ENUM('kanoe', 'kanoe_rodinna', 'velky_raft', 'padlo', 'padlo_detske', 'vesta', 'vesta_detska', 'barel') NOT NULL,
-    total_quantity INT NOT NULL DEFAULT 0,
+    item_type ENUM('kanoe', 'kanoe_rodinna', 'velky_raft', 'padlo', 
+                   'padlo_detske', 'vesta', 'vesta_detska', 'barel') NOT NULL,
+    base_quantity INT NOT NULL DEFAULT 0,
     FOREIGN KEY (warehouse_id) REFERENCES warehouses(id),
     UNIQUE KEY unique_item_warehouse (warehouse_id, item_type)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -108,15 +112,12 @@ INSERT INTO warehouses (location, name) VALUES
 ('Višňová', 'Sklad Višňová'),
 ('Roztoky - U Jezzu', 'Sklad Roztoky');
 
--- Vložení výchozího inventáře
-INSERT INTO inventory_items (warehouse_id, item_type, total_quantity)
+-- Vložíme výchozí hodnoty pro všechny sklady a všechny typy položek
+INSERT INTO inventory_items (warehouse_id, item_type, base_quantity)
 SELECT 
     w.id,
     t.item_type,
-    CASE 
-        WHEN t.item_type IN ('padlo', 'vesta') THEN FLOOR(30 + RAND() * 20)
-        ELSE FLOOR(10 + RAND() * 20)
-    END as total_quantity
+    FLOOR(10 + RAND() * 20)
 FROM warehouses w
 CROSS JOIN (
     SELECT 'kanoe' as item_type UNION ALL
@@ -129,7 +130,41 @@ CROSS JOIN (
     SELECT 'barel'
 ) t;
 
--- Vytvoření uživatele a práva
-CREATE USER IF NOT EXISTS 'berounka'@'%' IDENTIFIED BY 'berounka123';
-GRANT ALL PRIVILEGES ON berounka.* TO 'berounka'@'%';
-FLUSH PRIVILEGES;
+-- Vytvoříme tabulku pro historii skladových pohybů
+CREATE TABLE IF NOT EXISTS inventory_history (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    warehouse_id INT NOT NULL,
+    item_type VARCHAR(50) NOT NULL,
+    quantity INT NOT NULL,
+    date DATE NOT NULL,
+    movement_type ENUM('IN', 'OUT') NOT NULL,
+    order_id INT,
+    FOREIGN KEY (warehouse_id) REFERENCES warehouses(id),
+    FOREIGN KEY (order_id) REFERENCES orders(id),
+    INDEX idx_date (date),
+    INDEX idx_warehouse_date (warehouse_id, date)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- Vložíme testovací data
+INSERT INTO orders (name, email, phone, kanoe, padlo, vesta, arrival_date, arrival_time, 
+                   pickup_location, departure_date, departure_time, return_location, status)
+SELECT 
+    CONCAT('Test User ', n) as name,
+    CONCAT('test', n, '@example.com') as email,
+    CONCAT('123456', n) as phone,
+    FLOOR(1 + RAND() * 3) as kanoe,
+    FLOOR(2 + RAND() * 6) as padlo,
+    FLOOR(2 + RAND() * 6) as vesta,
+    DATE_ADD('2024-06-01', INTERVAL n DAY) as arrival_date,
+    TIME_FORMAT(TIME('08:00:00') + INTERVAL FLOOR(RAND() * 8) HOUR, '%H:%i:00') as arrival_time,
+    (SELECT location FROM warehouses ORDER BY RAND() LIMIT 1) as pickup_location,
+    DATE_ADD('2024-06-01', INTERVAL n+FLOOR(1+RAND()*3) DAY) as departure_date,
+    TIME_FORMAT(TIME('14:00:00') + INTERVAL FLOOR(RAND() * 6) HOUR, '%H:%i:00') as departure_time,
+    (SELECT location FROM warehouses ORDER BY RAND() LIMIT 1) as return_location,
+    'Potvrzená' as status
+FROM (
+    SELECT a.N + b.N * 10 as n 
+    FROM (SELECT 0 as N UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4) a,
+         (SELECT 0 as N UNION SELECT 1) b
+    WHERE a.N + b.N * 10 < 20
+) numbers;

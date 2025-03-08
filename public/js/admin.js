@@ -737,33 +737,6 @@ function renderInventoryTableWithState(items) {
     }).join('');
 }
 
-// Nová funkce pro zobrazení editů skladu pro daný den
-function renderWarehouseEditsForDay(edits) {
-    if (!edits || edits.length === 0) {
-        return '<div class="no-data">Žádné edity pro tento den</div>';
-    }
-    
-    return edits.map(edit => {
-        const difference = edit.new_quantity - edit.previous_quantity;
-        const differenceClass = difference > 0 ? 'quantity-high' : 'quantity-low';
-        
-        return `
-            <div class="plan-item edit">
-                <div class="edit-details">
-                    <div class="edit-title">
-                        ${formatMaterialType(edit.material_type)} - změna z ${edit.previous_quantity} na ${edit.new_quantity}
-                    </div>
-                    <div class="edit-info">
-                        Rozdíl: <span class="${differenceClass}">
-                        ${difference > 0 ? '+' : ''}${difference}
-                        </span> | ${formatTime(new Date(edit.created_at).toTimeString().split(' ')[0])}
-                    </div>
-                </div>
-            </div>
-        `;
-    }).join('');
-}
-
 // Improved renderWarehouseEditsForDay function to clearly show edit details
 function renderWarehouseEditsForDay(edits) {
     if (!edits || edits.length === 0) {
@@ -1038,11 +1011,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('inventoryDate').value = today;
     } catch (error) {
-        console.error('Auth check failed:', error);
+        console.error('Init failed:', error);
         if (error.message === 'Neplatné přihlášení') {
             logout();
         } else {
-            showError('Chyba při načítání dat');
+            UI.showError('Chyba při načítání dat');
         }
     }
 });
@@ -1767,3 +1740,66 @@ function changeInventoryDate(days) {
     // Load the inventory for the new date
     loadInventory();
 }
+
+// Fix the initialization to handle the reference errors
+document.addEventListener('DOMContentLoaded', async () => {
+    if (!checkAuth()) return;
+
+    try {
+        displayUsername();
+        const response = await fetch('/api/orders/list', {
+            headers: getAuthHeaders()
+        });
+
+        if (!response.ok) {
+            throw new Error('Neplatné přihlášení');
+        }
+
+        await loadOrders();
+        await loadUsers();
+        await loadInventory();
+        
+        if (document.getElementById('warehouse-edits').classList.contains('active')) {
+            await loadAllWarehouseEdits(true);
+        }
+        
+        setupModalHandlers();
+        
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('inventoryDate').value = today;
+    } catch (error) {
+        console.error('Init failed:', error);
+        if (error.message === 'Neplatné přihlášení') {
+            logout();
+        } else {
+            showError('Chyba při načítání dat');
+        }
+    }
+});
+
+// If using modules, explicitly expose functions to global scope
+// Add this at the end of the file to make functions globally accessible
+window.showTab = showTab;
+window.logout = logout;
+window.filterOrders = filterOrders;
+window.loadOrders = loadOrders;
+window.sortOrders = sortOrders;
+window.viewOrder = viewOrder;
+window.editOrder = editOrder;
+window.updateOrderStatus = updateOrderStatus;
+window.deleteOrder = deleteOrder;
+window.loadUsers = loadUsers;
+window.confirmDelete = confirmDelete;
+window.closeDeleteDialog = closeDeleteDialog;
+window.submitStatus = submitStatus;
+window.closeStatusDialog = closeStatusDialog;
+window.loadInventory = loadInventory;
+window.editWarehouse = editWarehouse;
+window.saveWarehouseChanges = saveWarehouseChanges;
+window.closeInventoryModal = closeInventoryModal;
+window.saveOrderChanges = saveOrderChanges;
+window.closeEditDialog = closeEditDialog;
+window.loadAllWarehouseEdits = loadAllWarehouseEdits;
+window.filterWarehouseEdits = filterWarehouseEdits;
+window.changeInventoryDate = changeInventoryDate;
+window.closeToast = closeToast;

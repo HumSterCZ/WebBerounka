@@ -65,12 +65,99 @@ async function initDatabase() {
         transport_people ENUM('Žádná', 'Microbus', 'Autobus', 'Nezvoleno') DEFAULT 'Nezvoleno',
         order_note TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        status ENUM('new', 'confirmed', 'completed', 'cancelled') DEFAULT 'new',
+        status ENUM('Nová', 'Potvrzená', 'Dokončená', 'Zrušená') DEFAULT 'Nová',
         INDEX idx_email (email),
         INDEX idx_dates (arrival_date, departure_date),
         INDEX idx_status (status)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
     `);
+
+    // Vytvoření warehouses tabulky (NOVĚ PŘIDÁNO)
+    await promisePool.query(`
+      CREATE TABLE IF NOT EXISTS warehouses (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        location VARCHAR(255) NOT NULL,
+        name VARCHAR(255) NOT NULL,
+        UNIQUE KEY unique_location (location)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    `);
+
+    // Vytvoření inventory_items tabulky (NOVĚ PŘIDÁNO)
+    await promisePool.query(`
+      CREATE TABLE IF NOT EXISTS inventory_items (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        warehouse_id INT NOT NULL,
+        item_type ENUM('kanoe', 'kanoe_rodinna', 'velky_raft', 'padlo', 
+                     'padlo_detske', 'vesta', 'vesta_detska', 'barel') NOT NULL,
+        base_quantity INT NOT NULL DEFAULT 0,
+        FOREIGN KEY (warehouse_id) REFERENCES warehouses(id) ON DELETE CASCADE,
+        UNIQUE KEY unique_item_warehouse (warehouse_id, item_type)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    `);
+
+    // Vytvoření warehouse_edits tabulky (NOVĚ PŘIDÁNO)
+    await promisePool.query(`
+      CREATE TABLE IF NOT EXISTS warehouse_edits (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        warehouse_id INT NOT NULL,
+        material_type VARCHAR(50) NOT NULL,
+        edit_date DATE NOT NULL,
+        previous_quantity INT NOT NULL,
+        new_quantity INT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        user_id INT DEFAULT NULL,
+        FOREIGN KEY (warehouse_id) REFERENCES warehouses(id) ON DELETE CASCADE,
+        INDEX idx_warehouse_date (warehouse_id, edit_date)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    `);
+
+    // Vytvoření inventory_history tabulky (NOVĚ PŘIDÁNO)
+    await promisePool.query(`
+      CREATE TABLE IF NOT EXISTS inventory_history (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        warehouse_id INT NOT NULL,
+        item_type VARCHAR(50) NOT NULL,
+        quantity INT NOT NULL,
+        date DATE NOT NULL,
+        movement_type ENUM('IN', 'OUT') NOT NULL,
+        order_id INT,
+        FOREIGN KEY (warehouse_id) REFERENCES warehouses(id) ON DELETE CASCADE,
+        FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE SET NULL,
+        INDEX idx_date (date),
+        INDEX idx_warehouse_date (warehouse_id, date)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    `);
+
+    // Vložení výchozích dat do skladů, pokud jsou prázdné
+    const [warehouseCount] = await promisePool.query('SELECT COUNT(*) as count FROM warehouses');
+    if (warehouseCount[0].count === 0) {
+      console.log('Vkládání výchozích dat do skladů...');
+      await promisePool.query(`
+        INSERT INTO warehouses (location, name) VALUES
+        ('Chrást - dolany', 'Sklad Chrást'),
+        ('Nadryby - Pravý břeh', 'Sklad Nadryby'),
+        ('Liblín - Tábořiště kobylka', 'Sklad Liblín'),
+        ('Třímany - U Mloka', 'Sklad Třímany'),
+        ('Zvíkovec - U Varských', 'Sklad Zvíkovec'),
+        ('Skryje - U Fišera', 'Sklad Skryje'),
+        ('Višňová', 'Sklad Višňová'),
+        ('Roztoky - U Jezzu', 'Sklad Roztoky')
+      `);
+
+      // Vložení výchozích hodnot pro inventory_items
+      const [warehouses] = await promisePool.query('SELECT id FROM warehouses');
+      const itemTypes = ['kanoe', 'kanoe_rodinna', 'velky_raft', 'padlo', 'padlo_detske', 'vesta', 'vesta_detska', 'barel'];
+      
+      for (const warehouse of warehouses) {
+        for (const itemType of itemTypes) {
+          const baseQuantity = Math.floor(10 + Math.random() * 20); // Náhodná hodnota mezi 10 a 30
+          await promisePool.query(
+            'INSERT INTO inventory_items (warehouse_id, item_type, base_quantity) VALUES (?, ?, ?)',
+            [warehouse.id, itemType, baseQuantity]
+          );
+        }
+      }
+    }
 
     console.log('Databáze úspěšně inicializována');
   } catch (err) {
@@ -237,72 +324,285 @@ app.post('/api/orders/create', async (req, res) => {
 // Přesuneme endpoint pro inventář před připojení admin rout
 app.get('/api/inventory/:date', async (req, res) => {
     try {
-        const date = req.params.date;
+        const selectedDate = req.params.date;
         const [warehouses] = await promisePool.query('SELECT * FROM warehouses');
         
+        // Inicializujeme prázdný objekt pro každý typ položky
+        const createEmptyStock = () => {
+            const stock = {};
+            ITEM_TYPES.forEach(type => stock[type] = 0);
+            return stock;
+        };
+
         const inventoryPromises = warehouses.map(async (warehouse) => {
-            // Načteme základní stav skladu
-            const [items] = await promisePool.query(
-                'SELECT item_type, total_quantity FROM inventory_items WHERE warehouse_id = ?',
-                [warehouse.id]
-            );
-            
-            // Načteme všechny výdeje a vrácení pro tento den
-            const [departures] = await promisePool.query(`
-                SELECT * FROM orders 
-                WHERE arrival_date = ?
-                AND pickup_location = ?
-                ORDER BY arrival_time ASC
-            `, [date, warehouse.location]);
+            try {
+                // 1. Vytvoříme základní stav s nulovými hodnotami
+                const baseStock = createEmptyStock();
 
-            const [returns] = await promisePool.query(`
-                SELECT * FROM orders 
-                WHERE departure_date = ?
-                AND return_location = ?
-                ORDER BY departure_time ASC
-            `, [date, warehouse.location]);
-            
-            // Zpracujeme aktuální stav skladu
-            const currentStock = {
-                kanoe: 0,
-                kanoe_rodinna: 0,
-                velky_raft: 0,
-                padlo: 0,
-                padlo_detske: 0,
-                vesta: 0,
-                vesta_detska: 0,
-                barel: 0
-            };
+                // 2. Načteme aktuální stav ze skladu
+                const [baseItems] = await promisePool.query(
+                    'SELECT item_type, base_quantity FROM inventory_items WHERE warehouse_id = ?',
+                    [warehouse.id]
+                );
 
-            // Přidáme základní množství ze skladu
-            items.forEach(item => {
-                if (item.item_type in currentStock) {
-                    currentStock[item.item_type] = item.total_quantity;
+                // 3. Aktualizujeme základní stav načtenými hodnotami
+                if (baseItems && baseItems.length > 0) {
+                    baseItems.forEach(item => {
+                        if (item && item.item_type && ITEM_TYPES.includes(item.item_type)) {
+                            baseStock[item.item_type] = parseInt(item.base_quantity) || 0;
+                        }
+                    });
                 }
-            });
 
-            return {
-                id: warehouse.id,
-                name: warehouse.name,
-                location: warehouse.location,
-                items: currentStock,
-                dailyPlan: {
-                    departures,
-                    returns
-                }
-            };
+                // 4. Vytvoříme kopii pro aktuální stav
+                const currentStock = { ...baseStock };
+
+                // 5. Načteme všechny pohyby před vybraným datem
+                const [previousMovements] = await promisePool.query(`
+                    SELECT * FROM orders 
+                    WHERE (
+                        (pickup_location = ? AND arrival_date < ?)
+                        OR 
+                        (return_location = ? AND departure_date < ?)
+                    )
+                    AND status != 'Zrušená'
+                    ORDER BY arrival_date, departure_date
+                `, [warehouse.location, selectedDate,
+                    warehouse.location, selectedDate]);
+
+                // 6. Aplikujeme předchozí pohyby
+                previousMovements.forEach(movement => {
+                    ITEM_TYPES.forEach(type => {
+                        const quantity = parseInt(movement[type] || 0);
+                        if (quantity > 0) {
+                            if (movement.pickup_location === warehouse.location) {
+                                currentStock[type] -= quantity;
+                            } else if (movement.return_location === warehouse.location) {
+                                currentStock[type] += quantity;
+                            }
+                        }
+                    });
+                });
+
+                // 7. Načteme dnešní pohyby
+                const [todayMovements] = await promisePool.query(`
+                    SELECT * FROM orders 
+                    WHERE (
+                        (pickup_location = ? AND arrival_date = ?)
+                        OR 
+                        (return_location = ? AND departure_date = ?)
+                    )
+                    AND status != 'Zrušená'
+                    ORDER BY arrival_time, departure_time
+                `, [warehouse.location, selectedDate,
+                    warehouse.location, selectedDate]);
+
+                // 8. Připravíme denní plán
+                const departures = todayMovements
+                    .filter(m => m.pickup_location === warehouse.location)
+                    .map(m => ({
+                        ...m,
+                        items: ITEM_TYPES.reduce((acc, type) => {
+                            acc[type] = parseInt(m[type] || 0);
+                            return acc;
+                        }, {})
+                    }));
+
+                const returns = todayMovements
+                    .filter(m => m.return_location === warehouse.location)
+                    .map(m => ({
+                        ...m,
+                        items: ITEM_TYPES.reduce((acc, type) => {
+                            acc[type] = parseInt(m[type] || 0);
+                            return acc;
+                        }, {})
+                    }));
+
+                return {
+                    id: warehouse.id,
+                    name: warehouse.name || 'Neznámý sklad',
+                    location: warehouse.location,
+                    baseStock: baseStock || {},
+                    currentStock: currentStock || {},
+                    dailyPlan: {
+                        departures: departures || [],
+                        returns: returns || []
+                    }
+                };
+            } catch (error) {
+                console.error(`Error processing warehouse ${warehouse.id}:`, error);
+                // Vrátíme prázdný sklad v případě chyby
+                return {
+                    id: warehouse.id,
+                    name: warehouse.name || 'Chyba skladu',
+                    location: warehouse.location,
+                    baseStock: createEmptyStock(),
+                    currentStock: createEmptyStock(),
+                    dailyPlan: {
+                        departures: [],
+                        returns: []
+                    },
+                    error: error.message
+                };
+            }
         });
-        
+
         const inventoryData = await Promise.all(inventoryPromises);
         res.json(inventoryData);
+
     } catch (error) {
-        console.error('Chyba při načítání stavu skladů:', error);
+        console.error('Inventory error:', error);
         res.status(500).json({
             success: false,
             message: 'Chyba při načítání dat skladů: ' + error.message
         });
     }
 });
+
+// Pomocná funkce pro získání stavu skladu k určitému datu
+async function getWarehouseStockForDate(warehouseId, date) {
+    try {
+        // Nejprve získáme poslední známý stav před daným datem
+        const [lastKnownState] = await promisePool.query(`
+            SELECT 
+                item_type,
+                SUM(
+                    CASE movement_type 
+                        WHEN 'IN' THEN quantity 
+                        WHEN 'OUT' THEN -quantity 
+                    END
+                ) as total_quantity
+            FROM inventory_history
+            WHERE warehouse_id = ? AND date < ?
+            GROUP BY item_type
+        `, [warehouseId, date]);
+
+        // Pokud nemáme historii, použijeme základní stav
+        if (lastKnownState.length === 0) {
+            const [baseItems] = await promisePool.query(
+                'SELECT item_type, base_quantity as total_quantity FROM inventory_items WHERE warehouse_id = ?',
+                [warehouseId]
+            );
+            return baseItems;
+        }
+
+        return lastKnownState;
+    } catch (error) {
+        console.error('Error getting warehouse stock:', error);
+        throw error;
+    }
+}
+
+// Funkce pro zaznamenání denních pohybů
+async function recordDailyMovements(warehouseId, date, movements) {
+    try {
+        const records = movements.flatMap(movement => {
+            const items = [];
+            ['kanoe', 'kanoe_rodinna', 'velky_raft', 'padlo', 
+             'padlo_detske', 'vesta', 'vesta_detska', 'barel'].forEach(item => {
+                if (movement[item] > 0) {
+                    items.push({
+                        warehouse_id: warehouseId,
+                        item_type: item,
+                        quantity: movement[item],
+                        date: date,
+                        movement_type: movement.operation_type,
+                        order_id: movement.id
+                    });
+                }
+            });
+            return items;
+        });
+
+        if (records.length > 0) {
+            await promisePool.query(
+                'INSERT INTO inventory_history (warehouse_id, item_type, quantity, date, movement_type, order_id) VALUES ?',
+                [records.map(r => [r.warehouse_id, r.item_type, r.quantity, r.date, r.movement_type, r.order_id])]
+            );
+        }
+    } catch (error) {
+        console.error('Error recording daily movements:', error);
+        throw error;
+    }
+}
+
+// Nová funkce pro aktualizaci základního stavu
+async function updateBaseStock(warehouseId, currentDate) {
+    try {
+        // 1. Nejdřív získáme původní hodnoty
+        const [originalItems] = await promisePool.query(
+            'SELECT item_type, total_quantity FROM inventory_items WHERE warehouse_id = ?',
+            [warehouseId]
+        );
+        
+        // 2. Načteme všechny předchozí pohyby
+        const [transfers] = await promisePool.query(`
+            SELECT 
+                o.*,
+                CASE 
+                    WHEN o.pickup_location = w.location THEN -1
+                    WHEN o.return_location = w.location THEN 1
+                    ELSE 0
+                END as movement_type
+            FROM orders o
+            CROSS JOIN (
+                SELECT location 
+                FROM warehouses 
+                WHERE id = ?
+            ) w
+            WHERE 
+                ((o.pickup_location = w.location AND o.arrival_date < ?)
+                OR 
+                (o.return_location = w.location AND o.departure_date < ?))
+                AND o.status != 'Zrušená'
+            ORDER BY 
+                CASE 
+                    WHEN o.pickup_location = w.location THEN o.arrival_date
+                    ELSE o.departure_date
+                END ASC,
+                CASE 
+                    WHEN o.pickup_location = w.location THEN o.arrival_time
+                    ELSE o.departure_time
+                END ASC
+        `, [warehouseId, currentDate, currentDate]);
+
+        // 3. Vytvoříme průběžný stav
+        const runningStock = {};
+        originalItems.forEach(item => {
+            runningStock[item.item_type] = item.total_quantity;
+        });
+
+        // 4. Aplikujeme všechny historické změny
+        transfers.forEach(transfer => {
+            ['kanoe', 'kanoe_rodinna', 'velky_raft', 'padlo', 
+             'padlo_detske', 'vesta', 'vesta_detska', 'barel'].forEach(item => {
+                if (transfer[item]) {
+                    runningStock[item] = (runningStock[item] || 0) + 
+                        (transfer.movement_type * Number(transfer[item]));
+                }
+            });
+        });
+
+        // 5. Aktualizujeme základní stav v databázi pro každou položku
+        const updatePromises = Object.entries(runningStock).map(([itemType, quantity]) => 
+            promisePool.query(
+                `INSERT INTO inventory_items (warehouse_id, item_type, total_quantity) 
+                 VALUES (?, ?, ?) 
+                 ON DUPLICATE KEY UPDATE total_quantity = ?`,
+                [warehouseId, itemType, quantity, quantity]
+            )
+        );
+
+        await Promise.all(updatePromises);
+        
+        console.log(`Updated base stock for warehouse ${warehouseId}:`, runningStock);
+        
+        return runningStock;
+    } catch (error) {
+        console.error('Error updating base stock:', error);
+        throw error;
+    }
+}
 
 // Zabezpečení POUZE pro admin API endpointy (přesunout před ostatní routy)
 const adminRoutes = express.Router();
@@ -555,6 +855,8 @@ app.put('/api/inventory/update', verifyToken, async (req, res) => {
     try {
         const { warehouseId, itemType, quantity, previousQuantity, editDate } = req.body;
         
+        console.log('Updating inventory:', { warehouseId, itemType, quantity });
+
         if (quantity < 0) {
             throw new Error('Množství nemůže být záporné');
         }
@@ -577,7 +879,7 @@ app.put('/api/inventory/update', verifyToken, async (req, res) => {
             // We only need this for new items that have never been in inventory before
             if (checkItem.length === 0) {
                 await connection.query(
-                    'INSERT INTO inventory_items (warehouse_id, item_type, total_quantity) VALUES (?, ?, ?)', 
+                    'INSERT INTO inventory_items (warehouse_id, item_type, base_quantity) VALUES (?, ?, ?)', 
                     [warehouseId, itemType, 0]  // Start with 0 as the base quantity
                 );
             }
@@ -608,7 +910,7 @@ app.put('/api/inventory/update', verifyToken, async (req, res) => {
             connection.release();
         }
     } catch (error) {
-        console.error('Chyba při aktualizaci množství:', error);
+        console.error('Error updating inventory:', error);
         res.status(400).json({
             success: false,
             message: 'Chyba při aktualizaci: ' + error.message
@@ -694,15 +996,14 @@ async function calculateWarehouseState(warehouseId, date) {
         
         // 1.1 Get the initial inventory amount (from inventory_items table)
         const [initialItems] = await promisePool.query(`
-            SELECT total_quantity FROM inventory_items
+            SELECT base_quantity FROM inventory_items
             WHERE warehouse_id = ? AND item_type = ?
         `, [warehouseId, itemType]);
         
         // Start with the initial quantity defined in inventory_items
-        let baseQuantity = initialItems.length > 0 ? initialItems[0].total_quantity : 0;
+        let baseQuantity = initialItems.length > 0 ? initialItems[0].base_quantity : 0;
         
         // 1.2 Get all warehouse edits STRICTLY BEFORE the target date
-        // These are manual adjustments to inventory quantities that happened before the date we're looking at
         const [previousEdits] = await promisePool.query(`
             SELECT * FROM warehouse_edits
             WHERE warehouse_id = ? 
@@ -712,7 +1013,6 @@ async function calculateWarehouseState(warehouseId, date) {
         `, [warehouseId, itemType, date]);
         
         // 1.3 Apply edits chronologically by date
-        // Track the latest edit value for each date
         const lastEditPerDay = {};
         previousEdits.forEach(edit => {
             lastEditPerDay[edit.edit_date] = edit.new_quantity;
@@ -816,7 +1116,6 @@ async function calculateWarehouseState(warehouseId, date) {
             const lastEdit = editsOnDate[editsOnDate.length - 1];
             
             // IMPORTANT: We're changing the base quantity to the last edit's new_quantity
-            // This ensures that the base quantity reflects the most recent edit on this date
             baseQuantity = lastEdit.new_quantity;
             
             // Add all edits to the changes list with isEdit flag
@@ -990,7 +1289,7 @@ app.post('/submit', async (req, res) => {
 
   try {
     await promisePool.query(
-      'INSERT INTO users (name, email) VALUES (?, ?)',
+      'INSERT INTO users (name, email) VALUES (?, ?, ?)',
       [name, email]
     );
     res.send('Data byla úspěšně uložena');
@@ -1014,3 +1313,753 @@ app.get('/users', async (req, res) => {
 app.get('/admin.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
+
+// Přidáme konstanty pro typy položek
+const ITEM_TYPES = [
+    'kanoe', 'kanoe_rodinna', 'velky_raft', 'padlo', 
+    'padlo_detske', 'vesta', 'vesta_detska', 'barel'
+];
+
+// Pomocná funkce pro vytvoření prázdného stavu skladu
+function createEmptyStock() {
+    return ITEM_TYPES.reduce((acc, type) => {
+        acc[type] = 0;
+        return acc;
+    }, {});
+}
+
+// Upravený endpoint pro inventář
+app.get('/api/inventory/:date', async (req, res) => {
+    try {
+        if (!req.params.date) {
+            throw new Error('Datum je povinné');
+        }
+
+        const selectedDate = req.params.date;
+        console.log('Loading inventory for date:', selectedDate);
+
+        const [warehouses] = await promisePool.query('SELECT * FROM warehouses');
+        if (!warehouses || warehouses.length === 0) {
+            throw new Error('Nebyly nalezeny žádné sklady');
+        }
+
+        const inventoryData = await Promise.all(warehouses.map(async (warehouse) => {
+            try {
+                const baseStock = createEmptyStock();
+                const currentStock = createEmptyStock();
+
+                const [baseItems] = await promisePool.query(
+                    `SELECT item_type, base_quantity FROM inventory_items WHERE warehouse_id = ?`,
+                    [warehouse.id]
+                );
+                console.log(`Base items for warehouse ${warehouse.id}:`, baseItems);
+                baseItems.forEach(item => {
+                    if (item && item.item_type) {
+                        const quantity = parseQuantity(item.base_quantity);
+                        baseStock[item.item_type] = quantity;
+                        currentStock[item.item_type] = quantity;
+                    }
+                });
+
+                const [movements] = await promisePool.query(
+                    `SELECT * FROM orders 
+                     WHERE ((pickup_location = ? AND arrival_date <= ?) OR 
+                     (return_location = ? AND departure_date <= ?))
+                     AND status != 'Zrušená'`,
+                    [warehouse.location, selectedDate, warehouse.location, selectedDate]
+                );
+                console.log(`Movements for warehouse ${warehouse.id}:`, movements.length);
+
+                const previousMovements = movements.filter(m =>
+                    (m.pickup_location === warehouse.location && m.arrival_date < selectedDate) ||
+                    (m.return_location === warehouse.location && m.departure_date < selectedDate)
+                );
+                const todayMovements = movements.filter(m =>
+                    (m.pickup_location === warehouse.location && m.arrival_date === selectedDate) ||
+                    (m.return_location === warehouse.location && m.departure_date === selectedDate)
+                );
+
+                previousMovements.forEach(movement => {
+                    ITEM_TYPES.forEach(type => {
+                        // Použijeme operátor ?? k zajištění číselné hodnoty
+                        const quantity = parseQuantity(movement[type] ?? 0);
+                        if (quantity > 0) {
+                            if (movement.pickup_location === warehouse.location) {
+                                currentStock[type] -= quantity;
+                            } else {
+                                currentStock[type] += quantity;
+                            }
+                        }
+                    });
+                });
+
+                const dailyPlan = {
+                    departures: todayMovements
+                        .filter(m => m.pickup_location === warehouse.location)
+                        .map(m => ({
+                            id: m.id,
+                            name: m.name,
+                            time: m.arrival_time,
+                            items: ITEM_TYPES.reduce((acc, type) => {
+                                acc[type] = parseQuantity(m[type] ?? 0);
+                                return acc;
+                            }, {})
+                        })),
+                    returns: todayMovements
+                        .filter(m => m.return_location === warehouse.location)
+                        .map(m => ({
+                            id: m.id,
+                            name: m.name,
+                            time: m.departure_time,
+                            items: ITEM_TYPES.reduce((acc, type) => {
+                                acc[type] = parseQuantity(m[type] ?? 0);
+                                return acc;
+                            }, {})
+                        }))
+                };
+
+                return {
+                    id: warehouse.id,
+                    name: warehouse.name,
+                    location: warehouse.location,
+                    items: baseStock || {},
+                    baseStock: baseStock || {},
+                    currentStock: currentStock || {},
+                    dailyPlan
+                };
+
+            } catch (error) {
+                console.error(`Error processing warehouse ${warehouse.id}:`, error);
+                return {
+                    id: warehouse.id,
+                    name: warehouse.name || 'Chyba skladu',
+                    location: warehouse.location,
+                    baseStock: createEmptyStock(),
+                    currentStock: createEmptyStock(),
+                    dailyPlan: { departures: [], returns: [] },
+                    error: error.message
+                };
+            }
+        }));
+
+        console.log('Sending inventory data:', inventoryData);
+        res.json(inventoryData);
+
+    } catch (error) {
+        console.error('Inventory error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Chyba při načítání dat skladů: ' + error.message
+        });
+    }
+});
+
+// Fix the calculateWarehouseState function to use the correct column name
+async function calculateWarehouseState(warehouseId, date) {
+    // For each material type, we need to calculate:
+    // 1. The base state (as of the beginning of the selected date)
+    // 2. All changes that happened on that exact date
+    // 3. The current state at the end of the selected date
+    const itemTypes = [
+        'kanoe', 'kanoe_rodinna', 'velky_raft', 
+        'padlo', 'padlo_detske', 'vesta', 
+        'vesta_detska', 'barel'
+    ];
+    
+    const result = {
+        warehouseId: warehouseId
+    };
+    
+    for (const itemType of itemTypes) {
+        // Step 1: Calculate the base quantity at the START of the selected date
+        
+        // 1.1 Get the initial inventory amount (from inventory_items table)
+        // Fix: Change total_quantity to base_quantity to match the database schema
+        const [initialItems] = await promisePool.query(`
+            SELECT base_quantity FROM inventory_items
+            WHERE warehouse_id = ? AND item_type = ?
+        `, [warehouseId, itemType]);
+        
+        // Start with the initial quantity defined in inventory_items
+        let baseQuantity = initialItems.length > 0 ? initialItems[0].base_quantity : 0;
+        
+        // 1.2 Get all warehouse edits STRICTLY BEFORE the target date
+        const [previousEdits] = await promisePool.query(`
+            SELECT * FROM warehouse_edits
+            WHERE warehouse_id = ? 
+            AND material_type = ? 
+            AND edit_date < ?
+            ORDER BY edit_date ASC, created_at ASC
+        `, [warehouseId, itemType, date]);
+        
+        // 1.3 Apply edits chronologically by date
+        const lastEditPerDay = {};
+        previousEdits.forEach(edit => {
+            lastEditPerDay[edit.edit_date] = edit.new_quantity;
+        });
+        
+        // Sort the dates to ensure we apply edits chronologically
+        const sortedDates = Object.keys(lastEditPerDay).sort();
+        for (const editDate of sortedDates) {
+            baseQuantity = lastEditPerDay[editDate];
+        }
+        
+        // 1.4 Get all orders that affected inventory BEFORE the target date
+        const [outgoingBeforeDate] = await promisePool.query(`
+            SELECT id, ${itemType} as quantity 
+            FROM orders
+            WHERE pickup_location = (SELECT location FROM warehouses WHERE id = ?)
+            AND arrival_date < ?
+            AND ${itemType} > 0
+            AND status != 'Zrušená'
+        `, [warehouseId, date]);
+        
+        const [incomingBeforeDate] = await promisePool.query(`
+            SELECT id, ${itemType} as quantity 
+            FROM orders
+            WHERE return_location = (SELECT location FROM warehouses WHERE id = ?)
+            AND departure_date < ?
+            AND ${itemType} > 0
+            AND status != 'Zrušená'
+        `, [warehouseId, date]);
+        
+        // 1.5 Apply all past order changes to the base quantity
+        outgoingBeforeDate.forEach(order => {
+            baseQuantity -= order.quantity || 0;
+        });
+        
+        incomingBeforeDate.forEach(order => {
+            baseQuantity += order.quantity || 0;
+        });
+        
+        // Step 2: Calculate all changes ON the selected date
+        const changes = [];
+        let changeTotal = 0;
+        
+        // 2.1 Get all orders that borrowed equipment ON the selected date
+        const [outgoingOnDate] = await promisePool.query(`
+            SELECT id, ${itemType} as quantity, arrival_time
+            FROM orders
+            WHERE pickup_location = (SELECT location FROM warehouses WHERE id = ?)
+            AND arrival_date = ?
+            AND ${itemType} > 0
+            AND status != 'Zrušená'
+            ORDER BY arrival_time ASC
+        `, [warehouseId, date]);
+        
+        // 2.2 Get all orders that returned equipment ON the selected date
+        const [incomingOnDate] = await promisePool.query(`
+            SELECT id, ${itemType} as quantity, departure_time
+            FROM orders
+            WHERE return_location = (SELECT location FROM warehouses WHERE id = ?)
+            AND departure_date = ?
+            AND ${itemType} > 0
+            AND status != 'Zrušená'
+            ORDER BY departure_time ASC
+        `, [warehouseId, date]);
+        
+        // 2.3 Get all edits ON the selected date
+        const [editsOnDate] = await promisePool.query(`
+            SELECT * FROM warehouse_edits
+            WHERE warehouse_id = ? 
+            AND material_type = ? 
+            AND edit_date = ?
+            ORDER BY created_at ASC
+        `, [warehouseId, itemType, date]);
+        
+        // 2.4 Apply outgoing changes (borrowing equipment)
+        outgoingOnDate.forEach(order => {
+            if (order.quantity > 0) {
+                changes.push({
+                    description: `Výdej #${order.id}`,
+                    quantity: -order.quantity,
+                    time: order.arrival_time,
+                    isEdit: false
+                });
+                changeTotal -= order.quantity;
+            }
+        });
+        
+        // 2.5 Apply incoming changes (returning equipment)
+        incomingOnDate.forEach(order => {
+            if (order.quantity > 0) {
+                changes.push({
+                    description: `Příjem #${order.id}`,
+                    quantity: order.quantity,
+                    time: order.departure_time,
+                    isEdit: false
+                });
+                changeTotal += order.quantity;
+            }
+        });
+        
+        // 2.6 Handle manual edits that occurred on the selected date
+        if (editsOnDate.length > 0) {
+            // Get the last edit of the day (this establishes the base quantity)
+            const lastEdit = editsOnDate[editsOnDate.length - 1];
+            
+            // IMPORTANT: We're changing the base quantity to the last edit's new_quantity
+            baseQuantity = lastEdit.new_quantity;
+            
+            // Add all edits to the changes list with isEdit flag
+            editsOnDate.forEach(edit => {
+                changes.push({
+                    description: `Edit skladu ID ${edit.id}`,
+                    quantity: edit.new_quantity - edit.previous_quantity,
+                    time: edit.created_at,
+                    isEdit: true,
+                    previousQuantity: edit.previous_quantity,
+                    newQuantity: edit.new_quantity
+                });
+            });
+        }
+        
+        // Step 3: Calculate the current quantity at the END of the selected date
+        // This is the base quantity (including edits on this date) plus order-related changes
+        const currentQuantity = baseQuantity + changeTotal;
+        
+        // Step 4: Save all calculated values for this material type
+        result[itemType] = {
+            baseQuantity,      // Quantity at the start of the day (after applying edits on that day)
+            changes,           // List of all changes that occurred on that day
+            changeTotal,       // Total change from orders on that day (excluding edits)
+            currentQuantity    // Final quantity at the end of the day
+        };
+    }
+    
+    return result;
+}
+
+// Fix the endpoint for getting all warehouse edits by adding error handling
+app.get('/api/warehouse/edits', verifyToken, async (req, res) => {
+    try {
+        const { from, to } = req.query;
+        let query = `
+            SELECT we.*, w.name as warehouse_name
+            FROM warehouse_edits we
+            JOIN warehouses w ON we.warehouse_id = w.id
+        `;
+        
+        const params = [];
+        const conditions = [];
+        
+        if (from) {
+            conditions.push('we.edit_date >= ?');
+            params.push(from);
+        }
+        
+        if (to) {
+            conditions.push('we.edit_date <= ?');
+            params.push(to);
+        }
+        
+        if (conditions.length > 0) {
+            query += ' WHERE ' + conditions.join(' AND ');
+        }
+        
+        query += ' ORDER BY we.created_at DESC';
+        
+        console.log('Executing query:', query, 'with params:', params); // Debug log
+        
+        const [edits] = await promisePool.query(query, params);
+        console.log(`Found ${edits.length} edits`); // Debug log
+        
+        res.json(edits);
+    } catch (error) {
+        console.error('Error loading warehouse edits:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Chyba při načítání dat editů skladů: ' + error.message
+        });
+    }
+});
+
+// Fix the endpoint for getting warehouse status for a specific date
+app.get('/api/warehouse/status/:date', verifyToken, async (req, res) => {
+    try {
+        const date = req.params.date;
+        console.log('Loading warehouse status for date:', date);
+        
+        // Load all warehouses
+        const [warehouses] = await promisePool.query('SELECT * FROM warehouses');
+        console.log(`Found ${warehouses.length} warehouses`); // Debug log
+        
+        if (!warehouses || warehouses.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Nebyly nalezeny žádné sklady'
+            });
+        }
+        
+        // Calculate state for each warehouse
+        const warehousesPromises = warehouses.map(async (warehouse) => {
+            try {
+                // Get warehouse state
+                const itemStates = await calculateWarehouseState(warehouse.id, date);
+                
+                // Get departures and returns for the day using direct location parameter
+                const [departures] = await promisePool.query(`
+                    SELECT * FROM orders 
+                    WHERE pickup_location = ?
+                    AND arrival_date = ?
+                    AND status != 'Zrušená'
+                    ORDER BY arrival_time ASC
+                `, [warehouse.location, date]);
+
+                const [returns] = await promisePool.query(`
+                    SELECT * FROM orders 
+                    WHERE return_location = ?
+                    AND departure_date = ?
+                    AND status != 'Zrušená'
+                    ORDER BY departure_time ASC
+                `, [warehouse.location, date]);
+                
+                // Get edits for this day
+                const [edits] = await promisePool.query(`
+                    SELECT * FROM warehouse_edits
+                    WHERE warehouse_id = ? AND edit_date = ?
+                    ORDER BY created_at ASC
+                `, [warehouse.id, date]);
+                
+                return {
+                    id: warehouse.id,
+                    name: warehouse.name,
+                    location: warehouse.location,
+                    items: itemStates,
+                    dailyPlan: {
+                        departures,
+                        returns,
+                        edits
+                    }
+                };
+            } catch (warehouseError) {
+                console.error(`Error processing warehouse ${warehouse.id}:`, warehouseError);
+                // Return a safe object on error
+                return {
+                    id: warehouse.id,
+                    name: warehouse.name,
+                    location: warehouse.location,
+                    items: {},
+                    dailyPlan: {
+                        departures: [],
+                        returns: [],
+                        edits: []
+                    },
+                    error: warehouseError.message
+                };
+            }
+        });
+        
+        const warehouseData = await Promise.all(warehousesPromises);
+        res.json(warehouseData);
+    } catch (error) {
+        console.error('Error loading warehouse status:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Chyba při načítání dat skladů: ' + error.message
+        });
+    }
+});
+
+// Add a utility function to safely parse quantity values
+function parseQuantity(value) {
+    const parsed = parseInt(value);
+    return isNaN(parsed) ? 0 : parsed;
+}
+
+// Fix the calculateWarehouseState function to handle collation mismatch
+async function calculateWarehouseState(warehouseId, date) {
+    // For each material type, we need to calculate:
+    // 1. The base state (as of the beginning of the selected date)
+    // 2. All changes that happened on that exact date
+    // 3. The current state at the end of that date
+    const itemTypes = [
+        'kanoe', 'kanoe_rodinna', 'velky_raft', 
+        'padlo', 'padlo_detske', 'vesta', 
+        'vesta_detska', 'barel'
+    ];
+    
+    const result = {
+        warehouseId: warehouseId
+    };
+    
+    try {
+        // First get the warehouse location with explicit collation
+        const [warehouseData] = await promisePool.query(`
+            SELECT location 
+            FROM warehouses 
+            WHERE id = ?
+        `, [warehouseId]);
+        
+        if (warehouseData.length === 0) {
+            throw new Error(`Warehouse with ID ${warehouseId} not found`);
+        }
+        
+        const warehouseLocation = warehouseData[0].location;
+        
+        for (const itemType of itemTypes) {
+            // Step 1: Calculate the base quantity at the START of the selected date
+            
+            // 1.1 Get the initial inventory amount (from inventory_items table)
+            const [initialItems] = await promisePool.query(`
+                SELECT base_quantity FROM inventory_items
+                WHERE warehouse_id = ?
+                AND item_type = ?
+            `, [warehouseId, itemType]);
+            
+            // Start with the initial quantity defined in inventory_items
+            let baseQuantity = initialItems.length > 0 ? parseInt(initialItems[0].base_quantity) || 0 : 0;
+            
+            // 1.2 Get all warehouse edits STRICTLY BEFORE the target date
+            const [previousEdits] = await promisePool.query(`
+                SELECT * FROM warehouse_edits
+                WHERE warehouse_id = ? 
+                AND material_type = ? 
+                AND edit_date < ?
+                ORDER BY edit_date ASC, created_at ASC
+            `, [warehouseId, itemType, date]);
+            
+            // 1.3 Apply edits chronologically by date
+            const lastEditPerDay = {};
+            previousEdits.forEach(edit => {
+                lastEditPerDay[edit.edit_date] = parseInt(edit.new_quantity) || 0;
+            });
+            
+            // Sort the dates to ensure we apply edits chronologically
+            const sortedDates = Object.keys(lastEditPerDay).sort();
+            for (const editDate of sortedDates) {
+                baseQuantity = lastEditPerDay[editDate];
+            }
+            
+            // 1.4 Get all orders that affected inventory BEFORE the target date
+            // Use the warehouse location directly instead of a subquery
+            const [outgoingBeforeDate] = await promisePool.query(`
+                SELECT id, ${itemType} as quantity 
+                FROM orders
+                WHERE pickup_location = ?
+                AND arrival_date < ?
+                AND ${itemType} > 0
+                AND status != 'Zrušená'
+            `, [warehouseLocation, date]);
+            
+            const [incomingBeforeDate] = await promisePool.query(`
+                SELECT id, ${itemType} as quantity 
+                FROM orders
+                WHERE return_location = ?
+                AND departure_date < ?
+                AND ${itemType} > 0
+                AND status != 'Zrušená'
+            `, [warehouseLocation, date]);
+            
+            // 1.5 Apply all past order changes to the base quantity
+            outgoingBeforeDate.forEach(order => {
+                baseQuantity -= parseInt(order.quantity) || 0;
+            });
+            
+            incomingBeforeDate.forEach(order => {
+                baseQuantity += parseInt(order.quantity) || 0;
+            });
+            
+            // Step 2: Calculate all changes ON the selected date
+            const changes = [];
+            let changeTotal = 0;
+            
+            // 2.1 Get all orders that borrowed equipment ON the selected date
+            // Use the warehouse location directly instead of a subquery
+            const [outgoingOnDate] = await promisePool.query(`
+                SELECT id, ${itemType} as quantity, arrival_time
+                FROM orders
+                WHERE pickup_location = ?
+                AND arrival_date = ?
+                AND ${itemType} > 0
+                AND status != 'Zrušená'
+                ORDER BY arrival_time ASC
+            `, [warehouseLocation, date]);
+            
+            // 2.2 Get all orders that returned equipment ON the selected date
+            // Use the warehouse location directly instead of a subquery
+            const [incomingOnDate] = await promisePool.query(`
+                SELECT id, ${itemType} as quantity, departure_time
+                FROM orders
+                WHERE return_location = ?
+                AND departure_date = ?
+                AND ${itemType} > 0
+                AND status != 'Zrušená'
+                ORDER BY departure_time ASC
+            `, [warehouseLocation, date]);
+            
+            // 2.3 Get all edits ON the selected date
+            const [editsOnDate] = await promisePool.query(`
+                SELECT * FROM warehouse_edits
+                WHERE warehouse_id = ? 
+                AND material_type = ? 
+                AND edit_date = ?
+                ORDER BY created_at ASC
+            `, [warehouseId, itemType, date]);
+            
+            // 2.4 Apply outgoing changes (borrowing equipment)
+            outgoingOnDate.forEach(order => {
+                if (order.quantity > 0) {
+                    changes.push({
+                        description: `Výdej #${order.id}`,
+                        quantity: -parseInt(order.quantity),
+                        time: order.arrival_time,
+                        isEdit: false
+                    });
+                    changeTotal -= parseInt(order.quantity) || 0;
+                }
+            });
+            
+            // 2.5 Apply incoming changes (returning equipment)
+            incomingOnDate.forEach(order => {
+                if (order.quantity > 0) {
+                    changes.push({
+                        description: `Příjem #${order.id}`,
+                        quantity: parseInt(order.quantity),
+                        time: order.departure_time,
+                        isEdit: false
+                    });
+                    changeTotal += parseInt(order.quantity) || 0;
+                }
+            });
+            
+            // 2.6 Handle manual edits that occurred on the selected date
+            if (editsOnDate.length > 0) {
+                // Get the last edit of the day (this establishes the base quantity)
+                const lastEdit = editsOnDate[editsOnDate.length - 1];
+                
+                // IMPORTANT: We're changing the base quantity to the last edit's new_quantity
+                baseQuantity = parseInt(lastEdit.new_quantity) || 0;
+                
+                // Add all edits to the changes list with isEdit flag
+                editsOnDate.forEach(edit => {
+                    changes.push({
+                        description: `Edit skladu ID ${edit.id}`,
+                        quantity: parseInt(edit.new_quantity) - parseInt(edit.previous_quantity),
+                        time: edit.created_at,
+                        isEdit: true,
+                        previousQuantity: parseInt(edit.previous_quantity) || 0,
+                        newQuantity: parseInt(edit.new_quantity) || 0
+                    });
+                });
+            }
+            
+            // Step 3: Calculate the current quantity at the END of the selected date
+            const currentQuantity = baseQuantity + changeTotal;
+            
+            // Step 4: Save all calculated values for this material type
+            result[itemType] = {
+                baseQuantity,      // Quantity at the start of the day
+                changes,           // List of all changes that occurred that day
+                changeTotal,       // Total change from orders that day
+                currentQuantity    // Final quantity at the end of the day
+            };
+        }
+    } catch (error) {
+        console.error(`Error in calculateWarehouseState:`, error);
+        // Return empty objects for each item type on error
+        itemTypes.forEach(type => {
+            result[type] = {
+                baseQuantity: 0,
+                changes: [],
+                changeTotal: 0,
+                currentQuantity: 0
+            };
+        });
+    }
+    
+    return result;
+}
+
+// Also fix the API endpoint for warehouse status
+app.get('/api/warehouse/status/:date', verifyToken, async (req, res) => {
+    try {
+        const date = req.params.date;
+        console.log('Loading warehouse status for date:', date);
+        
+        // Load all warehouses
+        const [warehouses] = await promisePool.query('SELECT * FROM warehouses');
+        console.log(`Found ${warehouses.length} warehouses`);
+        
+        if (!warehouses || warehouses.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Nebyly nalezeny žádné sklady'
+            });
+        }
+        
+        // Calculate state for each warehouse
+        const warehousesPromises = warehouses.map(async (warehouse) => {
+            try {
+                // Get warehouse state
+                const itemStates = await calculateWarehouseState(warehouse.id, date);
+                
+                // Get departures and returns for the day using direct location parameter
+                const [departures] = await promisePool.query(`
+                    SELECT * FROM orders 
+                    WHERE pickup_location = ?
+                    AND arrival_date = ?
+                    AND status != 'Zrušená'
+                    ORDER BY arrival_time ASC
+                `, [warehouse.location, date]);
+
+                const [returns] = await promisePool.query(`
+                    SELECT * FROM orders 
+                    WHERE return_location = ?
+                    AND departure_date = ?
+                    AND status != 'Zrušená'
+                    ORDER BY departure_time ASC
+                `, [warehouse.location, date]);
+                
+                // Get edits for this day
+                const [edits] = await promisePool.query(`
+                    SELECT * FROM warehouse_edits
+                    WHERE warehouse_id = ? AND edit_date = ?
+                    ORDER BY created_at ASC
+                `, [warehouse.id, date]);
+                
+                return {
+                    id: warehouse.id,
+                    name: warehouse.name,
+                    location: warehouse.location,
+                    items: itemStates,
+                    dailyPlan: {
+                        departures,
+                        returns,
+                        edits
+                    }
+                };
+            } catch (warehouseError) {
+                console.error(`Error processing warehouse ${warehouse.id}:`, warehouseError);
+                // Return a safe object on error
+                return {
+                    id: warehouse.id,
+                    name: warehouse.name,
+                    location: warehouse.location,
+                    items: {},
+                    dailyPlan: {
+                        departures: [],
+                        returns: [],
+                        edits: []
+                    },
+                    error: warehouseError.message
+                };
+            }
+        });
+        
+        const warehouseData = await Promise.all(warehousesPromises);
+        res.json(warehouseData);
+    } catch (error) {
+        console.error('Error loading warehouse status:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Chyba při načítání dat skladů: ' + error.message
+        });
+    }
+});
+
+// Add a utility function to safely parse quantity values
+function parseQuantity(value) {
+    const parsed = parseInt(value);
+    return isNaN(parsed) ? 0 : parsed;
+}

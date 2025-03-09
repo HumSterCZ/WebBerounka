@@ -922,15 +922,21 @@ function renderWarehouseEditsForDay(edits) {
         
         return `
             <div class="plan-item edit">
+                <div class="plan-time-edit">${formattedTime}</div>
                 <div class="edit-details">
                     <div class="edit-title">
-                        ${formatMaterialType(edit.material_type)} - ruční úprava
+                        <span class="material-name">${formatMaterialType(edit.material_type)}</span>
+                        <span class="edit-action">ruční úprava</span>
                     </div>
                     <div class="edit-info">
-                        Z <strong>${edit.previous_quantity}</strong> na <strong>${edit.new_quantity}</strong>
-                        <span class="${differenceClass}">
-                            (${difference > 0 ? '+' : ''}${difference})
-                        </span> | ${formattedTime}
+                        <div class="quantity-change">
+                            <span class="old-quantity">${edit.previous_quantity}</span>
+                            <span class="arrow">→</span>
+                            <span class="new-quantity">${edit.new_quantity}</span>
+                            <span class="difference ${differenceClass}">
+                                (${difference > 0 ? '+' : ''}${difference})
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>

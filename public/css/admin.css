@@ -517,6 +517,7 @@ tr:hover {
     display: flex;
     flex-direction: column;
     width: 100%; /* Ensure cards use full width of their grid cell */
+    padding: 20px;
 }
 
 .warehouse-header {
@@ -549,28 +550,31 @@ tr:hover {
 
 .warehouse-sections {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* Dva sloupce vedle sebe */
+    grid-template-columns: 4fr 2fr !important; /* Change from 3fr 2fr to 4fr 2fr (66.7%/33.3% split) */
     gap: 20px;
     margin-top: 15px;
+    min-height: 400px;
+    align-items: stretch;
+}
+
+.warehouse-sections {
+    display: grid;
+    grid-template-columns: 4fr 2fr !important; /* Ensure this matches the ratio above */
+    gap: 20px;
+    margin-top: 15px;
+    min-height: 400px;
 }
 
 .inventory-section, .daily-plan-section {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
     background: #f8f9fa;
     border-radius: 8px;
     padding: 20px;
-    height: 100%;
-}
-
-.inventory-section {
-    border-right: 1px solid #e5e5e5;
-    padding-right: 1rem;
-}
-
-.daily-plan-section {
-    padding-left: 1rem;
+    height: auto; /* Change from 100% to auto */
+    min-height: 100%; /* Ensure both sections have at least the same height */
+    box-sizing: border-box;
+    overflow: hidden; /* Prevent overflow from breaking layout */
 }
 
 .section-title {
@@ -578,6 +582,7 @@ tr:hover {
     margin-bottom: 15px;
     color: #333;
     font-size: 1.1rem;
+    flex-shrink: 0; /* Prevent title from shrinking */
 }
 
 .inventory-list, .daily-plan {
@@ -761,6 +766,7 @@ tr:hover {
     padding: 15px;
     border-radius: 6px;
     border: 1px solid #e5e5e5;
+    flex-shrink: 0; /* Prevent shrinking */
 }
 
 .plan-item {
@@ -774,6 +780,7 @@ tr:hover {
     gap: 10px;
     padding: 8px;
     border-bottom: 1px solid #eee;
+    flex-shrink: 0; /* Prevent shrinking */
 }
 
 .plan-item:last-child {
@@ -820,12 +827,13 @@ tr:hover {
 }
 
 .daily-plan {
-    display: grid;
+    display: flex;
+    flex-direction: column;
     gap: 15px;
     margin-top: 10px;
-    max-height: 400px;
-    overflow-y: auto;
+    max-height: none; /* Remove fixed height */
     padding-right: 5px;
+    overflow-y: visible; /* Let it flow naturally */
 }
 
 .daily-plan::-webkit-scrollbar {
@@ -845,21 +853,13 @@ tr:hover {
 @media (max-width: 768px) {
     .warehouse-sections {
         grid-template-columns: 1fr;
+    }
+
+    .inventory-section, .daily-plan-section {
         height: auto;
-    }
-
-    .inventory-section {
-        border-right: none;
-        border-bottom: 1px solid #e5e5e5;
-        padding: 1rem;
-    }
-
-    .daily-plan-section {
-        padding: 1rem;
     }
 }
 
-/* Přidáme responzivní úpravy */
 @media (max-width: 768px) {
     .inventory-grid {
         grid-template-columns: 1fr; /* Pouze na mobilu jeden sloupec */
@@ -885,6 +885,27 @@ tr:hover {
     padding: 0.75rem;
     border: 1px solid #dee2e6;
     text-align: center;
+}
+
+/* Improve text handling in inventory table to avoid ellipsis */
+.inventory-table th, 
+.inventory-table td {
+    padding: 8px;
+    white-space: normal; /* Allow text to wrap instead of using nowrap */
+    overflow: visible; /* Remove overflow hidden */
+    text-overflow: clip; /* Remove ellipsis */
+    hyphens: auto; /* Enable hyphenation for better text flow */
+    line-height: 1.3; /* Add line height for better readability of wrapped text */
+}
+
+.inventory-table th:first-child, 
+.inventory-table td:first-child {
+    width: 50%; /* Give even more space to material names */
+}
+
+.inventory-table th:not(:first-child), 
+.inventory-table td:not(:first-child) {
+    width: 16.66%; /* Adjust other columns to share remaining space */
 }
 
 .inventory-table th {
@@ -1564,13 +1585,6 @@ td.quantity-critical {
     margin-top: 5px;
 }
 
-.warehouse-sections {
-    display: grid;
-    grid-template-columns: 1fr 1fr; /* Dva sloupce vedle sebe */
-    gap: 20px;
-    margin-top: 15px;
-}
-
 .inventory-section, .daily-plan-section {
     background: #f8f9fa;
     border-radius: 8px;
@@ -1815,7 +1829,7 @@ td.quantity-critical {
 
 @media (max-width: 1200px) {
     .warehouse-sections {
-        grid-template-columns: 1fr; /* Na menších obrazovkách pod sebou */
+        grid-template-columns: 1fr !important; /* Stack on smaller screens */
     }
 }
 
@@ -1988,4 +2002,506 @@ td.quantity-critical {
     color: white;
 }
 
-/* ... rest of existing code ... */
+/* Daily Plan Section Responsive Styles */
+.daily-plan-section {
+    margin-top: 20px;
+}
+
+.daily-plan {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.plan-departures, .plan-returns, .plan-edits {
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    padding: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.plan-item {
+    display: flex;
+    padding: 8px;
+    margin-bottom: 8px;
+    border-radius: 5px;
+    background-color: white;
+    border-left: 4px solid #ddd;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.plan-item.departure {
+    border-left-color: #4caf50;
+}
+
+.plan-item.return {
+    border-left-color: #2196f3;
+}
+
+.plan-item.edit {
+    border-left-color: #ff9800;
+    display: flex;
+    align-items: flex-start;
+}
+
+.plan-time, .plan-time-edit {
+    min-width: 50px;
+    font-weight: bold;
+    padding-right: 10px;
+    color: #555;
+}
+
+.edit-details {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.edit-title {
+    font-weight: bold;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.material-name {
+    color: #333;
+}
+
+.edit-action {
+    color: #777;
+    font-size: 0.9em;
+}
+
+.edit-info {
+    display: flex;
+    font-size: 0.95em;
+}
+
+.quantity-change {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.arrow {
+    color: #777;
+}
+
+.old-quantity, .new-quantity {
+    font-weight: bold;
+}
+
+.difference {
+    font-weight: bold;
+    padding: 2px 5px;
+    border-radius: 3px;
+}
+
+.difference.quantity-high {
+    background-color: rgba(76, 175, 80, 0.15);
+    color: #2e7d32;
+}
+
+.difference.quantity-low {
+    background-color: rgba(244, 67, 54, 0.15);
+    color: #c62828;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+    .daily-plan {
+        grid-template-columns: 1fr;
+    }
+    
+    .edit-title {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+    }
+    
+    .plan-time-edit {
+        min-width: 40px;
+        font-size: 0.9em;
+    }
+    
+    .quantity-change {
+        margin-top: 3px;
+    }
+}
+
+/* No Data Display */
+.no-data {
+    padding: 15px;
+    text-align: center;
+    color: #777;
+    font-style: italic;
+}
+
+/* Fix for Section Height Alignment */
+.warehouse-sections {
+    display: grid;
+    grid-template-columns: 4fr 2fr !important; /* Change from 3fr 2fr to 4fr 2fr (66.7%/33.3% split) */
+    gap: 20px;
+    margin-top: 15px;
+    min-height: 400px;
+    align-items: stretch; /* Ensures columns stretch to same height */
+}
+
+.inventory-section, .daily-plan-section {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    height: 100%; /* Set exact same height */
+    margin: 0; /* Remove any margin differences */
+    position: relative; /* Ensure proper positioning context */
+}
+
+/* Ensure both sections have the same title handling */
+.section-title {
+    font-weight: 600;
+    margin: 0 0 15px 0; /* Consistent margin, explicitly set all sides */
+    padding: 0; /* Remove any padding */
+    color: #333;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    line-height: 1.4; /* Standardize line height */
+}
+
+/* Ensure content areas fill available space consistently */
+.inventory-table, .daily-plan {
+    flex: 1 1 auto; /* Grow and shrink as needed */
+    overflow: auto;
+    margin: 0; /* Remove any margin */
+    padding: 0; /* Remove any padding that could cause misalignment */
+}
+
+/* Make sure content aligns at the top */
+.daily-plan {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Ensure plan sections align nicely */
+.plan-departures, .plan-returns, .plan-edits {
+    margin-bottom: 15px;
+}
+
+/* Fix for inventory table layout in warehouse cards */
+.warehouse-card {
+    min-width: 0;
+    width: 100%;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Ensure warehouse sections maintain consistent height */
+.warehouse-sections {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 15px;
+    min-height: 400px;
+}
+
+/* Apply consistent styling to both sections */
+.inventory-section, .daily-plan-section {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    height: auto;
+    min-height: 100%;
+}
+
+/* Make the inventory table fill its container properly */
+.inventory-table {
+    width: 100%;
+    flex-grow: 1;
+    overflow: auto;
+}
+
+/* Ensure the table takes up proper width */
+.inventory-table table {
+    width: 100%;
+    table-layout: fixed; /* Prevents table from squishing */
+    border-collapse: collapse;
+}
+
+/* Set specific widths for table columns */
+.inventory-table th:first-child, 
+.inventory-table td:first-child {
+    width: 40%;
+    text-align: left;
+}
+
+.inventory-table th:not(:first-child), 
+.inventory-table td:not(:first-child) {
+    width: 20%;
+    text-align: center;
+}
+
+/* Ensure cells don't squish on smaller screens */
+.inventory-table th, 
+.inventory-table td {
+    padding: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Fix daily plan to match inventory section */
+.daily-plan {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 10px;
+    height: 100%;
+    overflow-y: auto;
+}
+
+/* Make plan sections properly fill the container */
+.plan-departures, .plan-returns, .plan-edits {
+    flex-shrink: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .warehouse-sections {
+        grid-template-columns: 1fr;
+    }
+    
+    .inventory-table th,
+    .inventory-table td {
+        font-size: 0.9rem;
+        padding: 6px;
+    }
+}
+
+@media (max-width: 768px) {
+    /* On mobile, make sure text doesn't overflow */
+    .inventory-table th:first-child, 
+    .inventory-table td:first-child {
+        width: 35%;
+    }
+}
+
+/* Modify plan item layout to show time above content */
+.plan-item {
+    display: flex;
+    flex-direction: column; /* Change to column layout */
+    padding: 8px;
+    margin-bottom: 8px;
+    border-radius: 5px;
+    background-color: white;
+    border-left: 4px solid #ddd;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.plan-time, .plan-time-edit {
+    font-weight: bold;
+    color: #555;
+    padding: 0 0 4px 0; /* Adjust padding for top placement */
+    margin-bottom: 5px;
+    border-bottom: 1px dotted #eee; /* Add subtle separator */
+    width: 100%; /* Take full width */
+    font-size: 0.9em; /* Slightly smaller font */
+}
+
+/* Adjustments for various plan item types */
+.plan-item.edit {
+    border-left-color: #ff9800;
+}
+
+.edit-details {
+    flex-grow: 1;
+    width: 100%; /* Take full width */
+}
+
+/* Adjust tables in inventory section to make better use of space */
+.inventory-table table {
+    width: 100%;
+    table-layout: fixed;
+}
+
+.inventory-table th:first-child, 
+.inventory-table td:first-child {
+    width: 45%; /* Give more space to material names */
+}
+
+.inventory-table th:not(:first-child), 
+.inventory-table td:not(:first-child) {
+    width: 18%; /* Adjust other columns */
+}
+
+/* Ensure text fits properly */
+.inventory-table td {
+    word-break: break-word; /* Allow breaking long words if needed */
+    hyphens: auto; /* Enable hyphenation for better text flow */
+}
+
+/* Ensure plan-details takes full width */
+.plan-details {
+    width: 100%;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+    .plan-time, .plan-time-edit {
+        text-align: left;
+    }
+}
+
+/* Make table header font size smaller to fit content better */
+.inventory-table th {
+    padding: 6px 4px;
+    font-size: 0.85rem; /* Reduce font size for table headers */
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    line-height: 1.2;
+    font-weight: 600;
+    background-color: #f8f9fa;
+}
+
+/* Also reduce cell padding for better space usage */
+.inventory-table td {
+    padding: 7px 4px;
+    line-height: 1.3;
+}
+
+/* Improve mobile and tablet responsiveness for inventory layout */
+
+/* Optimize table display on smaller screens */
+@media (max-width: 1200px) {
+    .warehouse-sections {
+        grid-template-columns: 1fr !important; /* Maintain single column on smaller devices */
+    }
+    
+    /* Add spacing between sections when stacked */
+    .inventory-section {
+        margin-bottom: 20px;
+    }
+    
+    /* Ensure inventory tables are more readable on tablet-sized screens */
+    .inventory-table th {
+        font-size: 0.8rem;
+        padding: 6px 3px;
+    }
+    
+    .inventory-table td {
+        font-size: 0.9rem;
+        padding: 6px 3px;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Optimize further for mobile phones */
+    .inventory-table th,
+    .inventory-table td {
+        padding: 5px 3px;
+        font-size: 0.8rem;
+    }
+    
+    /* Adjust column widths for better mobile display */
+    .inventory-table th:first-child, 
+    .inventory-table td:first-child {
+        width: 40%;
+    }
+    
+    .inventory-table th:not(:first-child), 
+    .inventory-table td:not(:first-child) {
+        width: 20%;
+    }
+    
+    /* Make warehouse cards padding smaller on mobile */
+    .warehouse-card {
+        padding: 12px;
+    }
+    
+    /* Reduce padding in sections for more content space */
+    .inventory-section, 
+    .daily-plan-section {
+        padding: 12px;
+    }
+    
+    /* Better spacing for plan items on mobile */
+    .plan-item {
+        padding: 6px;
+    }
+    
+    /* Smaller section titles on mobile */
+    .section-title {
+        font-size: 1rem;
+        margin-bottom: 10px;
+    }
+    
+    /* Optimize daily plan headers */
+    .plan-departures h4, 
+    .plan-returns h4,
+    .plan-edits h4 {
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+    }
+    
+    /* Ensure plan items are easier to read */
+    .plan-time, .plan-time-edit {
+        font-size: 0.85em;
+    }
+    
+    .plan-customer {
+        font-size: 0.9em;
+    }
+    
+    .plan-equipment {
+        font-size: 0.8em;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Extreme mobile optimization */
+    .warehouse-title {
+        font-size: 1.2rem;
+    }
+    
+    .warehouse-location {
+        font-size: 0.8rem;
+    }
+    
+    /* Adjust inventory table for very small screens */
+    .inventory-table th,
+    .inventory-table td {
+        padding: 4px 2px;
+        font-size: 0.75rem;
+    }
+    
+    .inventory-table th:first-child, 
+    .inventory-table td:first-child {
+        width: 35%;
+    }
+    
+    /* Simplified layout for edit inventory button on small screens */
+    .btn-edit-inventory {
+        padding: 5px 10px;
+        font-size: 0.85rem;
+    }
+    
+    /* Adjust padding for mobile devices */
+    .inventory-section, 
+    .daily-plan-section {
+        padding: 10px;
+    }
+}

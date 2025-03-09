@@ -65,14 +65,13 @@ nav ul li a[href="/objednavky.html"].active {
     font-size: 1.8rem;
     cursor: pointer;
     padding: 0.4rem 0.6rem;
-    position: absolute; /* Change from fixed to absolute */
-    right: auto; /* Reset right positioning */
-    top: 50%; /* Center vertically */
-    transform: translateY(-50%); /* Perfect vertical centering */
-    z-index: 1000;
+    position: fixed; /* Změna z absolute na fixed pro fixní umístění relativně k oknu prohlížeče */
+    right: 10px; /* Upravená hodnota pro pravý horní roh */
+    top: 10px; /* Upravená hodnota pro pravý horní roh */
+    z-index: 2000; /* Zvýšení z-indexu, aby byl nad ostatními prvky */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: all var(--transition-speed) ease;
-    margin-left: 1rem; /* Add margin for spacing from logo */
+    margin: 0; /* Odstranění všech okrajů */
 }
 
 .mobile-menu-toggle:hover {
@@ -104,11 +103,8 @@ nav ul li a[href="/objednavky.html"].active {
     
     .mobile-menu-toggle {
         display: block;
-        position: relative; /* Change to relative */
-        top: auto; /* Reset top */
-        transform: none; /* Remove transform */
-        margin-right: 1rem; /* Add margin on the right */
-        order: 2; /* Change order to appear after logo */
+        /* Odstraněno nastavení position, top, right, transform a margin-right,
+           protože už jsou definovány výše s position: fixed */
     }
     
     .mobile-menu-close {

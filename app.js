@@ -1275,6 +1275,50 @@ app.get('/api/warehouse/edit/:id', verifyToken, async (req, res) => {
     }
 });
 
+// Přidáme endpoint pro smazání editu skladu
+app.delete('/api/warehouse/edits/:id', verifyToken, async (req, res) => {
+    try {
+        const editId = req.params.id;
+        
+        // Nejdřív získáme informace o editu pro případné logování
+        const [edit] = await promisePool.query(`
+            SELECT * FROM warehouse_edits WHERE id = ?
+        `, [editId]);
+        
+        if (edit.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Edit nebyl nalezen'
+            });
+        }
+        
+        // Smazání editu z databáze
+        const [result] = await promisePool.query(`
+            DELETE FROM warehouse_edits WHERE id = ?
+        `, [editId]);
+        
+        if (result.affectedRows === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Edit nebyl nalezen nebo již byl smazán'
+            });
+        }
+        
+        console.log(`Edit skladu ID ${editId} byl smazán, warehouse_id: ${edit[0].warehouse_id}, material_type: ${edit[0].material_type}, date: ${edit[0].edit_date}`);
+        
+        res.json({
+            success: true,
+            message: 'Edit byl úspěšně smazán'
+        });
+    } catch (error) {
+        console.error('Chyba při mazání editu skladu:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Chyba při mazání dat: ' + error.message
+        });
+    }
+});
+
 // Ostatní routy...
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'domu.html'));
@@ -1772,7 +1816,7 @@ async function calculateWarehouseState(warehouseId, date) {
     // For each material type, we need to calculate:
     // 1. The base state (as of the beginning of the selected date)
     // 2. All changes that happened on that exact date
-    // 3. The current state at the end of that date
+    // 3. The current state at the end of the selected date
     const itemTypes = [
         'kanoe', 'kanoe_rodinna', 'velky_raft', 
         'padlo', 'padlo_detske', 'vesta', 

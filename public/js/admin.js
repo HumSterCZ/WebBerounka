@@ -1487,9 +1487,48 @@ function renderWarehouseEditsList(edits) {
                     ${difference > 0 ? '+' : ''}${difference}
                 </td>
                 <td>${formatDateTime(edit.created_at)}</td>
+                <td>
+                    <button onclick="deleteWarehouseEdit(${edit.id})" class="btn-action btn-delete" title="Smazat">Smazat</button>
+                </td>
             </tr>
         `;
     }).join('');
+}
+
+// Přidáme novou funkci pro smazání editu skladu
+async function deleteWarehouseEdit(editId) {
+    if (!confirm('Opravdu chcete smazat tento edit skladu?')) {
+        return;
+    }
+    
+    try {
+        const loadingToastId = showLoadingToast('Odstraňování editu skladu...', 'delete-edit-toast');
+        
+        const response = await fetch(`/api/warehouse/edits/${editId}`, {
+            method: 'DELETE',
+            headers: getAuthHeaders()
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Chyba při odstraňování editu skladu');
+        }
+        
+        removeToast(loadingToastId);
+        showToast('Edit skladu byl úspěšně odstraněn', 'success');
+        
+        // Znovu načteme seznam editů
+        loadAllWarehouseEdits();
+        
+        // Pokud jsme v záložce inventáře, aktualizujeme i tam data
+        const inventoryTab = document.getElementById('inventory');
+        if (inventoryTab && inventoryTab.classList.contains('active')) {
+            loadInventory();
+        }
+    } catch (error) {
+        console.error('Chyba při odstraňování editu skladu:', error);
+        showError(`Chyba při odstraňování: ${error.message}`);
+    }
 }
 
 // Upravíme funkci renderInventory pro lepší zobrazení stavu skladů - odstraněna "Akce" v hlavičce
@@ -1974,6 +2013,7 @@ window.loadAllWarehouseEdits = loadAllWarehouseEdits;
 window.filterWarehouseEdits = filterWarehouseEdits;
 window.changeInventoryDate = changeInventoryDate;
 window.closeToast = closeToast;
+window.deleteWarehouseEdit = deleteWarehouseEdit;
 
 // Ensure toast container exists when the page loads
 document.addEventListener('DOMContentLoaded', () => {

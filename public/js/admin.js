@@ -1612,17 +1612,10 @@ function renderChangesDetails(changes) {
     
     const detailsHtml = changes.map(change => {
         const prefix = change.quantity > 0 ? '+' : '';
-        return `<div>${change.description || 'Změna'}: ${prefix}${change.quantity}</div>`;
+        return `<div>${change.description ? change.description + ': ' : ''}${prefix}${change.quantity}</div>`;
     }).join('');
     
-    return `
-        <div class="changes-tooltip">
-            <span class="tooltip-icon">ℹ️</span>
-            <div class="tooltip-content">
-                ${detailsHtml}
-            </div>
-        </div>
-    `;
+    return `<div class="change-details">${detailsHtml}</div>`;
 }
 
 // Funkce pro určení barevné třídy podle množství

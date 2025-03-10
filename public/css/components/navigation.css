@@ -91,7 +91,7 @@ nav ul li a[href="/objednavky.html"].active {
 }
 
 /* Media query for mobile view */
-@media (max-width: 768px) {
+@media (max-width: 1160px) {
     nav {
         margin-left: 0;
         width: auto; /* Allow natural width */

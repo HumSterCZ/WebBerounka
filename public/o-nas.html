@@ -10,31 +10,115 @@
     <link rel="stylesheet" href="/css/styles.css">
     <script src="/components/navigation.js"></script>
     <script src="/components/header.js"></script>
-    <script src="/components/footer.js"></script>
 </head>
 <body>
-    <header>
+
+    <header class="header-hero">
         <site-header></site-header>
+        <section class="hero">
+            <p class="hero-subtitle">O Nás</p>
+            <h2>BEROUNKA.CZ</h2>
+            <p class="hero-text">Rodinná půjčovna s dlouholetou tradicí na řece Berounce</p>
+        </section>
     </header>
 
     <main>
-        <h2>O nás</h2>
-        <section class="about-content">
-            <p>Jsme rodinná půjčovna lodí s dlouholetou tradicí. Naším cílem je zprostředkovat vám nezapomenutelné zážitky na řece Berounce.</p>
-            
-            <div class="team-section">
-                <h3>Náš tým</h3>
-                <photo-gallery folder="team" count="3"></photo-gallery>
+        <section class="section-heading">
+            <h2 class="decorated-heading">O nás</h2>
+            <div class="heading-underline">
+                <div class="underline-element"></div>
+                <div class="underline-icon">🛶</div>
+                <div class="underline-element"></div>
+            </div>
+        </section>
+
+        <section class="about-content about-content-redesigned">
+            <div class="about-description">
+                <h3 class="section-title">Půjčovna lodí Berounka.cz</h3>
+                <p>Jsme rodinná půjčovna s dlouholetou tradicí na řece Berounce. Rádi Vám pomůžeme a poradíme s dotazy.</p>
+                
+                <p>Zaměřujeme se především na půjčování lodí značky Železný (Samba), ale také můžeme nabídnout i klasické vydry. 
+                Disponujeme jak klasickou kánojí pro dvě osoby, tak i kánojí pro rodiny s dětmi (třímístné kánoe). 
+                Pro početnější skupiny, pro ty, co si moc nevěří nebo jedou na vodu poprvé nabízíme šestimístné rafty.</p>
+                
+                <p>Po Berounce máme čtyři výdejní a sběrná místa, u kterých je výdej i sběr lodí ZDARMA. A sice: 
+                Chrást (U Dolanského mostu), Nadryby (přívoz), Liblín (Tábořiště Kobylka) a Třímany (U Mloka).</p>
+                
+                <p>Pořádáme také školní nebo firemní akce.</p>
+                
+                <p>Pro naše klienty nabízíme svoz zpět na začátek výletu, kde máte auta nebo na vlakové nádraží (po domluvě).</p>
             </div>
 
-            <div class="contact-section">
-                <h3>Kontaktujte nás</h3>
-                <contact-form></contact-form>
+            <div class="contact-info contact-card">
+                <h3 class="section-title">Kontakt</h3>
+                <div class="contact-detail">
+                    <p><strong>E-mail - Objednávky</strong><br>
+                    <a href="mailto:pujcovna@berounka.cz" class="contact-link">pujcovna@berounka.cz</a></p>
+                </div>
+                
+                <div class="contact-detail">
+                    <p><strong>Telefoní číslo</strong><br>
+                    <a href="tel:+420721606609" class="contact-link">+420 721 606 609</a></p>
+                </div>
+                
+                <div class="social-links">
+                    <a href="https://www.facebook.com/Berounka.cz" target="_blank" rel="noopener noreferrer" class="social-link">
+                        <img src="/images/fb.png" alt="Facebook" class="social-icon">
+                        Sledujte nás na Facebooku
+                    </a>
+                    
+                    <a href="https://www.instagram.com/berounka.cz/?hl=cs" target="_blank" rel="noopener noreferrer" class="social-link">
+                        <img src="/images/ig.png" alt="Instagram" class="social-icon">
+                        Sledujte nás na Instagramu
+                    </a>
+                </div>
+            </div>
+
+            <div class="services feature-box">
+                <h3 class="section-title">Nabízíme</h3>
+                <ul class="feature-list">
+                    <li>Přátelský přístup</li>
+                    <li>Řadu typů kánojí a raftů</li>
+                    <li>Stálá výdejní místa</li>
+                    <li>Dopravu osob minibusem nebo autobusem</li>
+                    <li>Dokážeme zařídit dopravu bagáže</li>
+                    <li>Team buildingové akce pro firmy, nebo vodáky pro školy</li>
+                </ul>
+            </div>
+
+            <div class="boat-types boat-showcase">
+                <h3 class="section-title">Naše lodě</h3>
+                
+                <div class="boat-category">
+                    <h4>Kánoe pro dvě osoby</h4>
+                    <div class="boat-item">
+                        <p><strong>Samba 4.5</strong> – Loďka určena pro dvě osoby s bagáží.</p>
+                    </div>
+                    <div class="boat-item">
+                        <p><strong>Makku (Vydra)</strong> – Loďka určena pro dvě osoby s bagáží.</p>
+                    </div>
+                </div>
+                
+                <div class="boat-category">
+                    <h4>Kánoe pro tři osoby</h4>
+                    <div class="boat-item">
+                        <p><strong>Samba 5.2</strong> – Loďka pro 3-4 osoby. Vhodná loď pro rodinu s dětmi. Velmi stabilní a lehce ovladatelná</p>
+                    </div>
+                </div>
+                
+                <div class="boat-category">
+                    <h4>Rafty pro pět až šest osob</h4>
+                    <div class="boat-item">
+                        <p><strong>Colorado</strong> – S otevřenou zádí, která umožnuje vodě uvnitř raftu odtékat. Vhodný pro početnější skupinu s bagáží.</p>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
 
-    <site-footer></site-footer>
+    <footer>
+        <p>&copy; 2024 Berounka.cz - Všechna práva vyhrazena</p>
+    </footer>
     <script src="/js/main.js"></script>
 </body>
 </html>

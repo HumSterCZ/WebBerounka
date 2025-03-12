@@ -296,3 +296,1320 @@ tr:nth-child(even) {
 tr:hover {
     background-color: #ddd;
 }
+
+/* Styly pro dekorativní nadpisy */
+.section-heading {
+    text-align: center;
+    margin: 3rem 0 2rem 0;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.decorated-heading {
+    font-family: 'Antonio', sans-serif;
+    font-size: 2.5rem;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.heading-underline {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0.5rem auto 2rem;
+    max-width: 500px;
+}
+
+.underline-element {
+    height: 3px;
+    background-color: var(--accent-color, #ff6b00);
+    flex-grow: 1;
+}
+
+.underline-icon {
+    font-size: 1.5rem;
+    margin: 0 1rem;
+    color: var(--accent-color, #ff6b00);
+}
+
+@media (max-width: 768px) {
+    .decorated-heading {
+        font-size: 2rem;
+    }
+    
+    .heading-underline {
+        max-width: 300px;
+    }
+}
+
+/* About page redesign */
+.about-content-redesigned {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+@media (min-width: 768px) {
+  .about-content-redesigned {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .about-description {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 992px) {
+  .about-content-redesigned {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.section-title {
+  color: #2c5f6b;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid rgba(44, 95, 107, 0.3);
+}
+
+.contact-card {
+  background-color: #f8f8f8;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.contact-detail {
+  margin-bottom: 1rem;
+}
+
+.contact-link {
+  color: #2c5f6b;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.contact-link:hover {
+  color: #1a3c44;
+  text-decoration: underline;
+}
+
+.social-links {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.social-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #333;
+  transition: color 0.2s;
+}
+
+.social-link:hover {
+  color: #2c5f6b;
+}
+
+.social-icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 10px;
+}
+
+.feature-box {
+  background-color: #f8f8f8;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.feature-list {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.feature-list li {
+  padding: 0.5rem 0;
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.feature-list li:before {
+  content: "🛶";
+  font-size: 0.8rem;
+  position: absolute;
+  left: 0;
+  top: 0.6rem;
+}
+
+.boat-showcase {
+  background-color: #f8f8f8;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.boat-category {
+  margin-bottom: 1.5rem;
+}
+
+.boat-category h4 {
+  color: #2c5f6b;
+  margin-bottom: 0.75rem;
+}
+
+.boat-item {
+  background-color: white;
+  border-radius: 4px;
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+/* Styles for first-time paddler page */
+.first-time-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
+
+.intro-box, .content-card, .contact-box {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+@media (min-width: 768px) {
+    .info-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.info-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.highlighted-text {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--accent-color, #ff6b00);
+    margin-bottom: 1rem;
+}
+
+.responsive-img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.intro-img-container {
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background-color: #2c3e50;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 600;
+    transition: background-color 0.3s;
+}
+
+.btn:hover {
+    background-color: #34495e;
+}
+
+.btn-primary {
+    background-color: var(--accent-color, #ff6b00);
+}
+
+.btn-primary:hover {
+    background-color: var(--accent-color-hover, #ff8533);
+}
+
+.btn-secondary {
+    background-color: #2c3e50;
+}
+
+.btn-secondary:hover {
+    background-color: #34495e;
+}
+
+.info-card {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.5rem;
+    height: 100%;
+    border: 1px solid #e5e5e5;
+}
+
+.info-card h4 {
+    margin-bottom: 1rem;
+    color: #2c3e50;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.feature-list {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.feature-list li {
+    padding: 0.5rem 0;
+    position: relative;
+    padding-left: 1.5rem;
+}
+
+.feature-list li:before {
+    content: "🛶";
+    font-size: 0.8rem;
+    position: absolute;
+    left: 0;
+    top: 0.6rem;
+}
+
+.tips-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .tips-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.tip-card {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.5rem;
+    border: 1px solid #e5e5e5;
+}
+
+.tip-card h4 {
+    margin-bottom: 1rem;
+    color: #2c3e50;
+}
+
+.faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.faq-item {
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.faq-question {
+    background-color: #f8f9fa;
+    padding: 1.25rem;
+    font-weight: 600;
+    cursor: pointer;
+    position: relative;
+}
+
+.faq-question::after {
+    content: "+";
+    position: absolute;
+    right: 1.25rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.5rem;
+    transition: transform 0.3s;
+}
+
+.faq-item.active .faq-question::after {
+    content: "−";
+}
+
+.faq-answer {
+    padding: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+}
+
+.faq-item.active .faq-answer {
+    padding: 1.25rem;
+    max-height: 500px;
+}
+
+.contact-box {
+    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+                url('/images/berounka-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.contact-box .section-title {
+    color: white;
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.contact-text {
+    font-size: 1.2rem;
+    max-width: 800px;
+    margin: 0 auto 2rem;
+    line-height: 1.6;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .first-time-content {
+        padding: 1rem;
+        gap: 2rem;
+    }
+    
+    .intro-box, .content-card, .contact-box {
+        padding: 1.5rem;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .btn {
+        text-align: center;
+    }
+}
+
+/* Styles for pro-skoly.html page */
+.school-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
+
+.pricing-table-container {
+    overflow-x: auto;
+    margin-bottom: 1rem;
+}
+
+.pricing-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    min-width: 600px;
+}
+
+.pricing-table th,
+.pricing-table td {
+    padding: 1rem;
+    text-align: center;
+    border: 1px solid #e5e5e5;
+}
+
+.pricing-table th {
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 600;
+}
+
+.pricing-table th:first-child,
+.pricing-table td:first-child {
+    text-align: left;
+    font-weight: 600;
+}
+
+.pricing-table tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+.pricing-note {
+    margin-top: 1rem;
+    text-align: center;
+    font-size: 1rem;
+    color: #555;
+}
+
+.course-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.step-item {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid var(--accent-color);
+}
+
+.step-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    background-color: var(--accent-color);
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 700;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.step-content {
+    flex-grow: 1;
+}
+
+.step-content h4 {
+    margin: 0 0 0.5rem 0;
+    color: #2c3e50;
+    font-size: 1.2rem;
+}
+
+.step-content p {
+    margin: 0;
+    line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+    .school-content {
+        padding: 1rem;
+        gap: 2rem;
+    }
+    
+    .step-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1rem;
+    }
+    
+    .step-number {
+        width: 2.5rem;
+        height: 2.5rem;
+        font-size: 1.25rem;
+    }
+}
+
+/* Styles for pricing page */
+.pricing-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
+
+.pricing-table-container {
+    overflow-x: auto;
+    margin: 1.5rem 0;
+}
+
+.pricing-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 800px; /* Ensure table doesn't get too compressed */
+}
+
+.pricing-table th,
+.pricing-table td {
+    padding: 0.75rem;
+    text-align: center;
+    border: 1px solid #e5e5e5;
+}
+
+.pricing-table th {
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.pricing-table th:first-child,
+.pricing-table td:first-child {
+    text-align: left;
+    font-weight: 600;
+}
+
+.pricing-table th:nth-child(2),
+.pricing-table td:nth-child(2) {
+    text-align: left;
+}
+
+.pricing-table tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+.special-note {
+    background-color: #fff8e6;
+    padding: 0.75rem;
+    border-left: 4px solid var(--accent-color);
+    font-style: italic;
+    margin: 1rem 0;
+}
+
+.pricing-info {
+    margin-top: 1.5rem;
+    line-height: 1.6;
+}
+
+.transport-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin: 1.5rem 0;
+}
+
+.transport-day {
+    background-color: #f8f9fa;
+    padding: 1.2rem;
+    border-radius: 8px;
+    border: 1px solid #e5e5e5;
+}
+
+.transport-day h5 {
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+    font-size: 1.1rem;
+}
+
+.transport-list {
+    list-style: none;
+    padding: 0;
+}
+
+.transport-list li {
+    padding: 0.5rem 0;
+    border-bottom: 1px dotted #e5e5e5;
+}
+
+.transport-list li:last-child {
+    border-bottom: none;
+}
+
+.transport-price {
+    margin-top: 1.5rem;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.transport-notes {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e5e5e5;
+}
+
+.discounts-list, 
+.cancellation-list {
+    list-style: none;
+    padding: 0;
+    margin: 1.5rem 0;
+}
+
+.discounts-list li, 
+.cancellation-list li {
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    background-color: #f8f9fa;
+    border-left: 4px solid var(--accent-color);
+    border-radius: 0 4px 4px 0;
+}
+
+.discount-note,
+.cancellation-note {
+    margin-top: 1.5rem;
+    line-height: 1.6;
+}
+
+.cancellation-note a {
+    color: var(--accent-color);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.cancellation-note a:hover {
+    color: var(--accent-color-hover);
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .pricing-content {
+        padding: 1rem;
+        gap: 2rem;
+    }
+    
+    .transport-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .pricing-table th, 
+    .pricing-table td {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* Routes page styles - continued */
+.highlight {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background-color: rgba(255, 107, 0, 0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+}
+
+.highlight i {
+    color: var(--accent-color, #ff6b00);
+    font-size: 1rem;
+}
+
+.route-itinerary {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.day-item {
+    display: flex;
+    padding: 0.5rem 0;
+    border-bottom: 1px dashed #e5e5e5;
+}
+
+.day-item:last-child {
+    border-bottom: none;
+}
+
+.day-label {
+    font-weight: 600;
+    min-width: 70px;
+    color: var(--accent-color, #ff6b00);
+}
+
+.day-route {
+    flex-grow: 1;
+}
+
+.route-navigation {
+    background-color: #f8f9fa;
+    padding: 2rem;
+    border-radius: 8px;
+    margin: 3rem 0;
+    text-align: center;
+    margin: 4rem auto;
+    max-width: 1000px;
+}
+
+.route-navigation h3 {
+    margin-bottom: 1rem;
+    color: #2c3e50;
+}
+
+.route-nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.cta-box {
+    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+                url('/images/berounka-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    padding: 3rem 2rem;
+    border-radius: 8px;
+    text-align: center;
+    max-width: 1000px;
+    margin: 3rem auto;
+}
+
+.cta-box h3 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    color: white;
+}
+
+.cta-box p {
+    font-size: 1.2rem;
+    max-width: 800px;
+    margin: 0 auto 2rem;
+}
+
+.routes-intro {
+    margin-bottom: 3rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e5e5e5;
+    text-align: center;
+}
+
+.category-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--accent-color, #ff6b00);
+    color: #2c3e50;
+    font-size: 1.8rem;
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+}
+
+.route-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: var(--accent-color, #ff6b00);
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.25rem 1rem;
+    border-radius: 0 0 0 8px;
+}
+
+/* Responsive adjustments for routes page */
+@media (max-width: 768px) {
+    .routes-content {
+        padding: 1rem;
+        gap: 2rem;
+    }
+    
+    .route-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .route-navigation {
+        padding: 1.5rem;
+    }
+    
+    .route-nav-links {
+        flex-direction: column;
+    }
+    
+    .route-nav-links a {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .route-navigation h3 {
+        font-size: 1.4rem;
+    }
+    
+    .category-title {
+        font-size: 1.5rem;
+    }
+    
+    .route-header h4 {
+        font-size: 1.3rem;
+    }
+}
+
+@media (max-width: 992px) and (min-width: 769px) {
+    .route-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1200px) {
+    .routes-content {
+        padding: 1rem 3rem;
+    }
+    
+    .route-cards {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Improved layout and content alignment */
+main {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.first-time-content, 
+.school-content, 
+.pricing-content,
+.routes-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem 0;
+}
+
+.intro-box, 
+.content-card, 
+.contact-box, 
+.pricing-box, 
+.transport-box,
+.discounts-box,
+.cancellation-box {
+    margin-bottom: 3rem;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.routes-category {
+    margin-bottom: 4rem;
+    padding: 0 1rem;
+}
+
+.route-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+}
+
+/* Improved route cards for better alignment */
+.route-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.route-description, .route-itinerary {
+    flex-grow: 1;
+    padding: 1.5rem;
+}
+
+/* Give headers more breathing room */
+.category-title {
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+}
+
+/* Improve navigation spacing */
+.route-navigation {
+    margin: 4rem auto;
+    max-width: 1000px;
+}
+
+/* Better CTA box */
+.cta-box {
+    max-width: 1000px;
+    margin: 3rem auto;
+}
+
+/* Improve mobile responsiveness */
+@media (max-width: 768px) {
+    .routes-content,
+    .school-content,
+    .pricing-content,
+    .first-time-content {
+        padding: 1rem;
+    }
+    
+    .route-cards {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Enhanced Routes Page Layout */
+.routes-content {
+    max-width: 1200px;
+    margin: 0 auto 4rem;
+    padding: 0;
+}
+
+.routes-intro {
+    margin: 2rem auto 4rem;
+    padding: 2rem;
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    border: 1px solid #e5e5e5;
+    text-align: center;
+    max-width: 1000px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+}
+
+.routes-category {
+    margin-bottom: 5rem;
+    scroll-margin-top: 80px;
+}
+
+.category-title {
+    margin: 0 0 2.5rem 0;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--accent-color, #ff6b00);
+    color: #2c3e50;
+    font-size: 2rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    max-width: 1100px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.route-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 2.5rem;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.route-card {
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+    border: 1px solid rgba(229, 229, 229, 0.8);
+}
+
+.route-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.route-header {
+    background-color: #f8f9fa;
+    padding: 2rem;
+    position: relative;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.route-header h4 {
+    font-size: 1.5rem;
+    margin: 0 0 1.2rem 0;
+    color: var(--primary-color, #2c3e50);
+    font-weight: 600;
+}
+
+.route-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    font-size: 0.95rem;
+    color: #555;
+}
+
+.route-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: var(--accent-color, #ff6b00);
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 0 0 0 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.route-description {
+    padding: 2rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.route-description p {
+    margin: 0;
+    line-height: 1.6;
+    color: #333;
+}
+
+.route-highlights {
+    padding: 1.5rem 2rem;
+    background-color: #f8f9fa;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    border-top: 1px solid #e5e5e5;
+}
+
+.highlight {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background-color: rgba(255, 107, 0, 0.1);
+    padding: 0.75rem 1.25rem;
+    border-radius: 6px;
+    font-weight: 500;
+    flex-grow: 1;
+    min-width: 200px;
+}
+
+.highlight i {
+    color: var(--accent-color, #ff6b00);
+    font-size: 1.1rem;
+}
+
+.route-itinerary {
+    padding: 2rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.day-item {
+    display: flex;
+    padding: 0.75rem 0;
+    border-bottom: 1px dashed #e5e5e5;
+}
+
+.day-item:last-child {
+    border-bottom: none;
+}
+
+.day-label {
+    font-weight: 700;
+    min-width: 80px;
+    color: var(--accent-color, #ff6b00);
+}
+
+.route-navigation {
+    background-color: #f8f9fa;
+    padding: 2.5rem;
+    border-radius: 12px;
+    margin: 5rem auto;
+    text-align: center;
+    max-width: 1000px;
+    border: 1px solid #e5e5e5;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.route-navigation h3 {
+    margin-bottom: 1.5rem;
+    color: #2c3e50;
+    font-size: 1.6rem;
+}
+
+.route-nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.route-nav-links .btn {
+    min-width: 160px;
+    text-align: center;
+    margin: 0.5rem;
+}
+
+.cta-box {
+    background: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)),
+                url('/images/berounka-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    padding: 4rem 2rem;
+    border-radius: 12px;
+    text-align: center;
+    max-width: 1000px;
+    margin: 4rem auto 2rem;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+}
+
+.cta-box h3 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    color: white;
+    font-weight: 600;
+}
+
+.cta-box p {
+    font-size: 1.25rem;
+    max-width: 800px;
+    margin: 0 auto 2rem;
+    line-height: 1.6;
+}
+
+.cta-box .btn-primary {
+    font-size: 1.1rem;
+    padding: 1rem 2rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .routes-content {
+        padding: 0 1rem;
+    }
+    
+    .route-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .category-title {
+        font-size: 1.5rem;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+    
+    .route-header {
+        padding: 1.5rem;
+    }
+    
+    .route-description, 
+    .route-itinerary {
+        padding: 1.5rem;
+    }
+    
+    .route-highlights {
+        padding: 1.25rem;
+        flex-direction: column;
+    }
+    
+    .highlight {
+        width: 100%;
+    }
+}
+
+/* Enhanced route details styling */
+.route-description p {
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+.route-description strong {
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+.river-km {
+    font-size: 0.85rem;
+    color: #666;
+    font-style: italic;
+    margin-left: 5px;
+}
+
+.day-item {
+    display: flex;
+    padding: 0.75rem 0;
+    border-bottom: 1px dashed #e5e5e5;
+}
+
+.day-item:last-child {
+    border-bottom: none;
+}
+
+.day-label {
+    font-weight: 700;
+    min-width: 80px;
+    color: var(--accent-color, #ff6b00);
+}
+
+.route-highlights {
+    padding: 1.5rem 2rem;
+    background-color: #f8f9fa;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    border-top: 1px solid #e5e5e5;
+}
+
+.highlight {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background-color: rgba(255, 107, 0, 0.1);
+    padding: 0.75rem 1.25rem;
+    border-radius: 6px;
+    font-weight: 500;
+    flex-grow: 1;
+    min-width: 200px;
+}
+
+/* Add information icon for interesting facts */
+.info-callout {
+    background-color: #e7f5ff;
+    border-left: 4px solid #339af0;
+    padding: 1rem;
+    margin: 1.5rem 0;
+    border-radius: 0 4px 4px 0;
+}
+
+.info-callout h5 {
+    color: #1971c2;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.info-callout h5 i {
+    color: #1971c2;
+}
+
+.info-callout p {
+    margin-bottom: 0;
+    font-size: 0.95rem;
+}
+
+/* Improve route cards for multi-day routes */
+.route-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.route-description {
+    flex-grow: 1;
+    padding: 2rem;
+}
+
+@media (max-width: 768px) {
+    .highlight {
+        width: 100%;
+        min-width: unset;
+    }
+}

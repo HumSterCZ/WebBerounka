@@ -12,13 +12,170 @@
     <script src="/components/header.js"></script>
 </head>
 <body>
-    <header>
+    <header class="header-hero">
         <site-header></site-header>
+        <section class="hero">
+            <p class="hero-subtitle">Ceník půjčovného</p>
+            <h2>CENY A PODMÍNKY</h2>
+            <p class="hero-text">Kompletní ceník našich služeb a výhody pro naše klienty</p>
+        </section>
     </header>
 
     <main>
-        <h2>Ceník půjčovného</h2>
-        <!-- Zde bude obsah stránky -->
+        <section class="section-heading">
+            <h2 class="decorated-heading">Ceník půjčovného</h2>
+            <div class="heading-underline">
+                <div class="underline-element"></div>
+                <div class="underline-icon">🛶</div>
+                <div class="underline-element"></div>
+            </div>
+        </section>
+
+        <section class="pricing-content">
+            <div class="pricing-box content-card">
+                <h3 class="section-title">Ceník plavidel a vybavení</h3>
+                <p class="pricing-note special-note"><em>*Uvedené ceny platí pouze pro zapůjčení na 4-5 všedních dní mimo státní svátky a nevztahují se na ně žádné další slevy.</em></p>
+
+                <div class="pricing-table-container">
+                    <table class="pricing-table">
+                        <thead>
+                            <tr>
+                                <th>Plavidlo</th>
+                                <th>Vybavení v ceně</th>
+                                <th>1 den</th>
+                                <th>2 dny</th>
+                                <th>3 dny</th>
+                                <th>4 dny</th>
+                                <th>5 dní</th>
+                                <th>6 dní</th>
+                                <th>7 dní</th>
+                                <th>Po-Pá* (4 dny)</th>
+                                <th>Po-Pá* (5 dní)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Kanoe</td>
+                                <td>2 pádla, 2 vesty, 2 barely</td>
+                                <td>550</td>
+                                <td>990</td>
+                                <td>1320</td>
+                                <td>1560</td>
+                                <td>1820</td>
+                                <td>1820</td>
+                                <td>1820</td>
+                                <td>1320</td>
+                                <td>1560</td>
+                            </tr>
+                            <tr>
+                                <td>Kanoe rodinná</td>
+                                <td>3-4 pádla, 3-4 vesty, 3 barely</td>
+                                <td>660</td>
+                                <td>1290</td>
+                                <td>1790</td>
+                                <td>2240</td>
+                                <td>2610</td>
+                                <td>2610</td>
+                                <td>2610</td>
+                                <td>1790</td>
+                                <td>2240</td>
+                            </tr>
+                            <tr>
+                                <td>Velký raft</td>
+                                <td>6 pádel, 6 vest, 3 barely</td>
+                                <td>1650</td>
+                                <td>3060</td>
+                                <td>3850</td>
+                                <td>4650</td>
+                                <td>5810</td>
+                                <td>5810</td>
+                                <td>5810</td>
+                                <td>3850</td>
+                                <td>4650</td>
+                            </tr>
+                            <tr>
+                                <td>Kajak</td>
+                                <td>pádlo, vesta, helma, špricdeka</td>
+                                <td>390</td>
+                                <td>770</td>
+                                <td>1060</td>
+                                <td>1240</td>
+                                <td>1270</td>
+                                <td>1270</td>
+                                <td>1270</td>
+                                <td>1060</td>
+                                <td>1240</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <p class="pricing-info">Cena za komplet zůstává stejná i v případě, že si objednáte méně pádel, vest nebo barelů. Pokud některé vybavení objednáte nad tento limit, bude vám za každý kus připočtena částka 40 Kč/den.</p>
+            </div>
+
+            <div class="transport-box content-card">
+                <h3 class="section-title">Doprava osob</h3>
+                
+                <div class="transport-info">
+                    <h4>Ceník dopravy osob minibusem (8+1):</h4>
+                    <p>Doprava minibusem (8+1) mimo místo uvedené v tabulce je 15Kč/Km.</p>
+                    <p>Zajištění dopravy autobusem je individuální.</p>
+                </div>
+
+                <div class="weekend-transport">
+                    <h4>O prázdninách jezdí o víkendech autobusy:</h4>
+                    
+                    <div class="transport-grid">
+                        <div class="transport-day">
+                            <h5>Sobota:</h5>
+                            <ul class="transport-list">
+                                <li>Liblín – Nadryby: Odjezd 9:00</li>
+                                <li>Mlok – Liblín: Odjezd 10:15</li>
+                                <li>Mlok – Kobylka: Odjezd 16:00</li>
+                            </ul>
+                        </div>
+                        <div class="transport-day">
+                            <h5>Neděle:</h5>
+                            <ul class="transport-list">
+                                <li>Zvíkovec – Mlok: Odjezd 15:00</li>
+                                <li>Mlok – Kobylka: Odjezd 16:00</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <p class="transport-price">Cena autobusu činní 150Kč/osoba – nezapočítávají se děti předškolního věku.</p>
+                </div>
+                
+                <div class="transport-notes">
+                    <p>Doprava lodí se nezapočítává, jestli je kalkulována doprava osob minibusem nebo autobusem. Nezapočítává se ani na našich výdejních nebo sběrných místech.</p>
+                </div>
+            </div>
+
+            <div class="discounts-box content-card">
+                <h3 class="section-title">Slevy</h3>
+                
+                <ul class="discounts-list">
+                    <li>Sleva <strong>3%</strong> z ceny za zapůjčení vybavení v hodnotě vyšší než <strong>7 000 Kč</strong></li>
+                    <li>Sleva <strong>5%</strong> z ceny za zapůjčení vybavení v hodnotě vyšší než <strong>12 000 Kč</strong></li>
+                    <li>Sleva <strong>8%</strong> z ceny za zapůjčení vybavení v hodnotě vyšší než <strong>17 000 Kč</strong></li>
+                </ul>
+                
+                <p class="discount-note">Do výpočtu slev se nezapočítává cena dopravy lodí a osob.</p>
+            </div>
+
+            <div class="cancellation-box content-card">
+                <h3 class="section-title">Storno poplatky</h3>
+                
+                <p>Při zrušení objednávky v době kratší než 14 dní před začátkem plavby účtujeme z celkové ceny nájmu tyto storno poplatky:</p>
+                
+                <ul class="cancellation-list">
+                    <li><strong>14-7 dní</strong> před plavbou – <strong>25%</strong></li>
+                    <li><strong>6-0 dní</strong> před plavbou – <strong>50%</strong></li>
+                </ul>
+                
+                <p class="cancellation-note">Výjimkou pro zrušení objednávky je nesplavnost (vysoký nebo naopak nízký vodní stav). Ukazatel nesplavnosti se řídí dle limitů na <a href="https://www.vodackanavigace.cz" target="_blank" rel="noopener noreferrer">www.vodackanavigace.cz</a></p>
+            </div>
+        </section>
     </main>
 
     <footer>

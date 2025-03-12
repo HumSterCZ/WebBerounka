@@ -8,17 +8,597 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@700&family=Outfit:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="/components/navigation.js"></script>
     <script src="/components/header.js"></script>
 </head>
 <body>
-    <header>
+    <header class="header-hero">
         <site-header></site-header>
+        <section class="hero">
+            <p class="hero-subtitle">Vodácké výlety</p>
+            <h2>TRASY NA BEROUNCE</h2>
+            <p class="hero-text">Objevte nejkrásnější úseky Berounky, od krátkých jednodenních po týdenní dobrodružství</p>
+        </section>
     </header>
 
     <main>
-        <h2>Vodácké trasy</h2>
-        <!-- Obsah stránky -->
+        <section class="section-heading">
+            <h2 class="decorated-heading">Vodácké trasy</h2>
+            <div class="heading-underline">
+                <div class="underline-element"></div>
+                <div class="underline-icon">🛶</div>
+                <div class="underline-element"></div>
+            </div>
+        </section>
+
+        <section class="routes-content">
+            <div class="routes-intro">
+                <p>Berounka nabízí ideální podmínky pro začátečníky i zkušené vodáky. Vyberte si z našich navržených tras podle délky vašeho výletu a objevte krásy Berounky z hladiny řeky. Pro všechny trasy zajišťujeme kompletní servis včetně dopravy osob a vybavení.</p>
+            </div>
+
+            <div class="route-navigation">
+                <h3>Vyberte délku trasy:</h3>
+                <div class="route-nav-links">
+                    <a href="#one-day" class="btn btn-secondary">Jednodenní trasy</a>
+                    <a href="#two-days" class="btn btn-secondary">Dvoudenní trasy</a>
+                    <a href="#three-days" class="btn btn-secondary">Třídenní trasy</a>
+                    <a href="#four-days" class="btn btn-secondary">Čtyřdenní trasy</a>
+                    <a href="#week-long" class="btn btn-secondary">5-7 denní trasy</a>
+                </div>
+            </div>
+
+            <!-- Jednodenní trasy -->
+            <div class="routes-category" id="one-day">
+                <h3 class="category-title">
+                    <i class="fas fa-sun"></i>
+                    Jednodenní trasy
+                </h3>
+                
+                <div class="route-cards">
+                    <div class="route-card">
+                        <div class="route-header">
+                            <span class="route-badge">Doporučujeme!</span>
+                            <h4>Liblín – Třímany U Mloka</h4>
+                            <div class="route-meta">
+                                <span><i class="fas fa-route"></i> 13 km</span>
+                                <span><i class="far fa-clock"></i> 4-5 hodin</span>
+                                <span><i class="fas fa-water"></i> 2 jezy</span>
+                            </div>
+                        </div>
+                        <div class="route-description">
+                            <p>Začíná se z kempu Kobylka (ř.km 35,6) na pravém břehu. Tato úvodní část řeky vám nabídne krásné scenérie s historickými prvky.</p>
+                            <p>Po dvou kilometrech plavby narazíte na první občerstvovací stanici <strong>Kemp na Střelnici</strong> (ř.km 37,2), kde v letních dnech mají vodní bar a velkou škálu výběru z karibských rumů.</p>
+                            <p>Poté proplujete pod mostem v Liblíně a po dalším kilometru vás čeká <strong>Liblínský mlýn</strong> s jezem (ř.km 38,6), který je sjízdný.</p>
+                            <p>V půli plavby je kemp Rybárna (ř.km 41,3). Následuje další kilometr a uvidíte majestátní <strong>Třímanské skály</strong> (ř.km 44,2) na pravém břehu.</p>
+                            <p>Po dalším úseku narazíte na jez <strong>Podkrašovský mlýn</strong> (ř.km 45,7), který je sjízdný. Za jezem po levé straně se nachází <strong>hrad Krašov</strong> (ř.km 47,2), pod hradem je místo k vylodění a od vody vede cestička přímo na hrad. Z hradu je vidět do tamního okolí na meandry řeky.</p>
+                            <p>Od Krašova trvá cesta přibližně půl hodinky do kempu u Mloka (ř.km 49,1). Doporučujeme si dát svíčkovou, ale také vaří další skvělá česká jídla.</p>
+                        </div>
+                        <div class="route-highlights">
+                            <div class="highlight">
+                                <i class="fas fa-hamburger"></i>
+                                <span>Vodní bar s rumy</span>
+                            </div>
+                            <div class="highlight">
+                                <i class="fas fa-monument"></i>
+                                <span>Hrad Krašov</span>
+                            </div>
+                            <div class="highlight">
+                                <i class="fas fa-mountain"></i>
+                                <span>Třímanské skály</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="route-card">
+                        <div class="route-header">
+                            <h4>Nadryby – Liblín</h4>
+                            <div class="route-meta">
+                                <span><i class="fas fa-route"></i> 15 km</span>
+                                <span><i class="far fa-clock"></i> 4-5 hodin</span>
+                                <span><i class="fas fa-water"></i> 4 jezy</span>
+                            </div>
+                        </div>
+                        <div class="route-description">
+                            <p>Začíná se po pravé straně břehu naproti <strong>kempu U Přívozu</strong> (ř.km 20,7). Auta si můžete nechat v cílové stanici v Kempu na Kobylce na neplaceném parkovišti.</p>
+                            <p>Hned na začátku plavby se můžete těšit na <strong>přívoz v Nadrybech</strong> (ř.km 20,6), který je jedním z tradičních převozů na Berounce.</p>
+                            <p>Po necelých 3 km narazíte na <strong>jez Darová</strong> (ř.km 23,5), který je sjízdný, ale vyžaduje opatrnost. Následně po 1 km se dostanete k dalšímu přívozu (ř.km 24,4).</p>
+                            <p>Pokračujte další 2 km k <strong>tábořišti Planá</strong> (ř.km 26,4), kde je možnost občerstvení. Po krátkém úseku připlujete k <strong>jezu Kaceřovský mlýn</strong> (ř.km 27,5), který je bezpečně sjízdný.</p>
+                            <p>Za zmínku stojí také blízký <strong>zámek Kaceřov</strong>, který je vzdálen 1,1 km od řeky na levém břehu.</p>
+                            <p>Po dalších 2,3 km narazíte na <strong>jez Žikovský mlýn</strong> (ř.km 29,8), který je nesjízdný a je nutné jej přenést. V této lokalitě se nachází také <strong>Bistro Skopce skadiboudou</strong> přímo na levém břehu.</p>
+                            <p>Následují 3,2 km klidné plavby, než se dostanete k <strong>hradu Libštejn</strong> (ř.km 33,1), který se majestátně tyčí na pravém břehu. Za ním je nesjízdný a nebezpečný <strong>jez Libštejnský mlýn</strong> (ř.km 33,2), který vyžaduje opatrné přenášení.</p>
+                            <p>Trasa končí v Liblíně u <strong>tábořiště Kobylka</strong> (ř.km 35,6).</p>
+                        </div>
+                        <div class="route-highlights">
+                            <div class="highlight">
+                                <i class="fas fa-parking"></i>
+                                <span>Neplacené parkování</span>
+                            </div>
+                            <div class="highlight">
+                                <i class="fas fa-hamburger"></i>
+                                <span>Bistro Skopce skadiboudou</span>
+                            </div>
+                            <div class="highlight">
+                                <i class="fas fa-landmark"></i>
+                                <span>Hrad Libštejn</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="route-card">
+                        <div class="route-header">
+                            <h4>Třímany U Mloka – Zvíkovec</h4>
+                            <div class="route-meta">
+                                <span><i class="fas fa-route"></i> 7 km</span>
+                                <span><i class="far fa-clock"></i> 3-4 hodiny</span>
+                                <span><i class="fas fa-water"></i> 1 jez</span>
+                            </div>
+                        </div>
+                        <div class="route-description">
+                            <p>Začíná se v <strong>kempu U Mloka</strong> (ř.km 49,1), který nabízí příjemné zázemí a dobré jídlo. Půjčovna je přímo na místě, takže vše potřebné máte k dispozici.</p>
+                            <p>Po 800 metrech plavby minete <strong>půjčovnu Dronte - U Potůčků</strong> (ř.km 49,9) a následně <strong>tábořiště U Potůčků</strong> (ř.km 50,0) na levém břehu.</p>
+                            <p>Po 1,2 km vás čeká <strong>jez Lejskův mlýn</strong> (ř.km 51,2), který je sjízdný po pravé straně šlajsnou. Hned u jezu se nachází <strong>penzion Na Prachárně</strong>, kde je možnost občerstvení.</p>
+                            <p>Po dalších 2,8 km plavby se dostanete k obci Dolany, kde můžete navštívit <strong>kostelík</strong> a místní <strong>občerstvení u kostela</strong> (ř.km 53,9) přímo na levém břehu.</p>
+                            <p>Pokračujte dalších 3,5 km, kde vaše plavba končí v <strong>kempu U Varských</strong> (ř.km 57,4) na levém břehu. Jen o 100 metrů dále se nachází nesjízdný <strong>jez Zvíkovec</strong> (ř.km 57,5).</p>
+                        </div>
+                        <div class="route-highlights">
+                            <div class="highlight">
+                                <i class="fas fa-church"></i>
+                                <span>Kostelík v Dolanech</span>
+                            </div>
+                            <div class="highlight">
+                                <i class="fas fa-water"></i>
+                                <span>Sjízdný jez Lejskův mlýn</span>
+                            </div>
+                            <div class="highlight">
+                                <i class="fas fa-campground"></i>
+                                <span>Kemp U Varských</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="route-card">
+                        <div class="route-header">
+                            <h4>Třímany – Skryje</h4>
+                            <div class="route-meta">
+                                <span><i class="fas fa-route"></i> 15 km</span>
+                                <span><i class="far fa-clock"></i> 5-6 hodin</span>
+                                <span><i class="fas fa-water"></i> 3 jezy</span>
+                            </div>
+                        </div>
+                        <div class="route-description">
+                            <p>Plavba začíná v <strong>kempu U Mloka</strong> (ř.km 49,1) na pravém břehu. Po 1,2 km plavby narazíte na první jez <strong>Lejskův mlýn</strong> (ř.km 51,2), který se sjíždí šlajsnou po pravé straně.</p>
+                            <p>Po třech kilometrech od vyplutí si můžete prohlédnout kostelík v Dolanech a navštívit <strong>občerstvení u kostela</strong> (ř.km 53,9) na levém břehu.</p>
+                            <p>V půli cesty doporučujeme navštívit <strong>Kemp u Varských</strong> (ř.km 57,4), kde se můžete občerstvit. Za ním následuje <strong>nesjízdný jez Zvíkovec</strong> (ř.km 57,5), který je třeba přenést.</p>
+                            <p>Zajímavá je také oblast kolem obce Zvíkovec s mostem (ř.km 57,7) a rekreačním střediskem Pohoda (ř.km 58,1).</p>
+                            <p>Po dalším úseku vás čeká <strong>jez Kočkův mlýn</strong> (ř.km 58,5), který je sjízdný. Následuje delší úsek klidné plavby (3,3 km), kde můžete obdivovat přírodní krásy údolí.</p>
+                            <p>Nedaleko od řeky (2,2 km od pravého břehu) se nachází přírodní zajímavost <strong>Skryjská jezírka a vodopád</strong> (ř.km 61,8), která stojí za odbočku, pokud máte čas.</p>
+                            <p>U stejného říčního kilometru je také <strong>jez Čilá</strong>, který je sice sjízdný, ale vyžaduje opatrnost. Dále minete <strong>tábořiště Šlovice</strong> (ř.km 62,0) na levém břehu.</p>
+                            <p>Končí se v <strong>kempu Pod Mostem u Fišera</strong>, což je veřejné tábořiště Ahoj Skryje (ř.km 63,5) na pravém břehu, přímo u obce Skryje.</p>
+                        </div>
+                        <div class="route-highlights">
+                            <div class="highlight">
+                                <i class="fas fa-church"></i>
+                                <span>Kostelík v Dolanech</span>
+                            </div>
+                            <div class="highlight">
+                                <i class="fas fa-campground"></i>
+                                <span>Kemp u Varských</span>
+                            </div>
+                            <div class="highlight">
+                                <i class="fas fa-water"></i>
+                                <span>Skryjská jezírka</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dvoudenní trasy - enhanced descriptions -->
+            <div class="routes-category" id="two-days">
+                <h3 class="category-title">
+                    <i class="fas fa-moon"></i>
+                    Dvoudenní trasy
+                </h3>
+                
+                <div class="route-cards">
+                    <div class="route-card">
+                        <div class="route-header">
+                            <h4>Nadryby - Třímany U Mloka</h4>
+                            <div class="route-meta">
+                                <span><i class="fas fa-route"></i> Celkem 34 km</span>
+                            </div>
+                        </div>
+                        <div class="route-itinerary">
+                            <div class="day-item">
+                                <span class="day-label">Den 1:</span>
+                                <span class="day-route">Chrást – Liblín (21 km)</span>
+                            </div>
+                            <div class="day-item">
+                                <span class="day-label">Den 2:</span>
+                                <span class="day-route">Liblín – Třímany U Mloka (13 km)</span>
+                            </div>
+                        </div>
+                        <div class="route-description">
+                            <p><strong>Den 1:</strong> Začnete v <strong>Chrástu u Dolanského mostu</strong> (ř.km 14,1), kde je hned několik půjčoven. Během prvního dne proplujete kolem soutoku s <strong>řekou Klabavou</strong> (ř.km 16,8) a poté vás čekají dva jezy - <strong>jez Telín</strong> a <strong>jez Valentovský mlýn</strong> (ř.km 19,7), které jsou oba sjízdné.</p>
+                            <p>V <strong>Nadrybech</strong> můžete využít občerstvení v kempu U Přívozu. Dále vás čeká jezů <strong>Darová</strong>, <strong>Kaceřovský mlýn</strong>, <strong>Žikovský mlýn</strong> a <strong>Libštejnský mlýn</strong>, přičemž návštěva hradu Libštejn je zajímavou zastávkou. Den zakončíte v <strong>Liblíně v tábořišti Kobylka</strong>.</p>
+                            <p><strong>Den 2:</strong> Druhý den pokračujete z Liblína přes <strong>Liblínský jez</strong> k tábořišti na Rybárně. Dále minete <strong>Třímanské skály</strong> a <strong>Podkrašovský mlýn</strong> s jezem. Zajímavou zastávkou je <strong>zřícenina hradu Krašov</strong> na levém břehu. Celou plavbu zakončíte v oblíbeném <strong>kempu U Mloka</strong>.</p>
+                        </div>
+                        <div class="route-highlights">
+                            <div class="highlight">
+                                <i class="fas fa-landmark"></i>
+                                <span>Hrad Libštejn</span>
+                            </div>
+                            <div class="highlight">
+                                <i class="fas fa-mountain"></i>
+                                <span>Třímanské skály</span>
+                            </div>
+                            <div class="highlight">
+                                <i class="fas fa-monument"></i>
+                                <span>Zřícenina Krašov</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="route-card">
+                        <div class="route-header">
+                            <h4>Liblín – Skryje</h4>
+                            <div class="route-meta">
+                                <span><i class="fas fa-route"></i> Celkem 28 km</span>
+                            </div>
+                        </div>
+                        <div class="route-itinerary">
+                            <div class="day-item">
+                                <span class="day-label">Den 1:</span>
+                                <span class="day-route">Liblín – Třímany U Mloka (13 km)</span>
+                            </div>
+                            <div class="day-item">
+                                <span class="day-label">Den 2:</span>
+                                <span class="day-route">Třímany U Mloka – Skryje (15 km)</span>
+                            </div>
+                        </div>
+                        <div class="route-description">
+                            <p><strong>Den 1:</strong> Začínáte v <strong>Liblíně u tábořiště Kobylka</strong> (ř.km 35,6). Po vyplutí minete obec Liblín, která leží na pravém břehu. Asi po 2 km narazíte na <strong>Liblínský jez</strong> (ř.km 38,6), který je sjízdný. Další plavba vás dovede k <strong>tábořišti na Rybárně</strong> (ř.km 41,3) – vhodné místo pro občerstvení.</p>
+                            <p>Po dalších 3 km uvidíte úchvatné <strong>Třímanské skály</strong> (ř.km 44,2) tyčící se na pravém břehu. Následuje <strong>jez Podkrašovský mlýn</strong> (ř.km 45,7), který je rovněž sjízdný. Zastavit můžete u <strong>zříceniny hradu Krašov</strong> (ř.km 47,2) – od levého břehu vede stezka k hradu s krásnými výhledy. Den zakončíte v oblíbeném <strong>kempu U Mloka v Třímanech</strong> (ř.km 49,1).</p>
+                            <p><strong>Den 2:</strong> Z Mloka pokračujete kolem <strong>tábořiště U Potůčků</strong> (ř.km 50,0) k <strong>jezu Lejskův mlýn</strong> (ř.km 51,2), který je sjízdný šlajsnou po pravé straně. Dále proplujete kolem obce Dolany s kostelíkem a <strong>občerstvením</strong> (ř.km 53,9) na levém břehu.</p>
+                            <p>Poté připlouvá <strong>kemp U Varských</strong> (ř.km 57,4), za nímž následuje <strong>nesjízdný jez Zvíkovec</strong> (ř.km 57,5), který je nutné přenést. Po krátkém úseku narazíte na <strong>sjízdný jez Kočkův mlýn</strong> (ř.km 58,5). Nezapomeňte si prohlédnout <strong>Skryjská jezírka a vodopády</strong> (ř.km 61,8) – přírodní zajímavost vzdálenou asi 2,2 km od řeky. Plavbu zakončíte v kempu ve <strong>Skryjích</strong> (ř.km 63,5), kde najdete příjemné zázemí.</p>
+                        </div>
+                        <div class="route-highlights">
+                            <div class="highlight">
+                                <i class="fas fa-mountain"></i>
+                                <span>Třímanské skály</span>
+                            </div>
+                            <div class="highlight">
+                                <i class="fas fa-monument"></i>
+                                <span>Hrad Krašov</span>
+                            </div>
+                            <div class="highlight">
+                                <i class="fas fa-water"></i>
+                                <span>Skryjská jezírka</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="route-card">
+                        <div class="route-header">
+                            <h4>Třímany U Mloka – Roztoky</h4>
+                            <div class="route-meta">
+                                <span><i class="fas fa-route"></i> Celkem 28 km</span>
+                            </div>
+                        </div>
+                        <div class="route-itinerary">
+                            <div class="day-item">
+                                <span class="day-label">Den 1:</span>
+                                <span class="day-route">Třímany u Mloka – Skryje (15 km)</span>
+                            </div>
+                            <div class="day-item">
+                                <span class="day-label">Den 2:</span>
+                                <span class="day-route">Skryje – Roztoky (13 km)</span>
+                            </div>
+                        </div>
+                        <div class="route-description">
+                            <p><strong>Den 1:</strong> Vaše plavba začíná v oblíbeném <strong>kempu U Mloka</strong> (ř.km 49,1), kde se můžete před vyplutím dobře občerstvit. Po 800 metrech minete <strong>tábořiště U Potůčků</strong> (ř.km 50,0) na levém břehu. Po dalším kilometru vás čeká <strong>jez Lejskův mlýn</strong> (ř.km 51,2), který je sjízdný šlajsnou po pravé straně. U jezu stojí <strong>penzion Na Prachárně</strong>, kde se lze zastavit.</p>
+                            <p>Asi po 3 km narazíte na obec Dolany s <strong>kostelíkem a občerstvením</strong> (ř.km 53,9) na levém břehu. Dále proplujete kolem <strong>kempu U Varských</strong> (ř.km 57,4) a nesjízdného <strong>jezu Zvíkovec</strong> (ř.km 57,5), který je nutné přenést. Za jezem leží obec Zvíkovec s mostem (ř.km 57,7) a nedaleko i <strong>rekreační středisko Pohoda</strong> (ř.km 58,1).</p>
+                            <p>Následuje <strong>sjízdný jez Kočkův mlýn</strong> (ř.km 58,5). První den zakončíte v <strong>kempu Ahoj Skryje</strong> (ř.km 63,5), nedaleko obce Skryje. Pokud máte čas, stojí za odbočku <strong>Skryjská jezírka a vodopád</strong> (ř.km 61,8).</p>
+                            <p><strong>Den 2:</strong> Ze Skryjí pokračujete po proudu, brzy minete silniční most (ř.km 64,1) a následně se vám naskytnou krásné výhledy na <strong>zříceninu Týřov</strong> (ř.km 65,2) na pravém břehu. Proplujete podél <strong>Týřovických skal</strong> (ř.km 66,5) a kolem <strong>Kouřimské rybárny</strong> (ř.km 67,5).</p>
+                            <p>Pozoruhodným místem je <strong>Čertova skála</strong> (ř.km 68,3) na levém břehu a později i <strong>Kněžská skála</strong> (ř.km 69,6). Před koncem trasy narazíte na <strong>hostinec u Rozvědčíka</strong> (ř.km 70,7), oblíbené místo vodáků. Nedaleko je i přívoz a <strong>Pamětní síň Oty Pavla</strong> (ř.km 71,9) – legendárního spisovatele spojovaného s Berounkou.</p>
+                            <p>Poslední úsek před Roztoky vás dovede k <strong>nesjízdnému jezu Nezabudický mlýn</strong> (ř.km 72,6). Plavbu zakončíte v <strong>Roztokách</strong> (ř.km 76,1), kde najdete Hospodu u Jezzu či možnost přenocování.</p>
+                        </div>
+                        <div class="route-highlights">
+                            <div class="highlight">
+                                <i class="fas fa-water"></i>
+                                <span>Skryjská jezírka</span>
+                            </div>
+                            <div class="highlight">
+                                <i class="fas fa-mountain"></i>
+                                <span>Týřovické skály</span>
+                            </div>
+                            <div class="highlight">
+                                <i class="fas fa-landmark"></i>
+                                <span>Zřícenina Týřov</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Třídenní trasy - enhanced descriptions -->
+            <div class="routes-category" id="three-days">
+                <h3 class="category-title">
+                    <i class="fas fa-calendar-day"></i>
+                    Třídenní trasy
+                </h3>
+                
+                <div class="route-cards">
+                    <div class="route-card">
+                        <div class="route-header">
+                            <h4>Chrást – Skryje</h4>
+                            <div class="route-meta">
+                                <span><i class="fas fa-route"></i> Celkem 49 km</span>
+                            </div>
+                        </div>
+                        <div class="route-itinerary">
+                            <div class="day-item">
+                                <span class="day-label">Den 1:</span>
+                                <span class="day-route">Chrást – Liblín (21 km)</span>
+                            </div>
+                            <div class="day-item">
+                                <span class="day-label">Den 2:</span>
+                                <span class="day-route">Liblín – Třímany U Mloka (13 km)</span>
+                            </div>
+                            <div class="day-item">
+                                <span class="day-label">Den 3:</span>
+                                <span class="day-route">Třímany U Mloka – Skryje (15 km)</span>
+                            </div>
+                        </div>
+                        <div class="route-description">
+                            <p><strong>Den 1:</strong> Plavbu zahájíte v <strong>Chrástu u Dolanského mostu</strong> (ř.km 14,1), kde je několik půjčoven, včetně naší. První úsek vás povede až k soutoku s <strong>řekou Klabavou</strong> (ř.km 16,8). Poté vás čeká <strong>jez Telín</strong> (ř.km 18,7) a následně občerstvení v <strong>Nadrybech u Valentovského mlýna</strong> (ř.km 19,7).</p>
+                            <p>Za Nadryby minete <strong>kemp U Přívozu</strong> (ř.km 20,7) a dorazíte k <strong>jezu Darová</strong> (ř.km 23,5), který je sjízdný, ale vyžaduje opatrnost. Po dalším úseku objevíte <strong>tábořiště Planá</strong> (ř.km 26,4) a následně <strong>jez Kaceřovský mlýn</strong> (ř.km 27,5).</p>
+                            <p>Nedaleko odtud se nachází pozoruhodný <strong>zámek Kaceřov</strong> (vzdálen 1,1 km od řeky). Pokračujete k <strong>jezu Žikovský mlýn</strong> (ř.km 29,8), který je nesjízdný a je třeba jej přenést. V lokalitě najdete <strong>Bistro Skopce skadiboudou</strong>. Po asi 3 km plavby se dostanete k <strong>hradu Libštejn</strong> (ř.km 33,1) na pravém břehu a hned za ním k <strong>jezu Libštejnský mlýn</strong> (ř.km 33,2), který je nesjízdný. Den zakončíte v <strong>Liblíně v tábořišti Kobylka</strong> (ř.km 35,6).</p>
+                
+                            <p><strong>Den 2:</strong> Druhý den pokračujete z Liblína, brzy minete <strong>soutok s řekou Střela</strong> (ř.km 36,2) a dostanete se k <strong>Reggae kempu</strong> (ř.km 37,1). Kolem <strong>kempu Na Střelnici</strong> (ř.km 37,2) s vodním barem a rumérií proplujete až k <strong>Liblínskému jezu</strong> (ř.km 38,6), který je sjízdný.</p>
+                            <p>Během druhé části dne dorazíte k <strong>tábořišti na Rybárně</strong> (ř.km 41,3), následně kolem <strong>Třímanských skal</strong> (ř.km 44,2) až k <strong>Podkrašovskému mlýnu</strong> (ř.km 45,7) s jezem. Cennou zastávkou je <strong>zřícenina hradu Krašov</strong> (ř.km 47,2), odkud jsou krásné výhledy na meandry řeky. Den zakončíte v oblíbeném <strong>kempu U Mloka</strong> (ř.km 49,1).</p>
+                
+                            <p><strong>Den 3:</strong> Poslední den plavby vás čeká úsek z Třímany kolem <strong>tábořiště U Potůčků</strong> (ř.km 50,0) k <strong>jezu Lejskův mlýn</strong> (ř.km 51,2), který je sjízdný šlajsnou na pravé straně. V obci Dolany najdete <strong>občerstvení u kostela</strong> (ř.km 53,9).</p>
+                            <p>Pokračujete dále k <strong>kempu U Varských</strong> (ř.km 57,4) a k <strong>nesjízdnému jezu Zvíkovec</strong> (ř.km 57,5). Po přenesení lodi minete most ve Zvíkovci (ř.km 57,7) a <strong>sjízdný jez Kočkův mlýn</strong> (ř.km 58,5). Doporučujeme návštěvu <strong>Skryjských jezírek a vodopádu</strong> (ř.km 61,8) vzdálených 2,2 km od pravého břehu. Trasu zakončíte u <strong>jezu Čilá</strong> (ř.km 61,8), který je sjízdný, ale vyžaduje opatrnost, a dorazíte do <strong>kempu ve Skryjích</strong> (ř.km 63,5).</p>
+                        </div>
+                        <div class="route-highlights">
+                            <div class="highlight">
+                                <i class="fas fa-landmark"></i>
+                                <span>Hrad Libštejn</span>
+                            </div>
+                            <div class="highlight">
+                                <i class="fas fa-monument"></i>
+                                <span>Zřícenina Krašov</span>
+                            </div>
+                            <div class="highlight">
+                                <i class="fas fa-water"></i>
+                                <span>Skryjská jezírka</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Add detailed descriptions to other routes... -->
+                    <div class="route-card">
+                        <div class="route-header">
+                            <h4>Nadryby – Skryje</h4>
+                            <div class="route-meta">
+                                <span><i class="fas fa-route"></i> Celkem 43 km</span>
+                            </div>
+                        </div>
+                        <div class="route-itinerary">
+                            <div class="day-item">
+                                <span class="day-label">Den 1:</span>
+                                <span class="day-route">Nadryby – Liblín (15 km)</span>
+                            </div>
+                            <div class="day-item">
+                                <span class="day-label">Den 2:</span>
+                                <span class="day-route">Liblín – Třímany U Mloka (13 km)</span>
+                            </div>
+                            <div class="day-item">
+                                <span class="day-label">Den 3:</span>
+                                <span class="day-route">Třímany U Mloka – Skryje (15 km)</span>
+                            </div>
+                        </div>
+                        <div class="route-description">
+                            <p><strong>Den 1:</strong> Plavbu zahájíte v <strong>Nadrybech</strong> (ř.km 20,7) nedaleko kempu U Přívozu. Hned na začátku minete přívoz a pokračujete k <strong>jezu Darová</strong> (ř.km 23,5), který je sjízdný, ale vyžaduje pozornost. Následuje další přívoz (ř.km 24,4) a <strong>tábořiště Planá</strong> (ř.km 26,4) s možností občerstvení.</p>
+                            <p>Dále vás čeká <strong>jez Kaceřovský mlýn</strong> (ř.km 27,5), který je sjízdný. Nevynechejte pohled na nedaleko stojící <strong>zámek Kaceřov</strong>. Po dalších kilometrech narazíte na <strong>jez Žikovský mlýn</strong> (ř.km 29,8), který je nesjízdný. V lokalitě najdete <strong>Bistro Skopce skadiboudou</strong>. Před koncem dne minete <strong>hrad Libštejn</strong> (ř.km 33,1) a <strong>nebezpečný jez Libštejnský mlýn</strong> (ř.km 33,2), který je nutné přenést. Den zakončíte v <strong>tábořišti Kobylka v Liblíně</strong> (ř.km 35,6).</p>
+                
+                            <p><strong>Den 2:</strong> Druhý den pokračujete z Liblína dále po proudu, minete <strong>soutok s řekou Střela</strong> (ř.km 36,2) a <strong>Reggae kemp</strong> (ř.km 37,1). Na břehu najdete <strong>kemp Na Střelnici</strong> (ř.km 37,2) s vodním barem. Následuje <strong>sjízdný Liblínský jez</strong> (ř.km 38,6) a po dalších kilometrech <strong>tábořiště na Rybárně</strong> (ř.km 41,3).</p>
+                            <p>V další části dne proplujete kolem působivých <strong>Třímanských skal</strong> (ř.km 44,2) na pravém břehu a poté k <strong>jezu Podkrašovský mlýn</strong> (ř.km 45,7), který je sjízdný. Zastavit můžete u <strong>zříceniny hradu Krašov</strong> (ř.km 47,2) s nádhernými výhledy. Den zakončíte v <strong>kempu U Mloka</strong> (ř.km 49,1).</p>
+                
+                            <p><strong>Den 3:</strong> Závěrečný den plavby začnete v kempu U Mloka, pokračujete kolem <strong>tábořiště U Potůčků</strong> (ř.km 50,0) až k <strong>jezu Lejskův mlýn</strong> (ř.km 51,2), který je sjízdný šlajsnou na pravé straně. U jezu stojí <strong>penzion Na Prachárně</strong>.</p>
+                            <p>Další trasa vás dovede do obce Dolany s <strong>občerstvením u kostela</strong> (ř.km 53,9). Před koncem plavby minete <strong>kemp U Varských</strong> (ř.km 57,4), <strong>nesjízdný jez Zvíkovec</strong> (ř.km 57,5) a po přenesení lodí proplujete kolem obce Zvíkovec (ř.km 57,7) a <strong>jezu Kočkův mlýn</strong> (ř.km 58,5), který je sjízdný. Pokud máte čas, doporučujeme návštěvu <strong>Skryjských jezírek</strong> (ř.km 61,8) – přírodní památky s vodopádem. Plavbu zakončíte v <strong>kempu Ahoj Skryje</strong> (ř.km 63,5).</p>
+                        </div>
+                        <div class="route-highlights">
+                            <div class="highlight">
+                                <i class="fas fa-glass-cheers"></i>
+                                <span>Vodní bar Na Střelnici</span>
+                            </div>
+                            <div class="highlight">
+                                <i class="fas fa-mountain"></i>
+                                <span>Třímanské skály</span>
+                            </div>
+                            <div class="highlight">
+                                <i class="fas fa-waterfall"></i>
+                                <span>Skryjská jezírka a vodopád</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="route-card">
+                        <div class="route-header">
+                            <h4>Liblín – Roztoky</h4>
+                            <div class="route-meta">
+                                <span><i class="fas fa-route"></i> Celkem 41 km</span>
+                            </div>
+                        </div>
+                        <div class="route-itinerary">
+                            <div class="day-item">
+                                <span class="day-label">Den 1:</span>
+                                <span class="day-route">Liblín – Třímany U Mloka (13 km)</span>
+                            </div>
+                            <div class="day-item">
+                                <span class="day-label">Den 2:</span>
+                                <span class="day-route">Třímany U Mloka – Skryje (15 km)</span>
+                            </div>
+                            <div class="day-item">
+                                <span class="day-label">Den 3:</span>
+                                <span class="day-route">Skryje – Roztoky (13 km)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="route-card">
+                        <div class="route-header">
+                            <h4>Třímany U Mloka – Žloukovice</h4>
+                            <div class="route-meta">
+                                <span><i class="fas fa-route"></i> Celkem 46 km</span>
+                            </div>
+                        </div>
+                        <div class="route-itinerary">
+                            <div class="day-item">
+                                <span class="day-label">Den 1:</span>
+                                <span class="day-route">Třímany U Mloka – Skryje (15 km)</span>
+                            </div>
+                            <div class="day-item">
+                                <span class="day-label">Den 2:</span>
+                                <span class="day-route">Skryje – Roztoky (13 km)</span>
+                            </div>
+                            <div class="day-item">
+                                <span class="day-label">Den 3:</span>
+                                <span class="day-route">Roztoky – Žloukovice (18 km)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Čtyřdenní trasy -->
+            <div class="routes-category" id="four-days">
+                <h3 class="category-title">
+                    <i class="fas fa-calendar-week"></i>
+                    Čtyřdenní trasy
+                </h3>
+                
+                <div class="route-cards">
+                    <div class="route-card">
+                        <div class="route-header">
+                            <h4>Chrást – Roztoky</h4>
+                            <div class="route-meta">
+                                <span><i class="fas fa-route"></i> Celkem 62 km</span>
+                            </div>
+                        </div>
+                        <div class="route-itinerary">
+                            <div class="day-item">
+                                <span class="day-label">Den 1:</span>
+                                <span class="day-route">Chrást – Liblín (21 km)</span>
+                            </div>
+                            <div class="day-item">
+                                <span class="day-label">Den 2:</span>
+                                <span class="day-route">Liblín – Třímany U Mloka (13 km)</span>
+                            </div>
+                            <div class="day-item">
+                                <span class="day-label">Den 3:</span>
+                                <span class="day-route">Třímany U Mloka – Skryje (15 km)</span>
+                            </div>
+                            <div class="day-item">
+                                <span class="day-label">Den 4:</span>
+                                <span class="day-route">Skryje – Roztoky (13 km)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="route-card">
+                        <div class="route-header">
+                            <h4>Liblín – Žloukovice</h4>
+                            <div class="route-meta">
+                                <span><i class="fas fa-route"></i> Celkem 59 km</span>
+                            </div>
+                        </div>
+                        <div class="route-itinerary">
+                            <div class="day-item">
+                                <span class="day-label">Den 1:</span>
+                                <span class="day-route">Liblín – Třímany U Mloka (13 km)</span>
+                            </div>
+                            <div class="day-item">
+                                <span class="day-label">Den 2:</span>
+                                <span class="day-route">Třímany U Mloka – Skryje (15 km)</span>
+                            </div>
+                            <div class="day-item">
+                                <span class="day-label">Den 3:</span>
+                                <span class="day-route">Skryje – Roztoky (13 km)</span>
+                            </div>
+                            <div class="day-item">
+                                <span class="day-label">Den 4:</span>
+                                <span class="day-route">Roztoky – Žloukovice (18 km)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pěti až sedmidenní trasy -->
+            <div class="routes-category" id="week-long">
+                <h3 class="category-title">
+                    <i class="fas fa-calendar-alt"></i>
+                    5 až 7 dní na vodě
+                </h3>
+                
+                <div class="route-cards">
+                    <div class="route-card">
+                        <div class="route-header">
+                            <h4>Chrást – Zadní Třebáň</h4>
+                            <div class="route-meta">
+                                <span><i class="fas fa-route"></i> Celkem 104 km</span>
+                            </div>
+                        </div>
+                        <div class="route-itinerary">
+                            <div class="day-item">
+                                <span class="day-label">Den 1:</span>
+                                <span class="day-route">Chrást – Liblín (21 km)</span>
+                            </div>
+                            <div class="day-item">
+                                <span class="day-label">Den 2:</span>
+                                <span class="day-route">Liblín – Třímany U Mloka (13 km)</span>
+                            </div>
+                            <div class="day-item">
+                                <span class="day-label">Den 3:</span>
+                                <span class="day-route">Třímany U Mloka – Skryje (15 km)</span>
+                            </div>
+                            <div class="day-item">
+                                <span class="day-label">Den 4:</span>
+                                <span class="day-route">Skryje – Višnová (11 km)</span>
+                            </div>
+                            <div class="day-item">
+                                <span class="day-label">Den 5:</span>
+                                <span class="day-route">Višnová – Račice (15 km)</span>
+                            </div>
+                            <div class="day-item">
+                                <span class="day-label">Den 6:</span>
+                                <span class="day-route">Račice – Beroun (15 km)</span>
+                            </div>
+                            <div class="day-item">
+                                <span class="day-label">Den 7:</span>
+                                <span class="day-route">Beroun – Zadní Třebáň (14 km)</span>
+                            </div>
+                        </div>
+                        <div class="route-highlights">
+                            <div class="highlight">
+                                <i class="fas fa-star"></i>
+                                <span>Kompletní splutí nejkrásnějších úseků Berounky</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cta-box">
+                <h3>Připraveni vydat se na cestu?</h3>
+                <p>Zarezervujte si lodě a vybavení již dnes a připravte se na nezapomenutelný zážitek na Berounce.</p>
+                <a href="/objednavky.html" class="btn btn-primary">Objednat vybavení</a>
+            </div>
+        </section>
     </main>
 
     <footer>

@@ -12,18 +12,190 @@
     <script src="/components/header.js"></script>
 </head>
 <body>
-    <header>
+    <header class="header-hero">
         <site-header></site-header>
+        <section class="hero">
+            <p class="hero-subtitle">Průvodce pro začátečníky</p>
+            <h2>JEDU NA VODU POPRVÉ</h2>
+            <p class="hero-text">Vše, co potřebujete vědět před vaší první plavbou po Berounce</p>
+        </section>
     </header>
 
     <main>
-        <h2>Jedu na vodu poprvé</h2>
-        <!-- Obsah stránky -->
+        <section class="section-heading">
+            <h2 class="decorated-heading">Průvodce vodáctvím</h2>
+            <div class="heading-underline">
+                <div class="underline-element"></div>
+                <div class="underline-icon">🛶</div>
+                <div class="underline-element"></div>
+            </div>
+        </section>
+
+        <section class="first-time-content">
+            <!-- Úvodní sekce -->
+            <div class="intro-box">
+                <div class="info-grid">
+                    <div class="info-column">
+                        <h3 class="section-title">Berounka pro začátečníky</h3>
+                        <p class="highlighted-text">Chystáte se na svou první vodáckou výpravu? Berounka je ideální řekou pro začátečníky díky svému klidnému toku a krásné přírodě.</p>
+                        <p>Připravili jsme pro vás všechny důležité informace, které vám pomohou užít si bezpečnou a příjemnou plavbu. Vodáctví je skvělý způsob, jak strávit čas v přírodě, zažít dobrodružství a vytvořit nezapomenutelné vzpomínky s přáteli či rodinou.</p>
+                        <div class="action-buttons">
+                            <a href="/ceny.html" class="btn btn-primary">Zobrazit ceník</a>
+                            <a href="/trasy.html" class="btn btn-secondary">Prozkoumat trasy</a>
+                        </div>
+                    </div>
+                    <div class="info-column">
+                        <div class="intro-img-container">
+                            <img src="/images/Spluti_lode.jpg" alt="Klidný tok Berounky" class="responsive-img">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Co si vzít s sebou -->
+            <div class="packing-box content-card">
+                <h3 class="section-title">Co si vzít s sebou na vodu</h3>
+                
+                <div class="info-grid">
+                    <div class="info-column">
+                        <div class="info-card">
+                            <h4>Oblečení a obuv</h4>
+                            <ul class="feature-list">
+                                <li>Plavky a rychleschnoucí oblečení</li>
+                                <li>Boty do vody (sandály s pevnou podrážkou)</li>
+                                <li>Pokrývka hlavy a sluneční brýle</li>
+                                <li>Nepromokavá bunda pro případ deště</li>
+                                <li>Náhradní oblečení v nepromokavém obalu</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="info-column">
+                        <div class="info-card">
+                            <h4>Další vybavení</h4>
+                            <ul class="feature-list">
+                                <li>Opalovací krém a repelent</li>
+                                <li>Lékárnička</li>
+                                <li>Dostatečné množství vody</li>
+                                <li>Svačina nebo piknikové jídlo</li>
+                                <li>Vodotěsné pouzdro na mobil a doklady</li>
+                                <li>Mapa vodácké trasy</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tipy pro začátečníky -->
+            <div class="tips-box content-card">
+                <h3 class="section-title">Základní vodácké tipy pro začátečníky</h3>
+                
+                <div class="tips-grid">
+                    <div class="tip-card">
+                        <h4>Správné pádlování</h4>
+                        <p>Při pádlování se snažte držet přímý sed, pádle držte jednou rukou nahoře za hlavičku a druhou níže na žerdi. Základní záběr provádějte od špiček nohou směrem dozadu podél lodi.</p>
+                    </div>
+                    
+                    <div class="tip-card">
+                        <h4>Komunikace na lodi</h4>
+                        <p>Domluvte si předem signály s vaším parťákem na lodi. Zadák řídí loď a naviguje, komunikujte spolu zejména před překážkami a při změnách směru.</p>
+                    </div>
+                    
+                    <div class="tip-card">
+                        <h4>Balení věcí</h4>
+                        <p>Vše důležité balte do nepromokavých vaků nebo sudů, které vám zapůjčíme. Věci v lodi vždy připevněte, aby v případě převržení neplavaly po řece.</p>
+                    </div>
+                    
+                    <div class="tip-card">
+                        <h4>Ohleduplnost k přírodě</h4>
+                        <p>Berounka protéká krásnou přírodou, kterou bychom měli chránit. Odpadky si vždy odneste s sebou a nezasahujte do vodních ekosystémů.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FAQ sekce -->
+            <div class="faq-box content-card">
+                <h3 class="section-title">Nejčastější dotazy</h3>
+                
+                <div class="faq-list">
+                    <div class="faq-item">
+                        <div class="faq-question">Je to nebezpečné?</div>
+                        <div class="faq-answer">
+                            <p>Berounka je velmi klidná řeka vhodná pro začátečníky nebo turisty. Největší nebezpečí může nastat na jezech, kde je třeba dbát opatrnosti. Proto raději doporučujeme si jez před splutím prohlédnout, popřípadě přenést. Který jez je sjízdný nebo se musí přenášet, Vám řekneme při půjčení lodiček.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">Neznáme zdejší trasy</div>
+                        <div class="faq-answer">
+                            <p>Trasy Vám můžeme pomoci naplánovat, tak aby jste měli kde stanovat nebo aby na Vás nebyl úsek moc dlouhý.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">Co potřebuji k půjčení lodí?</div>
+                        <div class="faq-answer">
+                            <p>Potřebujete platný občanský průkaz nebo pas. Platí se půjčovné v ceně lodi jsou zahrnuty pádla, barely a vesty. Nevyžadujeme žádnou kauci.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">Zajištujete dopravu osob?</div>
+                        <div class="faq-answer">
+                            <p>Ano zajišťujeme. Máme auta pro přepravu 8 osob, kde na konci Vaší plavby můžeme nabídnout odvoz na začátek výletu nebo odvezeme řidiče kam bude třeba.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">Musím půjčovné platit předem?</div>
+                        <div class="faq-answer">
+                            <p>Vypůjčení lodí se platí na začátku plavby při převzetí lodí.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">Jak funguje sběrné místo?</div>
+                        <div class="faq-answer">
+                            <p>V kempu Tábořiště Kobylka (Liblín) a U mloka (Třímany) můžete vrátit vybavení kdykoliv bez předchozí domluvy, obsluha je zde neustále. Jiná sběrná místa konce plavby se domlouvají.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">Co dělat při převrhnutí?</div>
+                        <div class="faq-answer">
+                            <p>Zachovejte klid. Držte se své lodi, která plave. Pokud je to bezpečné, doplavte s lodí ke břehu. V případě potřeby požádejte o pomoc další vodáky. Proto je důležité mít vždy záchrannou vestu, kterou vám zapůjčíme.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kontaktní sekce -->
+            <div class="contact-box">
+                <h3 class="section-title">Máte další otázky?</h3>
+                <p class="contact-text">Neváhejte nás kontaktovat telefonicky nebo e-mailem. Rádi vám pomůžeme s plánováním vaší první vodácké výpravy na Berounce.</p>
+                <div class="action-buttons">
+                    <a href="mailto:pujcovna@berounka.cz" class="btn btn-primary">Kontaktujte nás</a>
+                    <a href="tel:+420721606609" class="btn btn-secondary">+420 721 606 609</a>
+                </div>
+            </div>
+        </section>
     </main>
 
     <footer>
         <p>&copy; 2024 Berounka.cz - Všechna práva vyhrazena</p>
     </footer>
     <script src="/js/main.js"></script>
+    <script>
+        // FAQ functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const faqItems = document.querySelectorAll('.faq-item');
+            
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question');
+                question.addEventListener('click', () => {
+                    item.classList.toggle('active');
+                });
+            });
+        });
+    </script>
 </body>
 </html>

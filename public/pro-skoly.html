@@ -12,13 +12,147 @@
     <script src="/components/header.js"></script>
 </head>
 <body>
-    <header>
+    <header class="header-hero">
         <site-header></site-header>
+        <section class="hero">
+            <p class="hero-subtitle">Nabídka pro</p>
+            <h2>ŠKOLY A SKUPINY</h2>
+            <p class="hero-text">Vodácké výlety pro školní třídy a skupiny se zkušenými instruktory</p>
+        </section>
     </header>
 
     <main>
-        <h2>Nabídka pro školy</h2>
-        <!-- Obsah stránky -->
+        <section class="section-heading">
+            <h2 class="decorated-heading">Školní vodácké kurzy</h2>
+            <div class="heading-underline">
+                <div class="underline-element"></div>
+                <div class="underline-icon">🛶</div>
+                <div class="underline-element"></div>
+            </div>
+        </section>
+
+        <section class="school-content">
+            <div class="intro-box">
+                <div class="info-grid">
+                    <div class="info-column">
+                        <h3 class="section-title">Vodní turistika pro vaši školu</h3>
+                        <p class="highlighted-text">Vodní turistika neboli „vodák" je pro žáky vždy velkou zábavou a žáci si zpravidla odvezou ve své paměti spoustu hezkých zážitků.</p>
+                        <p>Pro školní kurzy doporučujeme zvolit dvoumístné kánoe, avšak pro menší děti (nižší stupeň ZŠ) jsou vhodnější rafty z důvodu větší stability. Nabízíme také kurz vodní turistiky s kvalifikovanými instruktory, kteří naučí děti dovednostem na vodě.</p>
+                        <p>Rádi Vám pomůžeme s volbou úseků, které budete se svou třídou splouvat.</p>
+                    </div>
+                    <div class="info-column">
+                        <div class="intro-img-container">
+                            <img src="/images/Spluti_lode.jpg" alt="Školní vodácký kurz" class="responsive-img">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pricing-box content-card">
+                <h3 class="section-title">Ceník pro školy</h3>
+                <div class="pricing-table-container">
+                    <table class="pricing-table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>1. den</th>
+                                <th>2. den</th>
+                                <th>3. den</th>
+                                <th>4. den</th>
+                                <th>5. den</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Cena za osobu</strong></td>
+                                <td>220 Kč</td>
+                                <td>340 Kč</td>
+                                <td>420 Kč</td>
+                                <td>500 Kč</td>
+                                <td>540 Kč</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="pricing-note"><em>Plavba o víkendu činní 150Kč/osoba. V týdnu platí ceny dle tabulky.</em></p>
+            </div>
+
+            <div class="includes-box content-card">
+                <div class="info-grid">
+                    <div class="info-column">
+                        <div class="info-card">
+                            <h4>Ceny zahrnují:</h4>
+                            <ul class="feature-list">
+                                <li>Dopravu lodí na začátek a na konec výletu</li>
+                                <li>Veškeré příslušenství (lodě, pádla, vesty a barely)</li>
+                                <li>Konzultace ohledně plánování trasy</li>
+                                <li>Dopravu osob minibusem nebo autobusem</li>
+                                <li>Pro kantory lodě s vybavením ZDARMA</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="info-column">
+                        <div class="info-card">
+                            <h4>Ceny nezahrnují:</h4>
+                            <ul class="feature-list">
+                                <li>Instruktora/průvodce vodní turistiky (2500Kč / 1Den)</li>
+                                <li>Přepravu bagáže (1100kč/1den)</li>
+                                <li>Dopravu osob – Je možné si u nás domluvit dopravu osob podél řeky, případně na výlet, cena však závisí na ceníku externího dopravce se kterým spolupracujeme.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="course-box content-card">
+                <h3 class="section-title">Průběh kurzu s instruktorem</h3>
+                <p>Naši instruktoři jsou bývalí studenti pedagogické fakulty nebo certifikovaní vodáčtí instruktoři. Připravíme plán plavby, tak aby se líbil Vám i studentům.</p>
+                <p><strong>Není třeba, aby učitelé byli zkušení vodáci</strong>, o to vše se postarají naši instruktoři. Našim cílem je, aby se žáci naučili nových dovedností v oblasti vodní turistiky. Kurz se instruktoři snaží vést zábavnou formou.</p>
+                
+                <div class="course-steps">
+                    <div class="step-item">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Seznámení s vybavením</h4>
+                            <p>Kurz začíná seznámením s náčiním a loďmi.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step-item">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Nácvik na suchu</h4>
+                            <p>Žáci se seznámí s veškerou teorií a se zásadami bezpečnosti na vodě.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step-item">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Nácvik na klidné vodě</h4>
+                            <p>Na stojaté, chcete-li klidné vodě se žáci naučí techniku pádlování.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step-item">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Splouvání řeky</h4>
+                            <p>Po ukončení úvodního výcviku následuje splouvání řeky dle domluvených parametrů kurzu.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="contact-box">
+                <h3 class="section-title">Máte zájem o školní kurz?</h3>
+                <p class="contact-text">Kontaktujte nás pro více informací a rezervaci termínu pro vaši školní třídu.</p>
+                <div class="action-buttons">
+                    <a href="mailto:pujcovna@berounka.cz" class="btn btn-primary">Napište nám</a>
+                    <a href="tel:+420721606609" class="btn btn-secondary">+420 721 606 609</a>
+                </div>
+            </div>
+        </section>
     </main>
 
     <footer>

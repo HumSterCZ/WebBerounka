@@ -1,0 +1,109 @@
+/* 
+ * Styly pro objednávkový formulář 
+ */
+
+/* Selectory lokací */
+select#pickup_location,
+select#return_location {
+    width: 100%;
+    padding: var(--spacing-md);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-family: var(--body-font);
+    background-color: var(--bg-light);
+    margin-bottom: var(--spacing-md);
+}
+
+/* Multistep form specifics */
+.progressbar {
+    counter-reset: step;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-xl);
+}
+
+.progressbar li {
+    list-style-type: none;
+    width: calc(20% - 8px);
+    text-align: center;
+    font-weight: 500;
+    color: var(--text-dark);
+    position: relative;
+}
+
+.progressbar li:before {
+    content: counter(step);
+    counter-increment: step;
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    border: 2px solid var(--border-color);
+    display: block;
+    text-align: center;
+    margin: 0 auto var(--spacing-sm) auto;
+    border-radius: var(--border-radius);
+    background-color: var(--bg-light);
+}
+
+.progressbar li.active {
+    color: var(--accent-color);
+}
+
+.progressbar li.active:before {
+    border-color: var(--accent-color);
+    background-color: var(--accent-color);
+    color: var(--light-text);
+}
+
+/* Order summary styles */
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--spacing-sm) 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.summary-item:last-child {
+    border-bottom: none;
+    font-weight: 600;
+}
+
+.summary-label {
+    flex: 1;
+}
+
+.summary-value {
+    font-weight: 600;
+    text-align: right;
+}
+
+.order-confirmation {
+    text-align: center;
+    padding: var(--spacing-xl);
+    background-color: var(--bg-medium);
+    border-radius: var(--border-radius);
+    margin: var(--spacing-xl) 0;
+}
+
+.confirmation-number {
+    font-size: var(--font-size-xl);
+    color: var(--accent-color);
+    font-weight: 600;
+    margin: var(--spacing-md) 0;
+}
+
+@media (max-width: 767px) {
+    .progressbar {
+        display: none;
+    }
+    
+    .summary-item {
+        flex-direction: column;
+        padding: var(--spacing-sm) 0;
+    }
+    
+    .summary-value {
+        text-align: left;
+        margin-top: var(--spacing-xs);
+    }
+}

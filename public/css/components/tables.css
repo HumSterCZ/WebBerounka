@@ -1,0 +1,79 @@
+/* 
+ * Tabulky - styly pro tabulky
+ */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: var(--spacing-md);
+}
+
+th, td {
+    padding: var(--spacing-md);
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+th {
+    background-color: var(--primary-color);
+    color: var(--light-text);
+    font-weight: 600;
+}
+
+tr:nth-child(even) {
+    background-color: var(--bg-medium);
+}
+
+tr:hover {
+    background-color: var(--bg-dark);
+}
+
+.pricing-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    min-width: 800px; /* Ensure table doesn't get too compressed */
+}
+
+.pricing-table th,
+.pricing-table td {
+    padding: 0.75rem;
+    text-align: center;
+    border: 1px solid var(--border-color);
+}
+
+.pricing-table th {
+    background-color: var(--primary-color);
+    color: var(--light-text);
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.pricing-table th:first-child,
+.pricing-table td:first-child {
+    text-align: left;
+    font-weight: 600;
+}
+
+.pricing-table tr:nth-child(even) {
+    background-color: var(--bg-medium);
+}
+
+.table-container {
+    overflow-x: auto;
+    margin-bottom: var(--spacing-md);
+}
+
+.table-controls {
+    display: flex;
+    gap: var(--spacing-md);
+    align-items: center;
+    margin-bottom: var(--spacing-md);
+}
+
+@media (max-width: 768px) {
+    th, td {
+        padding: var(--spacing-sm);
+        font-size: var(--font-size-sm);
+    }
+}

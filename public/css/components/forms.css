@@ -1,36 +1,38 @@
 .container {
-    max-width: 800px;
-    margin: 2rem auto;
-    padding: 0 1rem;
+    max-width: var(--container-width);
+    margin: var(--spacing-xl) auto;
+    padding: 0 var(--spacing-md);
 }
 
 .step {
-    background: white;
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background: var(--bg-light);
+    padding: var(--spacing-xl);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
 }
 
 .form-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1rem;
+    gap: var(--spacing-md);
 }
 
 .form-group {
-    margin-bottom: 1rem;
+    margin-bottom: var(--spacing-md);
 }
 
 input, select, textarea {
     width: 100%;
-    padding: 0.8rem;
+    padding: var(--spacing-md);
     border: 1px solid var(--border-color);
-    border-radius: 4px;
-    font-size: 1rem;
-    transition: border-color 0.3s ease;
+    border-radius: var(--border-radius);
+    font-size: var(--font-size);
+    transition: border-color var(--transition-speed) ease;
 }
 
-input:focus, select:focus, textarea:focus {
+input:focus,
+select:focus,
+textarea:focus {
     border-color: var(--accent-color);
     outline: none;
     box-shadow: 0 0 0 2px rgba(255, 107, 0, 0.1);
@@ -39,30 +41,30 @@ input:focus, select:focus, textarea:focus {
 .button-group {
     display: flex;
     justify-content: space-between;
-    margin-top: 2rem;
-    gap: 1rem;
+    margin-top: var(--spacing-xl);
+    gap: var(--spacing-md);
 }
 
 .form-textarea {
     width: 100%;
     min-height: 120px;
-    padding: 0.8rem;
+    padding: var(--spacing-md);
     border: 1px solid var(--border-color);
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     resize: vertical;
 }
 
 .order-summary {
-    background: #f8f9fa;
-    padding: 2rem;
+    background: var(--bg-medium);
+    padding: var(--spacing-xl);
     border-radius: var(--border-radius);
-    margin-bottom: 2rem;
+    margin-bottom: var(--spacing-xl);
 }
 
 .summary-row {
     display: flex;
     justify-content: space-between;
-    padding: 0.5rem 0;
+    padding: var(--spacing-sm) 0;
     border-bottom: 1px solid var(--border-color);
 }
 
@@ -71,11 +73,11 @@ input:focus, select:focus, textarea:focus {
     background-color: var(--error-bg);
 }
 
-/* Aktualizace stylů pro všechna tlačítka */
+/* Tlačítka */
 .next-btn, .prev-btn, .submit-btn {
     padding: 12px 24px;
     border: none;
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     cursor: pointer;
     font-weight: 600;
     transition: all 0.3s ease;
@@ -84,13 +86,13 @@ input:focus, select:focus, textarea:focus {
 
 .next-btn {
     background-color: var(--accent-color);
-    color: white;
+    color: #fff;
 }
 
 .submit-btn {
-    background-color: #28a745; /* Zelená barva pro tlačítko odeslat */
-    color: white;
-    margin: 0; /* Reset margin */
+    background-color: #28a745;
+    color: #fff;
+    margin: 0;
 }
 
 .next-btn:hover {
@@ -99,13 +101,13 @@ input:focus, select:focus, textarea:focus {
 }
 
 .submit-btn:hover {
-    background-color: #218838; /* Tmavší zelená při najetí myší */
+    background-color: #218838;
     transform: translateY(-1px);
 }
 
 .prev-btn {
     background-color: #6c757d;
-    color: white;
+    color: #fff;
 }
 
 .prev-btn:hover {
@@ -113,14 +115,12 @@ input:focus, select:focus, textarea:focus {
     transform: translateY(-1px);
 }
 
-/* Responzivní design */
 @media (max-width: 768px) {
     .form-grid {
         grid-template-columns: 1fr;
     }
 }
 
-/* Zajištění viditelnosti posledního kroku */
 #step6 {
     display: none;
 }

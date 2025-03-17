@@ -1,6 +1,10 @@
+/* 
+ * Navigace - styly pro hlavní navigaci
+ */
+
 nav {
     flex-grow: 1;
-    margin-left: var(--spacing-lg);
+    margin-left: var(--spacing-xl);
     position: relative;
 }
 
@@ -65,13 +69,13 @@ nav ul li a[href="/objednavky.html"].active {
     font-size: 1.8rem;
     cursor: pointer;
     padding: 0.4rem 0.6rem;
-    position: fixed; /* Změna z absolute na fixed pro fixní umístění relativně k oknu prohlížeče */
-    right: 10px; /* Upravená hodnota pro pravý horní roh */
-    top: 10px; /* Upravená hodnota pro pravý horní roh */
-    z-index: 2000; /* Zvýšení z-indexu, aby byl nad ostatními prvky */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    right: 10px;
+    top: 10px;
+    z-index: var(--z-fixed);
+    box-shadow: var(--box-shadow-sm);
     transition: all var(--transition-speed) ease;
-    margin: 0; /* Odstranění všech okrajů */
+    margin: 0;
 }
 
 .mobile-menu-toggle:hover {
@@ -86,15 +90,15 @@ nav ul li a[href="/objednavky.html"].active {
     font-size: 2rem;
     cursor: pointer;
     position: absolute;
-    top: 1rem;
-    right: 1rem;
+    top: var(--spacing-md);
+    right: var(--spacing-md);
 }
 
 /* Media query for mobile view */
 @media (max-width: 1160px) {
     nav {
         margin-left: 0;
-        width: auto; /* Allow natural width */
+        width: auto;
         position: relative;
         display: flex;
         align-items: center;
@@ -103,8 +107,6 @@ nav ul li a[href="/objednavky.html"].active {
     
     .mobile-menu-toggle {
         display: block;
-        /* Odstraněno nastavení position, top, right, transform a margin-right,
-           protože už jsou definovány výše s position: fixed */
     }
     
     .mobile-menu-close {
@@ -118,10 +120,10 @@ nav ul li a[href="/objednavky.html"].active {
         width: 100%;
         height: 100%;
         background-color: var(--primary-color);
-        z-index: 1000;
+        z-index: var(--z-dropdown);
         opacity: 0;
         visibility: hidden;
-        transition: opacity 0.3s ease;
+        transition: opacity var(--transition-speed) ease;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -136,27 +138,27 @@ nav ul li a[href="/objednavky.html"].active {
     nav ul {
         flex-direction: column;
         align-items: center;
-        padding: 2rem 0;
+        padding: var(--spacing-xl) 0;
     }
     
     nav ul li {
-        margin: 0.8rem 0;
+        margin: var(--spacing-md) 0;
     }
     
     nav ul li a {
-        font-size: 1.2rem;
-        padding: 0.8rem 1.5rem;
+        font-size: var(--font-size-lg);
+        padding: var(--spacing-md) var(--spacing-lg);
         display: block;
     }
     
     /* Ensure special styling for "Objednávky" keeps proper spacing in mobile */
     nav ul li a[href="/objednavky.html"] {
-        margin-top: 1rem;
+        margin-top: var(--spacing-md);
     }
     
     /* Additional styling to ensure proper mobile layout */
     .header-content {
-        position: relative; /* Ensure proper stacking context */
+        position: relative;
         display: flex;
         justify-content: space-between;
         align-items: center;

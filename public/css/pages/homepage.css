@@ -1,0 +1,68 @@
+/* 
+ * Styly pro domovskou stránku
+ */
+
+.photo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--spacing-xl);
+    padding: var(--spacing-xl);
+}
+
+/* Sekce O nás */
+.about-us {
+    padding: var(--spacing-xxl);
+    background-color: var(--bg-medium);
+    border-radius: var(--border-radius-lg);
+    margin: var(--spacing-xl) auto;
+    text-align: center;
+}
+
+.content-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xl);
+}
+
+.about-text {
+    font-size: var(--font-size-md);
+    line-height: 1.6;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Sekce služeb */
+.services {
+    width: 100%;
+}
+
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-xl);
+    padding: var(--spacing-md);
+    margin: 0 auto;
+}
+
+.service-card {
+    background-color: var(--bg-light);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: var(--spacing-xl);
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .about-us {
+        padding: var(--spacing-lg);
+    }
+    
+    .services-grid {
+        gap: var(--spacing-lg);
+    }
+    
+    .service-card {
+        padding: var(--spacing-lg);
+    }
+}

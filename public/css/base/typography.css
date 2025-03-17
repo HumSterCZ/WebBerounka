@@ -1,0 +1,95 @@
+/* 
+ * Typografie - definice stylů pro text
+ */
+
+h1 {
+    font-size: var(--font-size-xxl);
+    margin-bottom: var(--spacing-md);
+    text-align: center;
+}
+
+h2 {
+    font-size: var(--font-size-xl);
+    margin-bottom: var(--spacing-md);
+}
+
+h3 {
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--spacing-md);
+}
+
+p {
+    margin-bottom: var(--spacing-md);
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.text-primary {
+    color: var(--primary-color);
+}
+
+.text-accent {
+    color: var(--accent-color);
+}
+
+.text-light {
+    color: var(--light-text);
+}
+
+.text-success {
+    color: var(--success-color);
+}
+
+.text-error {
+    color: var(--error-color);
+}
+
+.text-warning {
+    color: var(--warning-color);
+}
+
+.hero-subtitle {
+    font-family: var(--body-font);
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    opacity: 0.9;
+    margin-bottom: -1rem;
+}
+
+.hero h2 {
+    font-family: var(--heading-font);
+    font-size: 7rem;
+    font-weight: 700;
+    letter-spacing: 4px;
+    line-height: 1;
+    text-transform: uppercase;
+    margin: 0.5rem 0;
+    font-stretch: 110%;
+}
+
+.hero-text {
+    font-family: var(--body-font);
+    font-size: var(--font-size-md);
+    font-weight: 400;
+    letter-spacing: 1px;
+    line-height: 1.6;
+    max-width: 800px;
+    margin-top: 1rem;
+}
+
+.decorated-heading {
+    font-family: var(--heading-font);
+    font-size: var(--font-size-xl);
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}

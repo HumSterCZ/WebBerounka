@@ -1,0 +1,110 @@
+/* 
+ * Styly pro stránku ceníku
+ */
+
+.pricing-content {
+    max-width: var(--container-width);
+    margin: 0 auto;
+    padding: var(--spacing-md) var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxl);
+}
+
+.pricing-table-container {
+    overflow-x: auto;
+    margin: var(--spacing-md) 0;
+}
+
+.special-note {
+    background-color: #fff8e6;
+    padding: var(--spacing-md);
+    border-left: 4px solid var(--accent-color);
+    font-style: italic;
+    margin: var(--spacing-md) 0;
+}
+
+.pricing-info {
+    margin-top: var(--spacing-md);
+    line-height: 1.6;
+}
+
+.transport-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-xl);
+    margin: var(--spacing-md) 0;
+}
+
+.transport-day {
+    background-color: var(--bg-medium);
+    padding: var(--spacing-md);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+}
+
+.transport-day h5 {
+    margin-bottom: var(--spacing-md);
+    color: var(--primary-color);
+    font-size: var(--font-size-md);
+}
+
+.transport-list {
+    list-style: none;
+    padding: 0;
+}
+
+.transport-list li {
+    padding: var(--spacing-sm) 0;
+    border-bottom: 1px dotted var(--border-color);
+}
+
+.transport-list li:last-child {
+    border-bottom: none;
+}
+
+.transport-price {
+    margin-top: var(--spacing-md);
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.transport-notes {
+    margin-top: var(--spacing-md);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--border-color);
+}
+
+.discounts-list, 
+.cancellation-list {
+    list-style: none;
+    padding: 0;
+    margin: var(--spacing-md) 0;
+}
+
+.discounts-list li, 
+.cancellation-list li {
+    padding: var(--spacing-md) var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+    background-color: var(--bg-medium);
+    border-left: 4px solid var(--accent-color);
+    border-radius: 0 var(--border-radius) var(--border-radius) 0;
+}
+
+@media (max-width: 768px) {
+    .pricing-content {
+        padding: var(--spacing-md);
+        gap: var(--spacing-xl);
+    }
+    
+    .transport-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-md);
+    }
+    
+    .pricing-table th, 
+    .pricing-table td {
+        padding: var(--spacing-sm);
+        font-size: var(--font-size-sm);
+    }
+}

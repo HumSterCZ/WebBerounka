@@ -1,0 +1,259 @@
+/* 
+ * Responsivní styly - media queries pro různá zařízení
+ */
+
+/* Tablet (768px - 991px) */
+@media (max-width: 992px) {
+    .container {
+        max-width: 95%;
+    }
+    
+    .hero h2 {
+        font-size: 5rem;
+    }
+    
+    .decorated-heading {
+        font-size: var(--font-size-lg);
+    }
+    
+    .warehouse-sections {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* Mobilní telefony (767px a méně) */
+@media (max-width: 768px) {
+    /* Hlavička a navigace */
+    .header-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    nav {
+        margin-left: 0;
+        margin-top: var(--spacing-md);
+    }
+    
+    nav ul {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    nav ul li {
+        margin: var(--spacing-xs) 0;
+    }
+    
+    /* Hero sekce */
+    .hero {
+        padding: var(--spacing-xl) var(--spacing-md);
+    }
+    
+    .hero h2 {
+        font-size: 3rem;
+        letter-spacing: 1px;
+    }
+    
+    .hero-subtitle {
+        font-size: var(--font-size-lg);
+        letter-spacing: 2px;
+    }
+    
+    .hero-text {
+        font-size: var(--font-size);
+    }
+    
+    /* Layout a gridy */
+    .grid-2, .grid-3, .grid-4 {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-grid, 
+    .info-grid, 
+    .services-grid, 
+    .photo-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Tlačítka a formuláře */
+    .button-group {
+        flex-direction: column;
+    }
+    
+    .btn-block-mobile {
+        width: 100%;
+        margin-bottom: var(--spacing-sm);
+        text-align: center;
+    }
+    
+    /* Tabulky */
+    .table-container {
+        overflow-x: auto;
+    }
+    
+    /* Admin panel */
+    .admin-container {
+        padding: 0 var(--spacing-md);
+    }
+    
+    .section-header {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+    
+    .tab-button {
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+    
+    /* Sklady */
+    .inventory-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .inventory-controls {
+        flex-wrap: wrap;
+    }
+    
+    /* Stránkové komponenty */
+    .first-time-content,
+    .school-content,
+    .pricing-content,
+    .routes-content,
+    .about-content {
+        padding: var(--spacing-md);
+        gap: var(--spacing-lg);
+    }
+    
+    .intro-box, .content-card, .contact-box {
+        padding: var(--spacing-md);
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .tip-card,
+    .info-card {
+        padding: var(--spacing-md);
+    }
+    
+    .route-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .faq-question {
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+    
+    .transport-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-md);
+    }
+}
+
+/* Extra malé displeje (menší než 576px) */
+@media (max-width: 576px) {
+    html {
+        font-size: 15px;
+    }
+    
+    .hero h2 {
+        font-size: 2.5rem;
+    }
+    
+    .hero-subtitle {
+        font-size: var(--font-size-md);
+    }
+    
+    .container {
+        padding: 0 var(--spacing-sm);
+    }
+    
+    .section-heading {
+        margin: var(--spacing-lg) 0;
+    }
+    
+    .heading-underline {
+        max-width: 250px;
+    }
+    
+    .decorated-heading {
+        font-size: var(--font-size-md);
+    }
+    
+    .order-summary {
+        padding: var(--spacing-md);
+    }
+    
+    .summary-item {
+        flex-direction: column;
+    }
+    
+    .summary-value {
+        margin-top: var(--spacing-xs);
+        text-align: left;
+    }
+    
+    .toast {
+        max-width: 300px;
+        left: 50%;
+        transform: translateX(-50%);
+        right: auto;
+    }
+    
+    .inventory-table th, 
+    .inventory-table td {
+        padding: 4px 2px;
+        font-size: var(--font-size-xs);
+    }
+    
+    .route-header {
+        padding: var(--spacing-sm);
+    }
+    
+    .highlight {
+        padding: var(--spacing-sm);
+        font-size: var(--font-size-sm);
+    }
+}
+
+/* Print media query */
+@media print {
+    body {
+        font-size: 12pt;
+        background: white;
+    }
+    
+    header, footer, .no-print {
+        display: none;
+    }
+    
+    .container {
+        width: 100%;
+        padding: 0;
+        margin: 0;
+    }
+    
+    a {
+        text-decoration: none;
+        color: #000;
+    }
+    
+    .box-shadow, .card, .step, .route-card {
+        box-shadow: none !important;
+        border: 1px solid #ccc;
+    }
+    
+    .report-section {
+        page-break-inside: avoid;
+    }
+    
+    .report-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .report-table th,
+    .report-table td {
+        border: 1px solid #000;
+    }
+}

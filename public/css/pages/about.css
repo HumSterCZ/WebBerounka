@@ -1,0 +1,103 @@
+/* 
+ * Styly pro stránku O nás
+ */
+
+.about-content {
+    max-width: var(--container-width);
+    margin: 0 auto;
+    padding: var(--spacing-xl);
+}
+
+.about-content p {
+    font-size: var(--font-size-md);
+    line-height: 1.8;
+    margin-bottom: var(--spacing-xl);
+    text-align: justify;
+}
+
+.team-section, 
+.contact-section {
+    margin: var(--spacing-xxl) 0;
+}
+
+.team-section h3,
+.contact-section h3 {
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--spacing-md);
+    color: var(--primary-color);
+    text-align: center;
+}
+
+/* About page redesign */
+.about-content-redesigned {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-xl);
+    max-width: var(--container-width);
+    margin: 0 auto;
+    padding: var(--spacing-xl) var(--spacing-md);
+}
+
+.section-title {
+    color: #2c5f6b;
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 2px solid rgba(44, 95, 107, 0.3);
+}
+
+.social-links {
+    margin-top: var(--spacing-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.social-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: var(--text-dark);
+    transition: color 0.2s;
+}
+
+.social-link:hover {
+    color: #2c5f6b;
+}
+
+.social-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: var(--spacing-sm);
+}
+
+.boat-category {
+    margin-bottom: var(--spacing-md);
+}
+
+.boat-category h4 {
+    color: #2c5f6b;
+    margin-bottom: var(--spacing-sm);
+}
+
+.boat-item {
+    background-color: var(--bg-light);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-sm);
+    margin-bottom: var(--spacing-sm);
+}
+
+@media (min-width: 768px) {
+    .about-content-redesigned {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .about-description {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (min-width: 992px) {
+    .about-content-redesigned {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}

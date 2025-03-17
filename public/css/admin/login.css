@@ -1,0 +1,78 @@
+/* 
+ * Přihlašovací stránka - styly pro přihlášení do administrace
+ */
+
+.login-container {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                url('/images/jez_most.jpg');
+    background-size: cover;
+    background-position: center;
+}
+
+.login-box {
+    background: var(--bg-light);
+    padding: var(--spacing-xl);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    width: 100%;
+    max-width: 400px;
+}
+
+.login-logo {
+    display: block;
+    margin: 0 auto var(--spacing-xl);
+    height: 80px;
+    width: auto;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.form-group label {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.form-group input {
+    padding: var(--spacing-md);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: var(--font-size);
+}
+
+.login-button {
+    background: var(--primary-color);
+    color: var(--light-text);
+    border: none;
+    padding: var(--spacing-md);
+    border-radius: var(--border-radius);
+    font-size: var(--font-size);
+    cursor: pointer;
+    transition: background-color var(--transition-speed);
+    font-weight: 600;
+    margin-top: var(--spacing-sm);
+}
+
+.login-button:hover {
+    background: var(--secondary-color);
+}
+
+.login-error {
+    color: var(--error-color);
+    text-align: center;
+    margin-top: var(--spacing-md);
+    font-size: var(--font-size-sm);
+}

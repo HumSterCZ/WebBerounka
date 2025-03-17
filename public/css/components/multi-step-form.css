@@ -46,7 +46,6 @@
     display: block;
 }
 
-/* Responzivní design */
 @media (max-width: 767px) {
     .progressbar {
         display: none;

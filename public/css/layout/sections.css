@@ -1,0 +1,102 @@
+/* 
+ * Sekce - obecné styly pro různé sekce stránek
+ */
+
+main {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+}
+
+section {
+    margin-bottom: var(--spacing-xxl);
+}
+
+.section-heading {
+    text-align: center;
+    margin: var(--spacing-xl) 0 var(--spacing-lg) 0;
+    max-width: var(--container-width);
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Dekorované nadpisy */
+.decorated-heading {
+    font-family: var(--heading-font);
+    font-size: var(--font-size-xl);
+    color: var(--primary-color);
+    margin-bottom: var(--spacing-sm);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.heading-underline {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: var(--spacing-sm) auto var(--spacing-lg);
+    max-width: 500px;
+}
+
+.underline-element {
+    height: 3px;
+    background-color: var(--accent-color);
+    flex-grow: 1;
+}
+
+.underline-icon {
+    font-size: var(--font-size-lg);
+    margin: 0 var(--spacing-md);
+    color: var(--accent-color);
+}
+
+/* Speciální sekce */
+.cta-box {
+    background: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)),
+                url('/images/berounka-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    padding: var(--spacing-xxl) var(--spacing-xl);
+    border-radius: var(--border-radius-lg);
+    text-align: center;
+    max-width: 1000px;
+    margin: var(--spacing-xxl) auto var(--spacing-xl);
+    box-shadow: var(--box-shadow-lg);
+}
+
+.cta-box h3 {
+    font-size: var(--font-size-xl);
+    margin-bottom: var(--spacing-md);
+    color: white;
+    font-weight: 600;
+}
+
+.cta-box p {
+    font-size: var(--font-size-md);
+    max-width: 800px;
+    margin: 0 auto var(--spacing-lg);
+    line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+    .decorated-heading {
+        font-size: var(--font-size-lg);
+    }
+    
+    .heading-underline {
+        max-width: 300px;
+    }
+    
+    .cta-box {
+        padding: var(--spacing-xl) var(--spacing-md);
+    }
+    
+    .cta-box h3 {
+        font-size: var(--font-size-lg);
+    }
+    
+    .cta-box p {
+        font-size: var(--font-size);
+    }
+}

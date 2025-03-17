@@ -1,0 +1,173 @@
+/* 
+ * Správa inventáře - styly pro správu skladových zásob 
+ */
+
+.inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-lg);
+    padding: var(--spacing-md);
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.warehouse-card {
+    min-width: 0;
+    width: 100%;
+    background: var(--bg-light);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: var(--spacing-lg);
+}
+
+.warehouse-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 1px solid var(--border-color);
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+}
+
+.warehouse-title-section {
+    flex: 1;
+    min-width: 200px;
+}
+
+.warehouse-title {
+    margin: 0;
+    font-size: var(--font-size-lg);
+    color: var(--text-dark);
+}
+
+.warehouse-location {
+    color: var(--text-medium);
+    font-size: var(--font-size-sm);
+    margin-top: var(--spacing-xs);
+}
+
+.warehouse-sections {
+    display: grid;
+    grid-template-columns: 4fr 2fr !important;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-md);
+    min-height: 400px;
+    align-items: stretch;
+}
+
+.inventory-section, 
+.daily-plan-section {
+    background: var(--bg-medium);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-md);
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    min-height: 100%;
+}
+
+.section-title {
+    font-weight: 600;
+    margin-bottom: var(--spacing-md);
+    color: var(--text-dark);
+    font-size: var(--font-size-md);
+}
+
+.inventory-table {
+    width: 100%;
+    flex-grow: 1;
+    overflow: auto;
+}
+
+.inventory-table table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+.inventory-table th:first-child, 
+.inventory-table td:first-child {
+    width: 40%;
+    text-align: left;
+}
+
+.inventory-table th:not(:first-child), 
+.inventory-table td:not(:first-child) {
+    width: 20%;
+    text-align: center;
+}
+
+.inventory-table th, 
+.inventory-table td {
+    padding: var(--spacing-sm);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.inventory-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    background-color: var(--bg-light);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    margin-bottom: var(--spacing-md);
+}
+
+.inventory-controls input[type="date"] {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    font-family: var(--body-font);
+    width: 150px;
+}
+
+.date-nav-btn {
+    background-color: var(--primary-color);
+    color: var(--light-text);
+    min-width: 42px;
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size);
+    line-height: 1;
+    border: none;
+    border-radius: var(--border-radius-sm);
+}
+
+@media (max-width: 1200px) {
+    .warehouse-sections {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .inventory-section {
+        margin-bottom: var(--spacing-lg);
+    }
+    
+    .inventory-table th {
+        font-size: var(--font-size-sm);
+        padding: var(--spacing-xs);
+    }
+    
+    .inventory-table td {
+        font-size: var(--font-size-sm);
+        padding: var(--spacing-xs);
+    }
+}
+
+@media (max-width: 768px) {
+    .inventory-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .inventory-controls {
+        flex-wrap: wrap;
+    }
+    
+    .inventory-controls input[type="date"] {
+        flex: 1;
+        min-width: 0;
+    }
+}

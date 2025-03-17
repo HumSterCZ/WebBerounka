@@ -146,25 +146,31 @@ CREATE TABLE IF NOT EXISTS inventory_history (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- Vložíme testovací data
-INSERT INTO orders (name, email, phone, kanoe, padlo, vesta, arrival_date, arrival_time, 
+INSERT INTO orders (name, email, phone, kanoe, kanoe_rodinna, maly_raft, velky_raft, padlo, padlo_detske, vesta, vesta_detska, barel, arrival_date, arrival_time, 
                    pickup_location, departure_date, departure_time, return_location, status)
 SELECT 
     CONCAT('Test User ', n) as name,
     CONCAT('test', n, '@example.com') as email,
     CONCAT('123456', n) as phone,
-    FLOOR(1 + RAND() * 3) as kanoe,
+    FLOOR(RAND() * 3) as kanoe,
+    FLOOR(RAND() * 2) as kanoe_rodinna,
+    FLOOR(RAND() * 2) as maly_raft,
+    FLOOR(RAND() * 2) as velky_raft,
     FLOOR(2 + RAND() * 6) as padlo,
+    FLOOR(RAND() * 2) as padlo_detske,
     FLOOR(2 + RAND() * 6) as vesta,
-    DATE_ADD('2024-06-01', INTERVAL n DAY) as arrival_date,
+    FLOOR(RAND() * 2) as vesta_detska,
+    FLOOR(RAND() * 2) as barel,
+    DATE_ADD('2025-03-17', INTERVAL FLOOR(RAND() * 7) DAY) as arrival_date,
     TIME_FORMAT(TIME('08:00:00') + INTERVAL FLOOR(RAND() * 8) HOUR, '%H:%i:00') as arrival_time,
     (SELECT location FROM warehouses ORDER BY RAND() LIMIT 1) as pickup_location,
-    DATE_ADD('2024-06-01', INTERVAL n+FLOOR(1+RAND()*3) DAY) as departure_date,
+    DATE_ADD('2025-03-17', INTERVAL FLOOR(RAND() * 7) DAY) as departure_date,
     TIME_FORMAT(TIME('14:00:00') + INTERVAL FLOOR(RAND() * 6) HOUR, '%H:%i:00') as departure_time,
     (SELECT location FROM warehouses ORDER BY RAND() LIMIT 1) as return_location,
     'Potvrzená' as status
 FROM (
     SELECT a.N + b.N * 10 as n 
     FROM (SELECT 0 as N UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4) a,
-         (SELECT 0 as N UNION SELECT 1) b
-    WHERE a.N + b.N * 10 < 20
+         (SELECT 0 as N UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4) b
+    WHERE a.N + b.N * 10 < 50
 ) numbers;

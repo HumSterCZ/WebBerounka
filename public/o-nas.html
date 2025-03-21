@@ -8,108 +8,151 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@700&family=Outfit:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/pages/about.css">
     <script src="/components/navigation.js"></script>
     <script src="/components/header.js"></script>
 </head>
 <body>
-
     <header class="header-hero">
         <site-header></site-header>
         <section class="hero">
-            <p class="hero-subtitle">O Nás</p>
-            <h2>BEROUNKA.CZ</h2>
-            <p class="hero-text">Rodinná půjčovna s dlouholetou tradicí na řece Berounce</p>
+            <p class="hero-subtitle">Jsme rodinná půjčovna s dlouholetou tradicí</p>
+            <h2>O nás</h2>
         </section>
     </header>
 
     <main>
         <section class="section-heading">
-            <h2 class="decorated-heading">O nás</h2>
+            <h1 class="decorated-heading">O naší půjčovně</h1>
             <div class="heading-underline">
                 <div class="underline-element"></div>
-                <div class="underline-icon">🛶</div>
+                <div class="underline-icon">🏞️</div>
                 <div class="underline-element"></div>
             </div>
         </section>
-
-        <section class="about-content about-content-redesigned">
-            <div class="about-description">
-                <h3 class="section-title">Půjčovna lodí Berounka.cz</h3>
-                <p>Jsme rodinná půjčovna s dlouholetou tradicí na řece Berounce. Rádi Vám pomůžeme a poradíme s dotazy.</p>
-                
-                <p>Zaměřujeme se především na půjčování lodí značky Železný (Samba), ale také můžeme nabídnout i klasické vydry. 
-                Disponujeme jak klasickou kánojí pro dvě osoby, tak i kánojí pro rodiny s dětmi (třímístné kánoe). 
-                Pro početnější skupiny, pro ty, co si moc nevěří nebo jedou na vodu poprvé nabízíme šestimístné rafty.</p>
-                
-                <p>Po Berounce máme čtyři výdejní a sběrná místa, u kterých je výdej i sběr lodí ZDARMA. A sice: 
-                Chrást (U Dolanského mostu), Nadryby (přívoz), Liblín (Tábořiště Kobylka) a Třímany (U Mloka).</p>
-                
-                <p>Pořádáme také školní nebo firemní akce.</p>
-                
-                <p>Pro naše klienty nabízíme svoz zpět na začátek výletu, kde máte auta nebo na vlakové nádraží (po domluvě).</p>
+        
+        <section class="section-wrapper">
+            <div class="about-us">
+                <div class="content-container">
+                    <div class="about-text">
+                        <p>Jsme rodinná půjčovna lodí s dlouholetou tradicí a láskou k řece Berounce. Zaměřujeme se především na půjčování lodí značky Železný (Samba), ale nabízíme i klasické vydry.</p>
+                        <p>Po Berounce máme čtyři výdejní a sběrná místa, u kterých je výdej i sběr lodí <strong>ZDARMA</strong>: Chrást (U Dolanského mostu), Nadryby (přívoz), Liblín (Tábořiště kobylka) a Třímany (U Mloka).</p>
+                        <p>Pro naše klienty zajišťujeme svoz zpět na začátek výletu, kde máte auta nebo na vlakové nádraží (po domluvě).</p>
+                    </div>
+                </div>
             </div>
+        </section>
 
-            <div class="contact-info contact-card">
-                <h3 class="section-title">Kontakt</h3>
-                <div class="contact-detail">
-                    <p><strong>E-mail - Objednávky</strong><br>
-                    <a href="mailto:pujcovna@berounka.cz" class="contact-link">pujcovna@berounka.cz</a></p>
-                </div>
+        <!-- Kontaktní informace -->
+        <section class="section-heading">
+            <h2 class="decorated-heading">Kontaktní informace</h2>
+            <div class="heading-underline">
+                <div class="underline-element"></div>
+                <div class="underline-icon">📞</div>
+                <div class="underline-element"></div>
+            </div>
+        </section>
+        
+        <section class="about-contact section-wrapper">
+            <!-- Nahrazení problematické kombinace tříd -->
+            <div class="contact-card">
+                <h3>Kontaktujte nás</h3>
                 
-                <div class="contact-detail">
-                    <p><strong>Telefoní číslo</strong><br>
-                    <a href="tel:+420721606609" class="contact-link">+420 721 606 609</a></p>
-                </div>
-                
-                <div class="social-links">
-                    <a href="https://www.facebook.com/Berounka.cz" target="_blank" rel="noopener noreferrer" class="social-link">
-                        <img src="/images/fb.png" alt="Facebook" class="social-icon">
-                        Sledujte nás na Facebooku
-                    </a>
+                <div class="contact-details">
+                    <div class="contact-detail-item">
+                        <strong>Telefon:</strong>
+                        <p><a href="tel:+420721606609">+420 721 606 609</a></p>
+                    </div>
                     
-                    <a href="https://www.instagram.com/berounka.cz/?hl=cs" target="_blank" rel="noopener noreferrer" class="social-link">
-                        <img src="/images/ig.png" alt="Instagram" class="social-icon">
-                        Sledujte nás na Instagramu
-                    </a>
+                    <div class="contact-detail-item">
+                        <strong>Email:</strong>
+                        <p><a href="mailto:pujcovna@berounka.cz">pujcovna@berounka.cz</a></p>
+                    </div>
+                    
+                    <div class="contact-detail-item">
+                        <strong>Adresa:</strong>
+                        <p>Chrást - U Dolanského mostu, 330 03 Chrást</p>
+                    </div>
+                </div>
+                
+                <div class="map-container">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2578.826557654411!2d13.494884376937073!3d49.7926167317802!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x470af26c9c9daf0f%3A0x7e0ab9a7bb87b8f!2sChr%C3%A1st%20-%20U%20Dolansk%C3%A9ho%20mostu!5e0!3m2!1scs!2scz!4v1650015000000!5m2!1scs!2scz" allowfullscreen="" loading="lazy"></iframe>
+                </div>
+                
+                <div class="opening-hours">
+                    <h4>Otevírací doba:</h4>
+                    <ul class="opening-hours-list">
+                        <li><span>Pondělí - Pátek:</span> <span>9:00 - 18:00</span></li>
+                        <li><span>Sobota:</span> <span>8:00 - 20:00</span></li>
+                        <li><span>Neděle:</span> <span>8:00 - 20:00</span></li>
+                    </ul>
                 </div>
             </div>
+        </section>
 
-            <div class="services feature-box">
-                <h3 class="section-title">Nabízíme</h3>
-                <ul class="feature-list">
-                    <li>Přátelský přístup</li>
-                    <li>Řadu typů kánojí a raftů</li>
-                    <li>Stálá výdejní místa</li>
-                    <li>Dopravu osob minibusem nebo autobusem</li>
-                    <li>Dokážeme zařídit dopravu bagáže</li>
-                    <li>Team buildingové akce pro firmy, nebo vodáky pro školy</li>
-                </ul>
+        <!-- Naše výdejní místa -->
+        <section class="section-heading">
+            <h2 class="decorated-heading">Naše výdejní místa</h2>
+            <div class="heading-underline">
+                <div class="underline-element"></div>
+                <div class="underline-icon">📍</div>
+                <div class="underline-element"></div>
             </div>
-
-            <div class="boat-types boat-showcase">
-                <h3 class="section-title">Naše lodě</h3>
-                
-                <div class="boat-category">
-                    <h4>Kánoe pro dvě osoby</h4>
-                    <div class="boat-item">
-                        <p><strong>Samba 4.5</strong> – Loďka určena pro dvě osoby s bagáží.</p>
+        </section>
+        
+        <section class="about-contact section-wrapper">
+            <div class="contact-card">
+                <h3>Chrást - U Dolanského mostu</h3>
+                <div class="contact-details">
+                    <div class="contact-detail-item">
+                        <strong>GPS:</strong>
+                        <p>49.7926167N, 13.4948844E</p>
                     </div>
-                    <div class="boat-item">
-                        <p><strong>Makku (Vydra)</strong> – Loďka určena pro dvě osoby s bagáží.</p>
-                    </div>
-                </div>
-                
-                <div class="boat-category">
-                    <h4>Kánoe pro tři osoby</h4>
-                    <div class="boat-item">
-                        <p><strong>Samba 5.2</strong> – Loďka pro 3-4 osoby. Vhodná loď pro rodinu s dětmi. Velmi stabilní a lehce ovladatelná</p>
+                    <div class="contact-detail-item">
+                        <strong>Popis:</strong>
+                        <p>Hlavní výdejní místo. Zde si můžete vyzvednout i vrátit vaši loď.</p>
                     </div>
                 </div>
-                
-                <div class="boat-category">
-                    <h4>Rafty pro pět až šest osob</h4>
-                    <div class="boat-item">
-                        <p><strong>Colorado</strong> – S otevřenou zádí, která umožnuje vodě uvnitř raftu odtékat. Vhodný pro početnější skupinu s bagáží.</p>
+            </div>
+            
+            <div class="contact-card">
+                <h3>Nadryby - přívoz</h3>
+                <div class="contact-details">
+                    <div class="contact-detail-item">
+                        <strong>GPS:</strong>
+                        <p>49.8231097N, 13.4345711E</p>
+                    </div>
+                    <div class="contact-detail-item">
+                        <strong>Popis:</strong>
+                        <p>Výdejní a sběrné místo lodí u přívozu v Nadrybech.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="contact-card">
+                <h3>Liblín - Tábořiště Kobylka</h3>
+                <div class="contact-details">
+                    <div class="contact-detail-item">
+                        <strong>GPS:</strong>
+                        <p>49.8957422N, 13.5339475E</p>
+                    </div>
+                    <div class="contact-detail-item">
+                        <strong>Popis:</strong>
+                        <p>Výdejní a sběrné místo lodí v populárním tábořišti Kobylka.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="contact-card">
+                <h3>Třímany - U Mloka</h3>
+                <div class="contact-details">
+                    <div class="contact-detail-item">
+                        <strong>GPS:</strong>
+                        <p>49.9215389N, 13.5781411E</p>
+                    </div>
+                    <div class="contact-detail-item">
+                        <strong>Popis:</strong>
+                        <p>Výdejní a sběrné místo lodí v tábořišti U Mloka.</p>
                     </div>
                 </div>
             </div>

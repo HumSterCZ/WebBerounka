@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
-    <title>Admin - Berounka.cz</title>
+    <title>Admin Panel - Berounka</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@700&family=Outfit:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="css/admin/admin-panel.css">
     <script src="/components/navigation.js"></script>
     <script src="/components/header.js"></script>
     <script src="/js/shared/locations.js"></script>
@@ -24,6 +25,7 @@
             </div>
             <button onclick="logout()" class="btn-logout">Odhlásit se</button>
         </div>
+        <h1>Administrátorský panel</h1>
     </header>
 
     <main class="admin-container">
@@ -186,6 +188,39 @@
             <div class="modal-content">
                 <span class="close">&times;</span>
                 <div id="orderDetail"></div>
+            </div>
+        </div>
+
+        <!-- Simplified Edit Modal -->
+        <div id="editModal" class="modal" style="display:none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Editace objednávky</h3>
+                    <span class="modal-close" id="editCancel">&times;</span>
+                </div>
+                <form id="editForm">
+                    <input type="hidden" id="editOrderId">
+                    <div class="form-group">
+                        <label for="editName">Jméno:</label>
+                        <input type="text" id="editName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editEmail">Email:</label>
+                        <input type="email" id="editEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editStatus">Status:</label>
+                        <select id="editStatus">
+                            <option value="Nová">Nová</option>
+                            <option value="Potvrzená">Potvrzená</option>
+                            <option value="Dokončená">Dokončená</option>
+                            <option value="Zrušená">Zrušená</option>
+                        </select>
+                    </div>
+                    <div class="button-group">
+                        <button type="submit" class="btn-save">Uložit změny</button>
+                    </div>
+                </form>
             </div>
         </div>
 

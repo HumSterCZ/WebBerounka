@@ -128,3 +128,48 @@ B|6.5.2025|10|+10|20|
 Projekt WebBerounka používá systematicky organizovanou strukturu CSS souborů pro lepší údržbu, čitelnost a škálovatelnost kódu.
 
 ### Základní adresářová struktura
+
+### Hlavní CSS
+
+/\*
+
+- BEROUNKA.CZ - Hlavní CSS
+- Tento soubor slouží jako rozcestník pro import všech CSS modulů
+  \*/
+
+/_ Základní nastavení _/
+@import 'base/variables.css'; /_ Globální proměnné _/
+@import 'base/reset.css'; /_ Reset CSS _/
+@import 'base/typography.css'; /_ Typografie _/
+
+/_ Komponenty _/
+@import 'components/navigation.css'; /_ Navigace _/
+@import 'components/buttons.css'; /_ Tlačítka _/
+@import 'components/cards.css'; /_ Karty _/
+@import 'components/forms.css'; /_ Formuláře _/
+@import 'components/multi-step-form.css'; /_ Vícekrokový formulář _/
+@import 'components/tables.css'; /_ Tabulky _/
+@import 'components/alerts.css'; /_ Upozornění _/
+@import 'components/modal.css'; /_ Modální okna _/
+
+/_ Rozložení _/
+@import 'layout/header.css'; /_ Hlavička _/
+@import 'layout/footer.css'; /_ Patička _/
+@import 'layout/grid.css'; /_ Mřížka _/
+@import 'layout/sections.css'; /_ Sekce _/
+
+/_ Stránky _/
+@import 'pages/homepage.css'; /_ Domovská stránka _/
+@import 'pages/order-form.css'; /_ Objednávkový formulář _/
+@import 'pages/routes.css'; /_ Trasy _/
+@import 'pages/pricing.css'; /_ Ceník _/
+@import 'pages/about.css'; /_ O nás _/
+@import 'pages/first-time.css'; /_ První voda _/
+
+/_ Admin _/
+@import 'admin/login.css'; /_ Přihlášení _/
+@import 'admin/admin-panel.css'; /_ Admin panel _/
+@import 'admin/inventory.css'; /_ Inventář _/
+
+/_ Responsivita _/
+@import 'responsive.css'; /_ Media queries _/

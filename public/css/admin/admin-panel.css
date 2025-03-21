@@ -99,17 +99,21 @@
 }
 
 .status-modal {
-    background: var(--bg-light);
-    padding: var(--spacing-xl);
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
     width: 90%;
-    max-width: 400px;
+    max-width: 450px;
+    position: relative;
 }
 
 .status-modal h3 {
-    margin: 0 0 var(--spacing-md) 0;
+    margin: 0 0 20px 0;
     color: var(--primary-color);
+    font-size: 1.3rem;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #eaeaea;
 }
 
 .status-select {
@@ -126,6 +130,38 @@
     display: flex;
     gap: var(--spacing-md);
     justify-content: flex-end;
+}
+
+/* Status Dialog Button Styling */
+.status-buttons button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: var(--border-radius);
+    font-family: var(--body-font);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.status-buttons .btn-save {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.status-buttons .btn-save:hover {
+    background-color: var(--primary-color-hover, #0056b3);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.status-buttons .btn-cancel {
+    background-color: var(--bg-medium);
+    color: var(--text-dark);
+    border: 1px solid var(--border-color);
+}
+
+.status-buttons .btn-cancel:hover {
+    background-color: var(--border-color);
 }
 
 .edits-controls {
@@ -203,6 +239,289 @@
     background-color: var(--error-color-hover);
 }
 
+/* Improved action buttons styling */
+.action-buttons {
+    display: grid;
+    gap: 4px;
+    width: 140px;
+}
+
+.btn-action {
+    padding: 6px 8px;
+    border: none;
+    border-radius: var(--border-radius-sm);
+    font-size: 11px;
+    cursor: pointer;
+    font-weight: 500;
+    color: white;
+    transition: opacity 0.2s ease;
+    white-space: nowrap;
+    text-align: center;
+}
+
+.btn-action:hover {
+    opacity: 0.85;
+}
+
+.btn-view {
+    background-color: #3498db; /* Blue */
+}
+
+.btn-status {
+    background-color: #f39c12; /* Orange */
+}
+
+.btn-edit {
+    background-color: #2ecc71; /* Green */
+}
+
+.btn-delete {
+    background-color: #e74c3c; /* Red */
+}
+
+/* Simplified Modal Styling */
+.modal {
+   display: none; /* skrytý modál */
+   position: fixed;
+   top: 0;
+   left: 0;
+   width: 100%;
+   height: 100%;
+   background: rgba(0, 0, 0, 0.6);
+   justify-content: center;
+   align-items: center;
+}
+.modal-content {
+   background: #fff;
+   padding: 20px;
+   border-radius: 5px;
+   max-width: 500px;
+   width: 100%;
+}
+.modal-header {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   border-bottom: 1px solid #ccc;
+   margin-bottom: 15px;
+}
+.modal-close {
+   cursor: pointer;
+   font-size: 20px;
+}
+.form-group {
+   margin-bottom: 15px;
+}
+.button-group {
+   text-align: right;
+}
+.btn-save, .btn-cancel {
+   padding: 8px 12px;
+   border: none;
+   cursor: pointer;
+   border-radius: 3px;
+}
+.btn-save {
+   background: #28a745;
+   color: #fff;
+}
+.btn-cancel {
+   background: #dc3545;
+   color: #fff;
+}
+
+/* Improved Modal Styling - Cleaner and More Readable */
+.modal {
+    /* Původně bylo s overflow-y a max-height, nyní bez scroll */
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: var(--z-modal);
+    -webkit-backdrop-filter: blur(3px);
+    animation: fadeIn 0.3s ease-in-out;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: #fff;
+    padding: 20px;
+    width: 90%;
+    max-width: 800px;
+    border-radius: 8px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    /* Odstraněno: overflow-y: auto; max-height: 90vh; */
+    overflow: visible;
+    animation: slideIn 0.4s ease-out;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 18px 25px;
+    position: relative;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.3rem;
+    letter-spacing: 0.5px;
+}
+
+.modal-body {
+    padding: 30px;
+    overflow-y: auto;
+    flex: 1;
+    background-color: white;
+}
+
+.modal-footer {
+    padding: 18px 25px;
+    border-top: 1px solid #eaeaea;
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    background-color: #f8f9fa;
+}
+
+.modal-close, .modal-close-btn {
+    cursor: pointer;
+    opacity: 0.8;
+    transition: all 0.2s;
+}
+
+.modal-close {
+    position: absolute;
+    top: -18px;
+    right: -18px;
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+    background-color: var(--error-color);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+    border: 3px solid white;
+    z-index: 1001;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.modal-close:hover {
+    background-color: var(--error-color-hover);
+    transform: scale(1.1);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+/* Styling for close button with class="close" */
+.close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 28px;
+    font-weight: 700;
+    color: white;
+    background-color: var(--error-color);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    border: 2px solid white;
+    z-index: 1001;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    line-height: 1;
+}
+
+.close:hover {
+    background-color: var(--error-color-hover);
+    transform: scale(1.1);
+}
+
+/* Order detail specific styling - Improved */
+.order-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+}
+
+.detail-section {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+    border: 1px solid #eaeaea;
+}
+
+.detail-section h3 {
+    margin-top: 0;
+    margin-bottom: 18px;
+    color: var(--primary-color);
+    font-size: 1.1rem;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #eaeaea;
+}
+
+.detail-section p {
+    margin: 12px 0;
+    font-size: 0.95rem;
+    color: #333;
+    line-height: 1.5;
+}
+
+.detail-section strong {
+    font-weight: 600;
+    color: #222;
+}
+
+/* Report modal styling */
+.report-modal {
+    max-width: 90%;
+    width: 900px;
+}
+
+/* Modal animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from { transform: translateY(-30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Responsive styles for modals */
+@media (max-width: 768px) {
+    .order-detail-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .modal-content {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        max-height: none;
+        border-radius: 0;
+    }
+}
+
 @media (max-width: 768px) {
     .admin-container {
         padding: 0 var(--spacing-md);
@@ -228,5 +547,450 @@
     
     .edits-search-row {
         flex-direction: column;
+    }
+
+    .close {
+        top: 5px;
+        right: 5px;
+    }
+}
+
+/* Edit Form Modal Styling - Improved */
+.edit-dialog {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: var(--z-modal);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.edit-modal {
+    background: #fff;
+    margin: 0;
+    width: 90%;
+    max-width: 800px;
+    border-radius: 8px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    /* Odstraněno: overflow-y: auto; max-height: 90vh; */
+    overflow: visible;
+    animation: slideIn 0.4s ease-out;
+    display: flex;
+    flex-direction: column;
+}
+
+.edit-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 18px 25px;
+    position: relative;
+}
+
+.edit-header h3 {
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.3rem;
+    letter-spacing: 0.5px;
+}
+
+.edit-form-container {
+    padding: 30px;
+    overflow-y: auto;
+    flex: 1;
+    background-color: #ffffff;
+}
+
+/* Better organized form layout */
+.edit-form-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.edit-form-container fieldset {
+    border: none;
+    padding: 0;
+    margin: 0 0 25px 0;
+}
+
+.edit-form-container legend {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #eaeaea;
+    width: 100%;
+}
+
+.edit-form-container .form-group {
+    margin-bottom: 18px;
+    position: relative;
+}
+
+.edit-form-container label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+    font-size: 0.95rem;
+}
+
+.edit-form-container .form-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 5px;
+}
+
+.edit-form-container .form-row .form-group {
+    flex: 1;
+}
+
+.edit-form-container input[type="text"],
+.edit-form-container input[type="email"],
+.edit-form-container input[type="number"],
+.edit-form-container input[type="date"],
+.edit-form-container textarea,
+.edit-form-container select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-family: var(--body-font);
+    font-size: var(--font-size);
+    background-color: white;
+    transition: all 0.2s ease;
+    color: #333;
+}
+
+.edit-form-container input:focus,
+.edit-form-container textarea:focus,
+.edit-form-container select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+    outline: none;
+}
+
+.edit-footer {
+    padding: 18px 25px;
+    border-top: 1px solid #eaeaea;
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    background-color: #f8f9fa;
+}
+
+.edit-close {
+    position: absolute;
+    top: -18px;
+    right: -18px;
+    font-size: 24px;
+    font-weight: 700;
+    color: white;
+    background-color: var(--error-color);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+    border: 3px solid white;
+    z-index: 1001;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.edit-close:hover {
+    background-color: var(--error-color-hover);
+    transform: scale(1.1);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+/* Form controls styling */
+.edit-form-container .form-group {
+    margin-bottom: 20px;
+}
+
+.edit-form-container label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+    font-size: 0.95rem;
+}
+
+.edit-form-container input[type="text"],
+.edit-form-container input[type="email"],
+.edit-form-container input[type="number"],
+.edit-form-container textarea,
+.edit-form-container select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-family: var(--body-font);
+    font-size: var(--font-size);
+    background-color: white;
+    margin-bottom: 8px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.edit-form-container input:focus,
+.edit-form-container textarea:focus,
+.edit-form-container select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+    outline: none;
+}
+
+.edit-form-container .btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.edit-form-container .btn-primary:hover {
+    background-color: var(--primary-color-hover, #0056b3);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.edit-form-container .btn-cancel {
+    background-color: var(--bg-medium);
+    color: var(--text-dark);
+    border: 1px solid var(--border-color);
+    padding: 10px 20px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.edit-form-container .btn-cancel:hover {
+    background-color: var(--border-color);
+}
+
+/* Responsive adjustments for edit form */
+@media (max-width: 768px) {
+    .edit-modal {
+        width: 100%;
+        height: 100%;
+        max-height: 100vh;
+        border-radius: 0;
+        margin: 0;
+    }
+    
+    .edit-dialog {
+        padding: 0;
+    }
+    
+    .edit-form-container {
+        padding: 20px;
+        max-height: calc(100vh - 130px);
+    }
+    
+    .edit-form-container .form-row {
+        flex-direction: column;
+    }
+}
+
+/* Edit Dialog Restyling - Making it match the modal-content style */
+.edit-dialog {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: var(--z-modal);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    overflow-y: auto;
+    animation: fadeIn 0.3s ease-in-out;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px;
+}
+
+.edit-modal {
+    background: white;
+    margin: 5vh auto;
+    width: 90%;
+    max-width: 800px;
+    border-radius: 8px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    /* Odstraněno: overflow-y: auto; max-height: 90vh; */
+    overflow: visible;
+    animation: slideIn 0.4s ease-out;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.edit-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 18px 25px;
+    position: relative;
+}
+
+.edit-header h3 {
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.3rem;
+    letter-spacing: 0.5px;
+}
+
+.edit-form-container {
+    padding: 30px;
+    overflow-y: auto;
+    flex: 1;
+    background-color: white;
+}
+
+.edit-footer {
+    padding: 18px 25px;
+    border-top: 1px solid #eaeaea;
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    background-color: #f8f9fa;
+}
+
+.edit-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    font-weight: 700;
+    color: white;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: all 0.2s;
+}
+
+.edit-close:hover {
+    opacity: 1;
+}
+
+/* Updated form styling to match modal styling */
+.edit-form-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.edit-form-container .form-group {
+    margin-bottom: 15px;
+}
+
+.edit-form-container label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.edit-form-container input,
+.edit-form-container select,
+.edit-form-container textarea {
+    width: 100%;
+    padding: var(--spacing-md);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-family: var(--body-font);
+    background-color: white;
+    transition: all 0.2s ease;
+}
+
+.edit-form-container input:focus,
+.edit-form-container select:focus,
+.edit-form-container textarea:focus {
+    border-color: var(--accent-color);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(255, 107, 0, 0.1);
+}
+
+.edit-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-md);
+}
+
+.edit-form-container .btn-save {
+    background-color: var(--accent-color);
+    color: var(--light-text);
+    border: none;
+    border-radius: var(--border-radius);
+    padding: var(--spacing-sm) var(--spacing-md);
+    cursor: pointer;
+    font-weight: 600;
+    transition: all var(--transition-speed) ease;
+}
+
+.edit-form-container .btn-cancel {
+    background-color: #6c757d;
+    color: var(--light-text);
+    border: none;
+    border-radius: var(--border-radius);
+    padding: var(--spacing-sm) var(--spacing-md);
+    cursor: pointer;
+    font-weight: 600;
+    transition: all var(--transition-speed) ease;
+}
+
+.edit-form-container .btn-save:hover {
+    background-color: var(--accent-color-hover);
+    transform: translateY(-1px);
+}
+
+.edit-form-container .btn-cancel:hover {
+    background-color: #5a6268;
+    transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+    .edit-modal {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        max-height: none;
+        border-radius: 0;
+    }
+    
+    .edit-dialog {
+        padding: 0;
+        align-items: flex-start;
+    }
+    
+    .edit-form-container {
+        padding: var(--spacing-md);
+    }
+    
+    .edit-buttons {
+        flex-direction: column;
+    }
+    
+    .edit-buttons button {
+        width: 100%;
     }
 }

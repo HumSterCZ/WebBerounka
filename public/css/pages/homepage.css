@@ -1,12 +1,69 @@
 /* 
- * Styly pro domovskou stránku
+ * Styly pro domovskou stránku - komplexní oprava zarovnání
  */
+
+/* Společný wrapper pro sekce - zajistí konzistentní zarovnání */
+.section-wrapper {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--spacing-md);
+    padding-right: var(--spacing-md);
+    box-sizing: border-box;
+}
+
+/* Sekce doporučených tras */
+.featured-photos {
+    margin-bottom: var(--spacing-xxl);
+}
 
 .photo-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: var(--spacing-xl);
-    padding: var(--spacing-xl);
+    padding: var(--spacing-xl) 0;
+    margin: 0 auto;
+}
+
+.photo-item {
+    text-align: center;
+    padding: var(--spacing-md);
+    background: var(--bg-light);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--box-shadow);
+    transition: transform var(--transition-speed) var(--transition-timing), 
+                box-shadow var(--transition-speed) var(--transition-timing);
+    border: 1px solid var(--border-color);
+}
+
+.photo-item:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--box-shadow-lg);
+}
+
+.photo-item img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    border-radius: var(--border-radius);
+    margin-bottom: var(--spacing-md);
+    box-shadow: var(--box-shadow-sm);
+}
+
+.photo-item h3 {
+    color: var(--primary-color);
+    margin: var(--spacing-md) 0;
+    font-size: var(--font-size-lg);
+}
+
+.photo-item p {
+    color: var(--text-medium);
+    line-height: 1.6;
+    margin-bottom: var(--spacing-sm);
+}
+
+.photo-item p strong {
+    color: var(--primary-color);
 }
 
 /* Sekce O nás */
@@ -16,6 +73,8 @@
     border-radius: var(--border-radius-lg);
     margin: var(--spacing-xl) auto;
     text-align: center;
+    box-shadow: var(--box-shadow);
+    border: 1px solid var(--border-color);
 }
 
 .content-container {
@@ -27,42 +86,364 @@
 
 .about-text {
     font-size: var(--font-size-md);
-    line-height: 1.6;
+    line-height: 1.7;
     max-width: 800px;
     margin: 0 auto;
+    color: var(--text-medium);
+}
+
+.about-text p {
+    margin-bottom: var(--spacing-md);
+}
+
+.action-buttons {
+    margin-top: var(--spacing-sm);
+}
+
+.action-buttons .btn {
+    padding: var(--spacing-sm) var(--spacing-xl);
+    font-size: var(--font-size);
+    font-weight: 600;
+    transition: all var(--transition-speed) var(--transition-timing);
+}
+
+.action-buttons .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(255, 107, 0, 0.25);
 }
 
 /* Sekce služeb */
 .services {
     width: 100%;
+    max-width: var(--container-width);
+    margin: 0 auto var(--spacing-xxl);
 }
 
 .services-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: var(--spacing-xl);
+    margin: var(--spacing-md) 0;
     padding: var(--spacing-md);
-    margin: 0 auto;
 }
 
 .service-card {
     background-color: var(--bg-light);
-    border-radius: var(--border-radius);
+    border-radius: var(--border-radius-lg);
     box-shadow: var(--box-shadow);
     padding: var(--spacing-xl);
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    transition: transform var(--transition-speed) var(--transition-timing), 
+                box-shadow var(--transition-speed) var(--transition-timing);
+    border: 1px solid var(--border-color);
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--box-shadow-lg);
+}
+
+.service-icon {
+    font-size: 3rem;
+    margin-bottom: var(--spacing-md);
+}
+
+.service-card h3 {
+    color: var(--primary-color);
+    margin: var(--spacing-md) 0;
+    font-size: var(--font-size-lg);
+}
+
+.service-card p {
+    color: var(--text-medium);
+    line-height: 1.6;
+    margin-bottom: var(--spacing-md);
+}
+
+.service-link {
+    display: inline-block;
+    margin-top: var(--spacing-md);
+    font-weight: 600;
+    color: var(--primary-color);
+    text-decoration: none;
+    padding-bottom: 3px;
+    border-bottom: 2px solid var(--accent-color);
+    transition: all var(--transition-speed) var(--transition-timing);
+}
+
+.service-link:hover {
+    color: var(--accent-color);
+    transform: translateY(-2px);
+}
+
+/* Ceník na úvodní stránce */
+.pricing-highlight {
+    width: 100%;
+    max-width: var(--container-width);
+    margin: var(--spacing-xl) auto var(--spacing-xxl);
+    padding: 0 var(--spacing-md);
+}
+
+.price-card-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-xl);
+    margin: var(--spacing-md) 0;
+}
+
+.price-card {
+    background-color: var(--bg-light);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--box-shadow);
+    padding: var(--spacing-xl);
+    text-align: center;
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    transition: transform var(--transition-speed) var(--transition-timing), 
+                box-shadow var(--transition-speed) var(--transition-timing);
+}
+
+.price-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--box-shadow-lg);
+}
+
+.price-card.featured {
+    border: 2px solid var(--accent-color);
+    position: relative;
+    transform: translateY(-10px) scale(1.02);
+    z-index: var(--z-normal);
+    box-shadow: 0 8px 20px rgba(255, 107, 0, 0.15);
+}
+
+.price-card.featured:hover {
+    transform: translateY(-15px) scale(1.02);
+    box-shadow: 0 15px 25px rgba(255, 107, 0, 0.2);
+}
+
+.price-badge {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--accent-color);
+    color: var(--light-text);
+    padding: calc(var(--spacing-xs) + 2px) var(--spacing-md);
+    border-radius: 30px;
+    font-weight: 600;
+    box-shadow: var(--box-shadow-sm);
+    white-space: nowrap;
+}
+
+.price-card h3 {
+    margin-bottom: var(--spacing-sm);
+    color: var(--primary-color);
+    font-size: var(--font-size-lg);
+}
+
+.price {
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    color: var(--accent-color);
+    margin: var(--spacing-md) 0;
+}
+
+.price-features {
+    list-style: none;
+    margin: var(--spacing-md) 0;
+    padding: 0;
+}
+
+.price-features li {
+    padding: var(--spacing-sm) 0;
+    border-bottom: 1px dotted var(--border-color);
+    color: var(--text-medium);
+}
+
+.price-features li:last-child {
+    border-bottom: none;
+}
+
+/* Kontaktní sekce - vylepšené centrování */
+.contact-section {
+    width: 100%;
+    margin: 0 auto var(--spacing-xxl);
+    padding: 0 var(--spacing-md); /* Přidán padding shodný s ostatními sekcemi */
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.contact-info {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-xl);
+    margin: var(--spacing-md) 0;
+    width: 100%;
+    max-width: var(--container-width);
+}
+
+.contact-item {
+    background-color: var(--bg-light);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--box-shadow);
+    padding: var(--spacing-xl);
+    text-align: center;
+    border: 1px solid var(--border-color);
+    transition: transform var(--transition-speed) var(--transition-timing);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.contact-item:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--box-shadow-lg);
+}
+
+.contact-icon {
+    font-size: 2.5rem;
+    margin-bottom: var(--spacing-md);
+    color: var(--accent-color);
+}
+
+.contact-item h3 {
+    margin-bottom: var(--spacing-sm);
+    color: var (--primary-color);
+    font-size: var(--font-size-lg);
+}
+
+.contact-link {
+    font-weight: 600;
+    color: var(--accent-color);
+    text-decoration: none;
+    transition: color var(--transition-speed) var(--transition-timing);
+}
+
+.contact-link:hover {
+    color: var(--accent-color-hover);
+    text-decoration: underline;
+}
+
+/* Admin link */
+.admin-link {
+    text-align: center;
+    margin: var(--spacing-xl) auto;
+    padding: var(--spacing-md);
+    border-radius: var(--border-radius);
+    max-width: 200px;
+}
+
+.admin-link .btn {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-weight: 600;
+    background-color: var(--primary-color);
+    color: var(--light-text);
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    transition: all var(--transition-speed) var (--transition-timing);
+}
+
+.admin-link .btn:hover {
+    background-color: var(--secondary-color);
+    transform: translateY(-2px);
+    box-shadow: var(--box-shadow);
+}
+
+/* Responsivita */
+@media (max-width: 992px) {
+    .price-card-container {
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--spacing-md);
+    }
+    
+    .contact-info {
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--spacing-md);
+    }
 }
 
 @media (max-width: 768px) {
     .about-us {
-        padding: var(--spacing-lg);
+        padding: var(--spacing-xl) var(--spacing-md);
     }
     
     .services-grid {
-        gap: var(--spacing-lg);
+        gap: var(--spacing-md);
     }
     
     .service-card {
-        padding: var(--spacing-lg);
+        padding: var(--spacing-md);
+    }
+
+    .price-card-container,
+    .contact-info {
+        grid-template-columns: 1fr;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .contact-section {
+        padding: 0 var(--spacing-md);
+    }
+    
+    .contact-info {
+        grid-template-columns: 1fr;
+        max-width: 500px; /* Zvětšená maximální šířka pro lepší vzhled */
+        margin: 0 auto;
+    }
+    
+    .price-card.featured {
+        transform: scale(1.02);
+        margin: var(--spacing-md) 0;
+    }
+    
+    .price-card.featured:hover {
+        transform: translateY(-5px) scale(1.02);
+    }
+    
+    .contact-item {
+        padding: var(--spacing-md);
+    }
+}
+
+@media (max-width: 576px) {
+    .photo-grid {
+        padding: var(--spacing-md);
+        gap: var(--spacing-md);
+    }
+    
+    .photo-item {
+        padding: var(--spacing-md);
+    }
+    
+    .photo-item img {
+        height: 180px;
+    }
+    
+    .service-card, 
+    .price-card, 
+    .contact-item {
+        padding: var(--spacing-md) var(--spacing-md);
+    }
+    
+    .contact-icon,
+    .service-icon {
+        font-size: 2.25rem;
+    }
+
+    .section-wrapper {
+        padding-left: var(--spacing-sm);
+        padding-right: var(--spacing-sm);
     }
 }

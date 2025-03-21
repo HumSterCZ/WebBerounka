@@ -3304,3 +3304,144 @@ document.addEventListener("DOMContentLoaded", () => {
   // Also expose removeToast to window object
   window.removeToast = removeToast;
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+  loadOrders();
+  document.getElementById("ordersTable").addEventListener("click", (e) => {
+    if (e.target.classList.contains("btn-edit")) {
+      const orderId = e.target.dataset.id;
+      openEditModal(orderId);
+    }
+  });
+});
+
+async function loadOrders() {
+  try {
+    const response = await fetch("/api/orders/list", {
+      headers: { Authorization: "Bearer " + localStorage.getItem("token") },
+    });
+    const orders = await response.json();
+    const tableBody = document.getElementById("ordersTableBody");
+    tableBody.innerHTML = orders
+      .map(
+        (order) => `
+      <tr>
+        <td>${order.id}</td>
+        <td>${order.name}</td>
+        <td>${order.email}</td>
+        <td>${order.status}</td>
+        <td><button class="btn-edit" data-id="${order.id}">Edit</button></td>
+      </tr>
+    `
+      )
+      .join("");
+  } catch (error) {
+    console.error("Error loading orders:", error);
+  }
+}
+
+function openEditModal(orderId) {
+  fetch(`/api/orders/${orderId}`, {
+    headers: { Authorization: "Bearer " + localStorage.getItem("token") },
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.success) {
+        const order = data.data;
+        document.getElementById("editOrderId").value = order.id;
+        document.getElementById("editName").value = order.name;
+        document.getElementById("editEmail").value = order.email;
+        document.getElementById("editStatus").value = order.status;
+        // ...populate další pole pokud je třeba...
+        document.getElementById("editModal").classList.add("active");
+      }
+    })
+    .catch((err) => console.error("Error fetching order:", err));
+}
+
+function closeEditModal() {
+  document.getElementById("editModal").classList.remove("active");
+}
+
+document.getElementById("editForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const orderId = document.getElementById("editOrderId").value;
+  const updateData = {
+    name: document.getElementById("editName").value,
+    email: document.getElementById("editEmail").value,
+    status: document.getElementById("editStatus").value,
+    // ...sbírej další data pokud je třeba...
+  };
+  try {
+    const response = await fetch(`/api/orders/${orderId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem("token"),
+      },
+      body: JSON.stringify(updateData),
+    });
+    const result = await response.json();
+    if (result.success) {
+      closeEditModal();
+      loadOrders();
+    } else {
+      console.error("Error updating order:", result.message);
+    }
+  } catch (error) {
+    console.error("Error updating order:", error);
+  }
+});
+
+document.getElementById("editCancel").addEventListener("click", closeEditModal);
+
+// Zjednodušená funkce pro editaci objednávky
+function editOrder(orderId) {
+  fetch(`/api/orders/${orderId}`, {
+    headers: { Authorization: "Bearer " + localStorage.getItem("token") },
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.success) {
+        const order = data.data;
+        document.getElementById("editOrderId").value = order.id;
+        document.getElementById("editName").value = order.name;
+        document.getElementById("editEmail").value = order.email;
+        document.getElementById("editStatus").value = order.status;
+        document.getElementById("editModal").style.display = "flex";
+      }
+    })
+    .catch((err) => console.error("Error editing order:", err));
+}
+
+document.getElementById("editForm").addEventListener("submit", function (e) {
+  e.preventDefault();
+  const orderId = document.getElementById("editOrderId").value;
+  const updateData = {
+    name: document.getElementById("editName").value,
+    email: document.getElementById("editEmail").value,
+    status: document.getElementById("editStatus").value,
+  };
+  fetch(`/api/orders/${orderId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + localStorage.getItem("token"),
+    },
+    body: JSON.stringify(updateData),
+  })
+    .then((res) => res.json())
+    .then((result) => {
+      if (result.success) {
+        document.getElementById("editModal").style.display = "none";
+        loadOrders();
+      } else {
+        console.error("Update error:", result.message);
+      }
+    })
+    .catch((err) => console.error("Error updating order:", err));
+});
+
+document.getElementById("editCancel").addEventListener("click", function () {
+  document.getElementById("editModal").style.display = "none";
+});

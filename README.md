@@ -5,59 +5,62 @@ Tento projekt představuje webovou aplikaci určenou k objednávání půjčení
 ## Funkcionality
 
 ### Objednávky
-- **Uživatelské údaje:**  
-  - Jméno  
-  - Email  
-  - Telefon  
-- **Detaily objednávky:**  
-  - Vybrané vybavení:  
-    - Kanoe  
-    - Kanoe rodinná  
-    - Velký raft (6 osob)  
-    - Pádlo  
-    - Pádlo dětské  
-    - Vesta  
-    - Vesta dětská  
-    - Barel  
-  - Datum příjezdu a čas příjezdu  
-  - Místo převzetí materiálu  
-  - Datum odjezdu a čas odjezdu  
-  - Místo odevzdání materiálu  
-  - Přeprava věcí (Ano/Ne)  
-  - Přeprava osob (Ano/Ne)  
+
+- **Uživatelské údaje:**
+  - Jméno
+  - Email
+  - Telefon
+- **Detaily objednávky:**
+  - Vybrané vybavení:
+    - Kanoe
+    - Kanoe rodinná
+    - Velký raft (6 osob)
+    - Pádlo
+    - Pádlo dětské
+    - Vesta
+    - Vesta dětská
+    - Barel
+  - Datum příjezdu a čas příjezdu
+  - Místo převzetí materiálu
+  - Datum odjezdu a čas odjezdu
+  - Místo odevzdání materiálu
+  - Přeprava věcí (Ano/Ne)
+  - Přeprava osob (Ano/Ne)
   - Poznámka
 
 ### Sklady
-- **Informace o skladu:**  
-  - Název skladu  
-  - Stav vybavení:  
-    - Kanoe  
-    - Kanoe rodinná  
-    - Velký raft (6 osob)  
-    - Pádlo  
-    - Pádlo dětské  
-    - Vesta  
-    - Vesta dětská  
+
+- **Informace o skladu:**
+  - Název skladu
+  - Stav vybavení:
+    - Kanoe
+    - Kanoe rodinná
+    - Velký raft (6 osob)
+    - Pádlo
+    - Pádlo dětské
+    - Vesta
+    - Vesta dětská
     - Barel
 
 ### Administrátorská sekce
-- **CRUD operace:**  
+
+- **CRUD operace:**
   - Přidání, editace, mazání a filtrování objednávek.
-- **Inventarizace skladů:**  
+- **Inventarizace skladů:**
   - Možnost fyzické kontroly a aktualizace počtů vybavení.
-- **Převozové lístky:**  
-  - Automatický výpočet stavu skladu dle objednávek a aktuálního počtu vybavení.  
+- **Převozové lístky:**
+  - Automatický výpočet stavu skladu dle objednávek a aktuálního počtu vybavení.
   - Generování a tisk převozových lístků s přehledem, odkud kam a jaký materiál se má přesouvat.
-- **Přístup:**  
-  - Administrace je chráněna heslem: `BerounkaAdmin2025*`  
+- **Přístup:**
+  - Administrace je chráněna heslem: `BerounkaAdmin2025*`
   - Pro zvýšení bezpečnosti doporučujeme uložit heslo jako environmentální proměnnou a provozovat aplikaci přes HTTPS.
 
 ## Technický Stack
 
 - **Backend:** MySQL – relační databáze pro uchovávání dat (tabulky: Osoby, Objednávky, Sklady)
 - **Kontejnerizace:** Docker – spuštění aplikace i databáze v Docker kontejnerech
-- **Vývojové nástroje:**  
-  - VS Code jako vývojové prostředí  
+- **Vývojové nástroje:**
+  - VS Code jako vývojové prostředí
   - Git pro správu verzí a spolupráci
 
 ## Instalace a Spuštění
@@ -66,11 +69,12 @@ Tento projekt představuje webovou aplikaci určenou k objednávání půjčení
    ```bash
    git clone https://github.com/HumSterCZ/WebBerounka.git
    cd berounka-web
+   ```
 
 Vždy pro vyhodnocení je potřeba projet kompletně všechny objednávky a edit cyklem a vyhodnotit "od startu databáze" až do zvoleného data co mám zobrazit za hodnoty materiálů.
-Je to moc důležité tak to prosím tak udělej. 
+Je to moc důležité tak to prosím tak udělej.
 
-Příklady funkce 
+Příklady funkce
 Inicializace databáze Skladů:
 Sklad A se inicializoval s 20 loděmi.
 Sklad B se inicializoval s 10 loděmi.
@@ -117,4 +121,4 @@ Pokud kliknu na den 6.5. Uvidím:
 A|6.5.2025|30|-20|10|
 B|6.5.2025|10|+10|20|
 
-
+vfdg
